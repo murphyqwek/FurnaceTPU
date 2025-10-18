@@ -1,0 +1,525 @@
+﻿<Window x:Class="pechka4._8.MainWindow"
+        xmlns:local="clr-namespace:pechka4._8.ViewModels"
+        xmlns:conv="clr-namespace:pechka4._8.Models"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="700" Width="1200" WindowState="Maximized"
+        Background="{DynamicResource MaterialDesignPaper}">
+    <Window.DataContext>
+        <local:MainWindowViewModel />
+    </Window.DataContext>
+    <Window.Resources>
+        <conv:BoolToBrushConverter x:Key="BoolToBrushConverter"
+        TrueBrush="MediumSeaGreen" FalseBrush="Gray"/>
+        <Storyboard x:Key="ArrowFlowUp" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="ArrowTrans1" Storyboard.TargetProperty="Y"
+                     From="35" To="0" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowTrans2" Storyboard.TargetProperty="Y"
+                     From="35" To="0" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowTrans3" Storyboard.TargetProperty="Y"
+                     From="35" To="0" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowTrans4" Storyboard.TargetProperty="Y"
+                     From="35" To="0" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowTrans5" Storyboard.TargetProperty="Y"
+                     From="35" To="0" Duration="0:0:1"/>
+        </Storyboard>
+        <Storyboard x:Key="ArrowFlowDown" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="ArrowTrans1" Storyboard.TargetProperty="Y"
+                     From="0" To="35" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowTrans2" Storyboard.TargetProperty="Y"
+                     From="0" To="35" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowTrans3" Storyboard.TargetProperty="Y"
+                     From="0" To="35" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowTrans4" Storyboard.TargetProperty="Y"
+                     From="0" To="35" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowTrans5" Storyboard.TargetProperty="Y"
+                     From="0" To="35" Duration="0:0:1"/>
+        </Storyboard>
+        <Storyboard x:Key="ArrowFlowRight" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="ArrowBTrans1" Storyboard.TargetProperty="X"
+                     From="-25" To="0" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowBTrans2" Storyboard.TargetProperty="X"
+                     From="-25" To="0" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowBTrans3" Storyboard.TargetProperty="X"
+                     From="-25" To="0" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowBTrans4" Storyboard.TargetProperty="X"
+                     From="-25" To="0" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowBTrans5" Storyboard.TargetProperty="X"
+                     From="-25" To="0" Duration="0:0:1"/>
+        </Storyboard>
+        <Storyboard x:Key="ArrowFlowLeft" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="ArrowBTrans1" Storyboard.TargetProperty="X"
+                     From="0" To="-25" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowBTrans2" Storyboard.TargetProperty="X"
+                     From="0" To="-25" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowBTrans3" Storyboard.TargetProperty="X"
+                     From="0" To="-25" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowBTrans4" Storyboard.TargetProperty="X"
+                     From="0" To="-25" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowBTrans5" Storyboard.TargetProperty="X"
+                     From="0" To="-25" Duration="0:0:1"/>
+        </Storyboard>
+        <Storyboard x:Key="RotorSpinRight" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="DriveARotorRotate"
+                     Storyboard.TargetProperty="Angle"
+                     From="0" To="360"
+                     Duration="0:0:1"/>
+        </Storyboard>
+        <Storyboard x:Key="RotorSpinLeft" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="DriveARotorRotate"
+                     Storyboard.TargetProperty="Angle"
+                     From="0" To="-360"
+                     Duration="0:0:1"/>
+        </Storyboard>
+
+
+    </Window.Resources>
+
+    <Window.Triggers>
+        
+    </Window.Triggers>
+
+    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-160,0,0,0">
+        
+
+        <!-- Карточки управления -->
+        
+        <Grid HorizontalAlignment="Right"  Width="700">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="0"/>
+            </Grid.ColumnDefinitions>
+            <Canvas IsHitTestVisible="False" Height="20" Margin="-180,179,0,0">
+               
+                    <Path
+    x:Name="DriveARotor"
+    Fill="Gray"
+    Stroke="DimGray"
+    StrokeThickness="1"
+    RenderTransformOrigin="0.5,0.5">
+                    <Path.Data>
+                        <PathGeometry>
+                            <PathFigure StartPoint="25,0">
+                                <LineSegment Point="30,20"/>
+                                <LineSegment Point="50,25"/>
+                                <LineSegment Point="30,30"/>
+                                <LineSegment Point="25,50"/>
+                                <LineSegment Point="20,30"/>
+                                <LineSegment Point="0,25"/>
+                                <LineSegment Point="20,20"/>
+                                <LineSegment Point="25,0"/>
+                            </PathFigure>
+                        </PathGeometry>
+                    </Path.Data>
+                    <Path.RenderTransform>
+                        <RotateTransform x:Name="DriveARotorRotate" CenterX="0" CenterY="0" Angle="0"/>
+                    </Path.RenderTransform>
+                </Path>
+                
+            </Canvas>
+            <Canvas IsHitTestVisible="False">
+                
+                <Image Grid.Column="0" Source="Resourses/Images/Tube_V.PNG"
+Width="37" Height="30" HorizontalAlignment="Left" VerticalAlignment="Stretch"
+Margin="-113,146,0,0"/>
+                <Image Grid.Column="0" Source="Resourses/Images/Tank_Up.PNG"
+Width="120" Height="120" HorizontalAlignment="Left" VerticalAlignment="Stretch"
+Margin="-140,26,0,0"/>
+                <Image Grid.Column="0" Source="Resourses/Images/Tube_V.PNG"
+Width="37" Height="30" HorizontalAlignment="Left" VerticalAlignment="Stretch"
+Margin="-113,235,0,0"/>
+                <Image Grid.Column="0" Source="Resourses/Images/Rotor.PNG"
+Width="59" Height="59" HorizontalAlignment="Left" VerticalAlignment="Stretch"
+Margin="-124,176,0,0"/>
+
+
+            </Canvas>
+           
+                <!-- Зона 1 -->
+            <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                <materialDesign:Card Padding="14" Margin="0,0,0,12" Width="170">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8" VerticalAlignment="Center">
+                            <materialDesign:PackIcon Kind="Thermometer" Width="24" Height="24" />
+                            <TextBlock Text="{Binding Zone1.Name}" FontSize="17" FontWeight="SemiBold" Margin="8,0,0,0"/>
+                        </StackPanel>
+                        <ProgressBar Value="{Binding Zone1.Temperature}" Maximum="700" Height="8" Margin="0,0,0,4"
+             Foreground="{Binding Zone1.TempBrush}" />
+                        <TextBlock Text="{Binding Zone1.TemperatureText}" FontSize="16" FontWeight="Bold" HorizontalAlignment="Right"/>
+                        <TextBox Style="{DynamicResource MaterialDesignFloatingHintTextBox}"
+                                 Text="{Binding Zone1.Temperature, UpdateSourceTrigger=PropertyChanged, StringFormat=F1}"
+                                 materialDesign:HintAssist.Hint="Задать температуру"
+                                 FontSize="14"
+                                 Margin="0,4,0,8"
+                                 Width="110"
+                                 PreviewTextInput="TextBox_PreviewTextInput"/>
+                        <Button Content="Управлять"
+                                Style="{DynamicResource MaterialDesignFilledButton}"
+                                Width="90"
+                                Height="28"
+                                FontSize="13"
+                                HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </materialDesign:Card>
+            </StackPanel>
+            <!-- Зона 2 -->
+            <StackPanel Grid.Column="1" HorizontalAlignment="Center" Margin="32,0,32,0">
+                <materialDesign:Card Padding="14" Margin="0,0,0,12" Width="170">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8" VerticalAlignment="Center">
+                            <materialDesign:PackIcon Kind="Thermometer" Width="24" Height="24" />
+                            <TextBlock Text="{Binding Zone2.Name}" FontSize="17" FontWeight="SemiBold" Margin="8,0,0,0"/>
+                        </StackPanel>
+                        <ProgressBar Value="{Binding Zone2.Temperature}" Maximum="700" Height="8" Margin="0,0,0,4"
+                                      Foreground="{Binding Zone2.TempBrush}"/>
+                        <TextBlock Text="{Binding Zone2.TemperatureText}" FontSize="16" FontWeight="Bold" HorizontalAlignment="Right"/>
+                        <TextBox Style="{DynamicResource MaterialDesignFloatingHintTextBox}"
+                                 Text="{Binding Zone2.Temperature, UpdateSourceTrigger=PropertyChanged, StringFormat=F1}"
+                                 materialDesign:HintAssist.Hint="Задать температуру"
+                                 FontSize="14"
+                                 Margin="0,4,0,8"
+                                 Width="110"
+                                 PreviewTextInput="TextBox_PreviewTextInput"/>
+                        <Button Content="Управлять"
+                                Style="{DynamicResource MaterialDesignFilledButton}"
+                                Width="90"
+                                Height="28"
+                                FontSize="13"
+                                HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </materialDesign:Card>
+            </StackPanel>
+            <!-- Зона 3 -->
+            <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                <materialDesign:Card Padding="14" Margin="0,0,0,12" Width="170">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8" VerticalAlignment="Center">
+                            <materialDesign:PackIcon Kind="Thermometer" Width="24" Height="24" />
+                            <TextBlock Text="{Binding Zone3.Name}" FontSize="17" FontWeight="SemiBold" Margin="8,0,0,0"/>
+                        </StackPanel>
+                        <ProgressBar Value="{Binding Zone3.Temperature}" Maximum="700" Height="8" Margin="0,0,0,4"
+                                      Foreground="{Binding Zone3.TempBrush}"/>
+                        <TextBlock Text="{Binding Zone3.TemperatureText}" FontSize="16" FontWeight="Bold" HorizontalAlignment="Right"/>
+                        <TextBox Style="{DynamicResource MaterialDesignFloatingHintTextBox}"
+                                 Text="{Binding Zone3.Temperature, UpdateSourceTrigger=PropertyChanged, StringFormat=F1}"
+                                 materialDesign:HintAssist.Hint="Задать температуру"
+                                 FontSize="14"
+                                 Margin="0,4,0,8"
+                                 Width="110"
+                                 PreviewTextInput="TextBox_PreviewTextInput"/>
+                        <Button Content="Управлять"
+                                Style="{DynamicResource MaterialDesignFilledButton}"
+                                Width="90"
+                                Height="28"
+                                FontSize="13"
+                                HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </materialDesign:Card>
+                <!-- Привод А -->
+            </StackPanel>
+            <StackPanel Grid.Column="3" HorizontalAlignment="Center">
+                <materialDesign:Card Grid.Column="1"
+    Width="180" Height="140" Padding="10"
+    HorizontalAlignment="Left" VerticalAlignment="Bottom"
+    Margin="-1030,0,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Привод А" FontSize="13" FontWeight="Bold" Margin="0,0,0,4"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,2" VerticalAlignment="Center">
+                            <TextBlock Text="Скорость:" FontSize="12" Margin="0,0,2,0"/>
+                            <TextBlock Text="{Binding DriveA.Speed, StringFormat=F1}" FontSize="12" FontWeight="Bold" Foreground="DarkSlateBlue"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                            <TextBox Width="55" Margin="0,0,8,0"
+                Text="{Binding DriveA.InputSpeed, UpdateSourceTrigger=PropertyChanged}"
+                PreviewTextInput="TextBox_PreviewTextInput"/>
+                            <Button Content="Применить"
+                Command="{Binding DriveA.ConfirmSpeedCommand}"
+                IsEnabled="{Binding DriveA.CanConfirmSpeed}"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <ToggleButton 
+IsChecked="{Binding DriveA.IsLeft, Mode=TwoWay}"
+Width="42" Height="42"
+Margin="0,0,0,0"
+Style="{StaticResource MaterialDesignIconButton}">
+                                <materialDesign:PackIcon 
+    Kind="ArrowLeftBold"
+    Width="42" Height="42"
+    VerticalAlignment="Center"
+    HorizontalAlignment="Center"
+    Foreground="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}, Converter={StaticResource BoolToBrushConverter}}"/>
+                            </ToggleButton>
+                            <ToggleButton 
+IsChecked="{Binding DriveA.IsRight, Mode=TwoWay}"
+Width="42" Height="42"
+Margin="0,0,0,0"
+Style="{StaticResource MaterialDesignIconButton}">
+                                <materialDesign:PackIcon 
+    Kind="ArrowRightBold"
+    Width="42" Height="42"
+    VerticalAlignment="Center"
+    HorizontalAlignment="Center"
+    Foreground="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}, Converter={StaticResource BoolToBrushConverter}}"/>
+                            </ToggleButton>
+                        </StackPanel>
+                    </StackPanel>
+                </materialDesign:Card>
+            </StackPanel>
+        </Grid>
+        
+
+        <!-- Визуализация трубы с цветными зонами -->
+       <!-- Визуализация трубы, шнека и привода B -->
+<Grid Width="1200" Height="240" HorizontalAlignment="Center" Margin="0,24,10,0">
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="500"/>    <!-- Под бункер, потом добавишь -->
+        <ColumnDefinition Width="0"/>     <!-- Под шнек -->
+        <ColumnDefinition Width="1.6*"/>   <!-- Под печку (трубу) -->
+            <!-- Пусто/резерв под центровку -->
+    </Grid.ColumnDefinitions>
+
+    <!-- БУНКЕР, если понадобится -->
+    
+
+    <!-- ШНЕК -->
+    <Image  Grid.Column="1" Source="Resourses/Images/Screw_Tube_L.PNG"
+           Width="146" Height="140"
+           HorizontalAlignment="Left"
+           VerticalAlignment="Top"
+           Margin="-145,42,0,0"/>
+            <Canvas x:Name="ArrowsCanvasB"
+        Width="100" Height="170" Panel.ZIndex="10"
+        HorizontalAlignment="Left" Margin="375,-100,0,0">
+                <materialDesign:PackIcon x:Name="ArrowBAnim1"
+        Kind="{Binding DriveB.ArrowKind}" Width="13" Height="13" Canvas.Left="0" Canvas.Top="115">
+                    <materialDesign:PackIcon.RenderTransform>
+                        <TranslateTransform x:Name="ArrowBTrans1" Y="0"/>
+                    </materialDesign:PackIcon.RenderTransform>
+                </materialDesign:PackIcon>
+                <materialDesign:PackIcon x:Name="ArrowBAnim2"
+        Kind="{Binding DriveB.ArrowKind}" Width="13" Height="13" Canvas.Left="25" Canvas.Top="115">
+                    <materialDesign:PackIcon.RenderTransform>
+                        <TranslateTransform x:Name="ArrowBTrans2" Y="0"/>
+                    </materialDesign:PackIcon.RenderTransform>
+                </materialDesign:PackIcon>
+                <materialDesign:PackIcon x:Name="ArrowBAnim3"
+        Kind="{Binding DriveB.ArrowKind}" Width="13" Height="13" Canvas.Left="50" Canvas.Top="115">
+                    <materialDesign:PackIcon.RenderTransform>
+                        <TranslateTransform x:Name="ArrowBTrans3" Y="0"/>
+                    </materialDesign:PackIcon.RenderTransform>
+                </materialDesign:PackIcon>
+                <materialDesign:PackIcon x:Name="ArrowBAnim4"
+        Kind="{Binding DriveB.ArrowKind}" Width="13" Height="13" Canvas.Left="75" Canvas.Top="115">
+                    <materialDesign:PackIcon.RenderTransform>
+                        <TranslateTransform x:Name="ArrowBTrans4" Y="0"/>
+                    </materialDesign:PackIcon.RenderTransform>
+                </materialDesign:PackIcon>
+                <materialDesign:PackIcon x:Name="ArrowBAnim5"
+        Kind="{Binding DriveB.ArrowKind}" Width="13" Height="13" Canvas.Left="100" Canvas.Top="115">
+                    <materialDesign:PackIcon.RenderTransform>
+                        <TranslateTransform x:Name="ArrowBTrans5" Y="0"/>
+                    </materialDesign:PackIcon.RenderTransform>
+                </materialDesign:PackIcon>
+            </Canvas>
+
+
+            <!-- ПЕЧКА/ТРУБА + ЗОНЫ -->
+    <Grid Grid.Column="2">
+        <!-- Картинка печки -->
+                <Image Source="Resourses/Images/pechka.PNG" VerticalAlignment="Top" Stretch="Fill" Height="140"/>
+        <!-- Цветные зоны поверх картинки -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <!-- Зона 1 -->
+            <Border Grid.Column="0" Margin="50,45,10,145" CornerRadius="15"
+                    Background="{Binding Zone1.TempBrush}" Opacity="0.60"/>
+            <!-- Зона 2 -->
+            <Border Grid.Column="1" Margin="10,45,10,145" CornerRadius="15"
+                    Background="{Binding Zone2.TempBrush}" Opacity="0.60"/>
+            <!-- Зона 3 -->
+            <Border Grid.Column="2" Margin="10,45,50,145" CornerRadius="15"
+                    Background="{Binding Zone3.TempBrush}" Opacity="0.60"/>
+        </Grid>
+        <!-- Стрелки-Canvas (по центру фланца, сместить Left если нужно) -->
+        <Canvas x:Name="ArrowsCanvas"
+                Width="100" Height="170"
+                Panel.ZIndex="10"
+                HorizontalAlignment="Left"
+                Margin="0,-47,0,0">
+            <materialDesign:PackIcon x:Name="ArrowAnim1"
+                Kind="{Binding DriveC.ArrowKind}" Width="13" Height="13"
+                Canvas.Left="26" Canvas.Top="10">
+                <materialDesign:PackIcon.RenderTransform>
+                    <TranslateTransform x:Name="ArrowTrans1" Y="0"/>
+                </materialDesign:PackIcon.RenderTransform>
+            </materialDesign:PackIcon>
+            <materialDesign:PackIcon x:Name="ArrowAnim2"
+                Kind="{Binding DriveC.ArrowKind}" Width="13" Height="13"
+                Canvas.Left="26" Canvas.Top="45">
+                <materialDesign:PackIcon.RenderTransform>
+                    <TranslateTransform x:Name="ArrowTrans2" Y="0"/>
+                </materialDesign:PackIcon.RenderTransform>
+            </materialDesign:PackIcon>
+            <materialDesign:PackIcon x:Name="ArrowAnim3"
+                Kind="{Binding DriveC.ArrowKind}" Width="13" Height="13"
+                Canvas.Left="26" Canvas.Top="80">
+                <materialDesign:PackIcon.RenderTransform>
+                    <TranslateTransform x:Name="ArrowTrans3" Y="0"/>
+                </materialDesign:PackIcon.RenderTransform>
+            </materialDesign:PackIcon>
+            <materialDesign:PackIcon x:Name="ArrowAnim4"
+                Kind="{Binding DriveC.ArrowKind}" Width="13" Height="13"
+                Canvas.Left="26" Canvas.Top="115">
+                <materialDesign:PackIcon.RenderTransform>
+                    <TranslateTransform x:Name="ArrowTrans4" Y="0"/>
+                </materialDesign:PackIcon.RenderTransform>
+            </materialDesign:PackIcon>
+            <materialDesign:PackIcon x:Name="ArrowAnim5"
+                Kind="{Binding DriveC.ArrowKind}" Width="13" Height="13"
+                Canvas.Left="26" Canvas.Top="150">
+                <materialDesign:PackIcon.RenderTransform>
+                    <TranslateTransform x:Name="ArrowTrans5" Y="0"/>
+                </materialDesign:PackIcon.RenderTransform>
+            </materialDesign:PackIcon>
+        </Canvas>
+    </Grid>
+
+    <!-- КАРТОЧКА ПРИВОДА B ПОД ШНЕКОМ -->
+            <materialDesign:Card Grid.Column="0"
+    Width="180" Height="140" Padding="7"
+    HorizontalAlignment="Right" VerticalAlignment="Bottom"
+    Margin="0,0,150,0">
+                <StackPanel>
+                    <TextBlock  Text="Привод B" FontSize="13" FontWeight="Bold" Margin="0,0,0,4"/>
+                    <!-- Текущая скорость -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4" VerticalAlignment="Center">
+                        <TextBlock Text="Скорость:" FontSize="12" Margin="0,0,2,0"/>
+                        <TextBlock Text="{Binding DriveB.Speed, StringFormat=F1}"
+                       FontSize="12"
+                       FontWeight="Bold"
+                       Foreground="DarkSlateBlue"/>
+                    </StackPanel>
+                    <!-- Ввод новой скорости -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                        <TextBox Width="55"
+                     Margin="0,0,8,0"
+                     Text="{Binding DriveB.InputSpeed, UpdateSourceTrigger=PropertyChanged}"
+                     PreviewTextInput="TextBox_PreviewTextInput"/>
+                        <Button Content="Применить"
+                    Command="{Binding DriveB.ConfirmSpeedCommand}"
+                    IsEnabled="{Binding DriveB.CanConfirmSpeed}"/>
+                    </StackPanel>
+                    <!-- Кнопки направления -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <ToggleButton 
+                IsChecked="{Binding DriveB.IsLeft, Mode=TwoWay}"
+                Width="42" Height="42"
+                Margin="0,0,0,0"
+                Style="{StaticResource MaterialDesignIconButton}">
+                            <materialDesign:PackIcon 
+                    Kind="ArrowLeftBold"
+                    Width="42" Height="42"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Foreground="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}, Converter={StaticResource BoolToBrushConverter}}"/>
+                        </ToggleButton>
+                        <ToggleButton 
+                IsChecked="{Binding DriveB.IsRight, Mode=TwoWay}"
+                Width="42" Height="42"
+                Margin="0,0,0,0"
+                Style="{StaticResource MaterialDesignIconButton}">
+                            <materialDesign:PackIcon 
+                    Kind="ArrowRightBold"
+                    Width="42" Height="42"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Foreground="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}, Converter={StaticResource BoolToBrushConverter}}"/>
+                        </ToggleButton>
+                    </StackPanel>
+                </StackPanel>
+            </materialDesign:Card>
+
+
+
+        </Grid>
+        
+        <!-- Привод C (вращение) снизу справа -->
+        <Grid Width="700" Height="210" HorizontalAlignment="Right" Margin="0,-105,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="80"/>
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="-3,40,0,0">
+                <Image Source="Resourses/Images/Drive.PNG" Width="50" Height="50" Margin="0,0,11,0"/>
+            </StackPanel>
+            <!-- Пусто в центре для симметрии -->
+            <StackPanel Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Left">
+                <materialDesign:Card Padding="10" Margin="-50,20,0,0" Width="180" Height="140">
+                    <StackPanel>
+                        <TextBlock Text="Привод С" FontSize="13" FontWeight="Bold" Margin="0,0,0,4"/>
+                        <!-- Текущая скорость -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4" VerticalAlignment="Center">
+                            <TextBlock Text="Скорость:" FontSize="12" Margin="0,0,2,0"/>
+                            <TextBlock Text="{Binding DriveC.Speed, StringFormat=F1}" 
+                       FontSize="12"
+                       FontWeight="Bold"
+                       Foreground="DarkSlateBlue"
+                                       />
+                        </StackPanel>
+                        <!-- Ввод новой скорости -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                            <TextBox Width="55"
+                     Margin="0,0,8,0"
+                     Text="{Binding DriveC.InputSpeed, UpdateSourceTrigger=PropertyChanged}" PreviewTextInput="TextBox_PreviewTextInput"
+                     />
+                            <Button Content="Применить"
+                    Command="{Binding DriveC.ConfirmSpeedCommand}"
+                    IsEnabled="{Binding DriveC.CanConfirmSpeed}"/>
+                        </StackPanel>
+                        <!-- Кнопки направления -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <ToggleButton 
+    IsChecked="{Binding DriveC.IsLeft, Mode=TwoWay}"
+    Width="42" Height="42"
+    Margin="0,0,0,0"
+     Style="{StaticResource MaterialDesignIconButton}">
+                                <materialDesign:PackIcon 
+        Kind="ArrowLeftBold"
+        Width="42" Height="42"
+        VerticalAlignment="Center"
+        HorizontalAlignment="Center"
+        Foreground="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}, Converter={StaticResource BoolToBrushConverter}}"/>
+                            </ToggleButton>
+                            <ToggleButton 
+    IsChecked="{Binding DriveC.IsRight, Mode=TwoWay}"
+    Width="42" Height="42"
+    Margin="0,0,0,0"
+    Style="{StaticResource MaterialDesignIconButton}">
+                                <materialDesign:PackIcon 
+        Kind="ArrowRightBold"
+        Width="42" Height="42"
+        VerticalAlignment="Center"
+        HorizontalAlignment="Center"
+        Foreground="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}, Converter={StaticResource BoolToBrushConverter}}"/>
+                            </ToggleButton>
+                        </StackPanel>
+                    </StackPanel>
+                </materialDesign:Card>
+
+
+            </StackPanel>
+            
+        </Grid>
+    </StackPanel>
+</Window>
