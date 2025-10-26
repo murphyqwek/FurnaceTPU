@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FurnaceCore.Model
 {
-    internal interface IFurnaceModule
+    public interface IFurnaceModule
     {
     }
 }
