@@ -4,13 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO.Ports;
+using FurnaceCore.IOManager;
 
 namespace FurnaceCore.Port
 {
-    public class PortModule(string name) : IPort
+    public class PortModule : IPort
     {
-        private string _name = name;
-        private SerialPort _serialPort = new SerialPort(name);
+        private IOManager.IOManager _ioManager;
+        private string _name;
+        private SerialPort _serialPort;
+
+        public PortModule(SerialPort serialPort, IOManager.IOManager ioManager)
+        {
+            _name = serialPort.PortName;
+            _ioManager = ioManager;
+            _serialPort = serialPort;
+            _serialPort.DataReceived += SerialPortDataReceivedHandler;
+        }
 
         public string Name 
         { 
@@ -46,6 +56,7 @@ namespace FurnaceCore.Port
         private void SerialPortDataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
             string receivedData = _serialPort.ReadLine();
+            _ioManager.HandleData(receivedData);
         }
     }
 }
