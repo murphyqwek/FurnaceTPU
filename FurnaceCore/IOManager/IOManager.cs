@@ -40,5 +40,17 @@ namespace FurnaceCore.IOManager
         {
             ProcessData(data);
         }
+
+        public void SendDataToModule(IFurnaceModule module, string data)
+        {
+            if (_modulePorts.TryGetValue(module, out IPort? port) && port != null)
+            {
+                port.SendData(data);
+            }
+            else
+            {
+                throw new InvalidOperationException("No port registered for the specified module.");
+            }
+        }
     }
 }
