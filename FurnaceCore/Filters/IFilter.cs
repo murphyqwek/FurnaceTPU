@@ -9,6 +9,6 @@ namespace FurnaceCore.Filters
     public interface IFilter
     {
         public bool CanHandle(string data);
-        public void Handle(string data);
+        public void HandleData(string data);
     }
 }

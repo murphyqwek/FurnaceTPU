@@ -8,5 +8,6 @@ namespace FurnaceCore.Model
 {
     public interface IFurnaceModule
     {
+        public void HandleData(string data);
     }
 }

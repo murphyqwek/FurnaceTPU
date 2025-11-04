@@ -26,7 +26,7 @@ namespace FurnaceTest.Mock
             return data.StartsWith(Tag);
         }
 
-        public void Handle(string data)
+        public void HandleData(string data)
         {
             LastReceived = data;
         }
