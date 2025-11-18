@@ -35,5 +35,15 @@ namespace FurnaceCore.utlis
                 return false;
             }
         }
+
+        public static double ConvertHexChannelDataToDouble(byte fByte, byte sByte, string channelData)
+        {
+            const double koeff = 10.0 / 32768.0;
+
+            short Value = Convert.ToInt16("0x" + channelData, 16);
+            double ConvertedValue = Value * koeff;
+            double RoundedValue = Math.Round(ConvertedValue, 3);
+            return RoundedValue;
+        }
     }
 }
