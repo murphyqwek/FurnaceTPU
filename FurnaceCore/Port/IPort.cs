@@ -13,5 +13,6 @@ namespace FurnaceCore.Port
         public void ClosePort();
         public bool IsOpen();
         public void SendData(string data);
+        public void SendData(byte[] data);
     }
 }

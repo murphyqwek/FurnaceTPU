@@ -53,6 +53,11 @@ namespace FurnaceCore.Port
             _serialPort.WriteLine(data);
         }
 
+        public void SendData(byte[] data)
+        {
+            _serialPort.Write(data, 0, data.Length);
+        }
+
         private void SerialPortDataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
             int bytesToRead = _serialPort.BytesToRead;

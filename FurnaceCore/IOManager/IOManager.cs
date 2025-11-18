@@ -3,9 +3,11 @@ using FurnaceCore.Model;
 using FurnaceCore.Port;
 using System;
 using System.Collections.Generic;
+using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FurnaceCore.IOManager
 {
@@ -41,16 +43,26 @@ namespace FurnaceCore.IOManager
             ProcessData(data);
         }
 
-        public void SendDataToModule(IFurnaceModule module, string data)
+        private IPort getPortByModule(IFurnaceModule module)
         {
             if (_modulePorts.TryGetValue(module, out IPort? port) && port != null)
             {
-                port.SendData(data);
+                return port;
             }
             else
             {
                 throw new InvalidOperationException("No port registered for the specified module.");
             }
+        }
+
+        public void SendDataToModule(IFurnaceModule module, string data)
+        {
+            getPortByModule(module).SendData(data);
+        }
+
+        public void SendDataToModule(IFurnaceModule module, byte[] data)
+        {
+            getPortByModule(module).SendData(data);
         }
     }
 }
