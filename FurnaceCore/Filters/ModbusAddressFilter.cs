@@ -21,7 +21,7 @@ namespace FurnaceCore.Filters
             this.furnaceModule = furnaceModule;
         }
 
-        public bool CanHandle(string data)
+        public virtual bool CanHandle(string data)
         {
             if(!HexConverter.TryHexStringToByteArray(data, out byte[]? byteArray))
             {

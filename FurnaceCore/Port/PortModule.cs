@@ -55,7 +55,13 @@ namespace FurnaceCore.Port
 
         private void SerialPortDataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
-            string receivedData = _serialPort.ReadLine();
+            int bytesToRead = _serialPort.BytesToRead;
+            byte[] buffer = new byte[bytesToRead];
+
+            // Читаем данные
+            int bytesRead = _serialPort.Read(buffer, 0, bytesToRead);
+
+            string receivedData = BitConverter.ToString(buffer).Replace("-", " ");
             _ioManager.HandleData(receivedData);
         }
     }
