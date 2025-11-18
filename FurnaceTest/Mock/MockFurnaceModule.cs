@@ -33,7 +33,7 @@ namespace FurnaceTest.Mock
 
         public void sendData(string data)
         {
-            _iOManager.SendDataToModule(this, data);
+            _iOManager.SendDataToPort(this, data);
         }
 
     }

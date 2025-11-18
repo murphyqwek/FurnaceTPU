@@ -55,7 +55,7 @@ namespace FurnaceCore.IOManager
             }
         }
 
-        public void SendDataToModule(IFurnaceModule module, string data)
+        public void SendDataToPort(IFurnaceModule module, string data)
         {
             getPortByModule(module).SendData(data);
         }
