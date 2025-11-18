@@ -45,5 +45,6 @@ namespace FurnaceCore.utlis
             double RoundedValue = Math.Round(ConvertedValue, 3);
             return RoundedValue;
         }
+        //278
     }
 }

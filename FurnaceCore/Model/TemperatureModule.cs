@@ -48,11 +48,15 @@ namespace FurnaceCore.Model
             return temperature;
         }
 
-        private double parseData(string data)
+        public static double parseData(string data)
         {
+            const double coeff = 327.058824;
+
             string[] splitted = data.Split(' ');
 
-            double value = HexConverter.ConvertHexChannelDataToDouble($"{splitted[3]} {splitted[4]}");
+            double value = HexConverter.ConvertHexChannelDataToDouble(splitted[3] + splitted[4]);
+
+            value = Math.Round(value * coeff, 3);
 
             return value;
         }
