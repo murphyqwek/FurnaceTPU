@@ -36,7 +36,7 @@ namespace FurnaceCore.utlis
             }
         }
 
-        public static double ConvertHexChannelDataToDouble(byte fByte, byte sByte, string channelData)
+        public static double ConvertHexChannelDataToDouble(string channelData)
         {
             const double koeff = 10.0 / 32768.0;
 
