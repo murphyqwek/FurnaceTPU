@@ -25,5 +25,10 @@ namespace FurnaceTest.Mock
         public bool IsOpen() => IsOpenFlag;
         public void SendData(string data) => SentData.Add(data);
         public void ReceiveData(string data) => _manager.HandleData(data);
+
+        public void SendData(byte[] data)
+        {
+            SentData.Add(BitConverter.ToString(data).Replace("-", " "));
+        }
     }
 }
