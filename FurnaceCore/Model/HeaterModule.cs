@@ -10,8 +10,6 @@ namespace FurnaceCore.Model
 {
     public class HeaterModule : BaseModbusFurnaceModule
     {
-        public readonly byte addressByte;
-        public readonly byte channelByte;
 
         private byte[] _turnOnHeaterCommand = new byte[]
         {
@@ -37,16 +35,10 @@ namespace FurnaceCore.Model
             0x00, //7 - CRC
         };
 
-        public HeaterModule(byte addressByte, byte channelByte, IOManager.IOManager ioManager) : base(ioManager)
+        public HeaterModule(byte addressByte, byte channelByte, IOManager.IOManager ioManager) : base(addressByte, channelByte, ioManager)
         {
-            this.addressByte = addressByte;
-            this.channelByte = channelByte;
-
-            this._turnOnHeaterCommand[0] = addressByte;
-            this._turnOnHeaterCommand[3] = channelByte;
-
-            this._turnOffHeaterCommand[0] = addressByte;
-            this._turnOffHeaterCommand[3] = channelByte;
+            InsertAddressesToCommand(ref this._turnOnHeaterCommand);
+            InsertAddressesToCommand(ref this._turnOffHeaterCommand);
         }
 
         public void TurnOnHeater()
