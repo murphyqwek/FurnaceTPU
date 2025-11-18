@@ -60,7 +60,7 @@ namespace FurnaceCore.IOManager
             getPortByModule(module).SendData(data);
         }
 
-        public void SendDataToModule(IFurnaceModule module, byte[] data)
+        public void SendDataToPort(IFurnaceModule module, byte[] data)
         {
             getPortByModule(module).SendData(data);
         }
