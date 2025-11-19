@@ -35,16 +35,22 @@ namespace pechka4._8
         public MainWindow()
         {
             InitializeComponent();
-            //DataContext = new MainWindowViewModel();
-            var vm = (pechka4._8.ViewModels.MainWindowViewModel)DataContext;
-            vm.DriveC.PropertyChanged += DriveC_PropertyChanged;
-            vm.DriveB.PropertyChanged += DriveB_PropertyChanged;
-            vm.DriveA.PropertyChanged += DriveA_PropertyChanged;
+
+            this.Loaded += MainWindow_Loaded;
+        }
+
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            var mainWindowViewModel = (MainWindowViewModel)DataContext;
+            mainWindowViewModel.DriveC.PropertyChanged += DriveC_PropertyChanged;
+            mainWindowViewModel.DriveB.PropertyChanged += DriveB_PropertyChanged;
+            mainWindowViewModel.DriveA.PropertyChanged += DriveA_PropertyChanged;
+
             UpdateCArrowsAnimation();
             UpdateBArrowsAnimation();
             UpdateAArrowsAnimation();
-
         }
+
         private void DriveA_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             var vm = (pechka4._8.ViewModels.MainWindowViewModel)DataContext;

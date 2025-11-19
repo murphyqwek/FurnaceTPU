@@ -1,9 +1,14 @@
-﻿using System;
+﻿using FurnaceCore.Model;
+using FurnaceWPF.Commands;
+using FurnaceWPF.Models;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 
 namespace pechka4._8.ViewModels
@@ -51,10 +56,28 @@ namespace pechka4._8.ViewModels
             byte b = (byte)(cold.B + (hot.B - cold.B) * temp / 700);
             return new SolidColorBrush(Color.FromRgb(r, g, b));
         }
+
+        private TemperatureModule temperatureModule;
+
+        public RemoteCommand remoteCommand { get; }
+
         public ZoneViewModel(string name, double initialTemperature)
         {
+            remoteCommand = new RemoteCommand(() => 
+                { 
+                    App.Services.GetRequiredService<MockPort>().ReceiveData("01 04 02 01 16 00 00"); 
+                }
+            );
+            this.temperatureModule = App.Services.GetRequiredService<TemperatureModule>();
             Name = name;
             Temperature = initialTemperature;
+
+            this.temperatureModule.OnTemperatureGet += TemperatureModule_OnTemperatureGet;
+        }
+
+        private void TemperatureModule_OnTemperatureGet(double temperature)
+        {
+            Application.Current.Dispatcher.Invoke(() => { Temperature = temperature; });
         }
     }
 

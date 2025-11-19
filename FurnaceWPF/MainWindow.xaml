@@ -159,12 +159,13 @@ Margin="-124,176,0,0"/>
                                  Margin="0,4,0,8"
                                  Width="110"
                                  PreviewTextInput="TextBox_PreviewTextInput"/>
-                        <Button Content="Управлять"
+                        <Button Content="Получить"
                                 Style="{DynamicResource MaterialDesignFilledButton}"
                                 Width="90"
                                 Height="28"
                                 FontSize="13"
-                                HorizontalAlignment="Center"/>
+                                HorizontalAlignment="Center"
+                                Command="{Binding Zone1.remoteCommand}"/>
                     </StackPanel>
                 </materialDesign:Card>
             </StackPanel>
