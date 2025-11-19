@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FurnaceCore.IOManager;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -33,7 +34,7 @@ namespace pechka4._8
 
         private void ConfigureServices(ServiceCollection services)
         {
-            // Сервисы
+            /* Сервисы
             services.AddSingleton<IOManager>();
             services.AddSingleton<TemperatureModule>();
             services.AddSingleton<ModbusAddressFilter>();
@@ -41,7 +42,7 @@ namespace pechka4._8
             // ViewModels
             services.AddSingleton<MainViewModel>();
             services.AddTransient<SettingsViewModel>();
-
+            */
             // Views
             services.AddTransient<MainWindow>();
         }
