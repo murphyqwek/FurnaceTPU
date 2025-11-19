@@ -43,6 +43,10 @@ namespace FurnaceCore.Model
             
             _completionSource = null;
 
+            var temp = rawData.Split(' ');
+
+            string temperatureRawDatta = temp[0];
+
             double temperature = parseData(rawData);
 
             return temperature;
@@ -50,15 +54,10 @@ namespace FurnaceCore.Model
 
         public static double parseData(string data)
         {
-            const double coeff = 327.058824;
-
             string[] splitted = data.Split(' ');
+            double value = Convert.ToInt16("0x" + splitted[0] + splitted[1], 16) / 10.0;
 
-            double value = HexConverter.ConvertHexChannelDataToDouble(splitted[3] + splitted[4]);
-
-            value = Math.Round(value * coeff, 3);
-
-            return value;
+            return Math.Round(value, 1);
         }
 
         public override void HandleData(string data)

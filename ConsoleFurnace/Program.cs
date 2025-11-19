@@ -12,7 +12,7 @@ namespace ConsoleFurnace
 
             double value = HexConverter.ConvertHexChannelDataToDouble("02 30".Replace(" ", ""));
 
-            Console.WriteLine(Math.Round(value * coeff, 3));
+            Console.WriteLine(TemperatureModule.parseData("01 16"));
         }
     }
 }

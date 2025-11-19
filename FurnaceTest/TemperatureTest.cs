@@ -14,9 +14,9 @@ namespace FurnaceTest
     {
         [Theory]
         [InlineData("01 16", 27.8)]
-        [InlineData("01 20", 28.781)]
-        [InlineData("01 30", 30.416)]
-        [InlineData("02 30", 55.927)]
+        [InlineData("01 20", 28.8)]
+        [InlineData("01 30", 30.4)]
+        [InlineData("02 30", 56.0)]
         public async Task GetTemperatureTest(string hexData, double temperature)
         {
             IOManager ioManager = new IOManager();
