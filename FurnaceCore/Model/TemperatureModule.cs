@@ -9,6 +9,7 @@ namespace FurnaceCore.Model
 {
     public class TemperatureModule : BaseModbusFurnaceModule
     {
+        private event Action<double> _onTemperatureGet;
         private TaskCompletionSource<string>? _completionSource;
 
         private byte[] _getTemperatureCommand = new byte[]
@@ -19,8 +20,6 @@ namespace FurnaceCore.Model
             0x07, //3 - номер канала
             0x00, //4
             0x01, //5
-            0x00, //6 - CRC
-            0x00, //7 - CRC
         };
 
         public TemperatureModule(byte addressByte, byte channelByte, IOManager.IOManager ioManager) : base(addressByte, channelByte, ioManager)
@@ -28,14 +27,12 @@ namespace FurnaceCore.Model
             InsertAddressesToCommand(ref this._getTemperatureCommand);
         }
 
-        public async Task<double> getTemperature()
+        public async Task<double> getTemperatureAsync()
         {
             if (_completionSource != null)
                 throw new InvalidOperationException("Last request in progress");
 
-            InsertCRCToCommand(ref _getTemperatureCommand);
-
-            _ioManager.SendDataToPort(this, _getTemperatureCommand);
+            _ioManager.SendDataToPort(this, GetCommandWithCRC(this._getTemperatureCommand));
 
             _completionSource = new TaskCompletionSource<string>();
 

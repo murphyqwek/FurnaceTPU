@@ -26,7 +26,7 @@ namespace FurnaceCore.Model
             command[3] = channelByte;
         }
 
-        protected void InsertCRCToCommand(ref byte[] command)
+        protected byte[] GetCommandWithCRC(byte[] command)
         {
             int length = command.Length;
 
@@ -37,8 +37,12 @@ namespace FurnaceCore.Model
 
             var crc = ModBusCRC.CalculateCRC(command);
 
-            command[length - 2] = crc[0];
-            command[length - 1] = crc[1];
+            var commandList = command.ToList();
+
+            commandList.Add(crc[0]);
+            commandList.Add(crc[1]);
+
+            return commandList.ToArray();
         }
 
         public abstract void HandleData(string data);

@@ -27,7 +27,7 @@ namespace FurnaceTest
             ioManager.RegisterModulePort(temperatureModule, mockPort);
             ioManager.RegisterFilter(modbusAddressFilter);
 
-            var task = temperatureModule.getTemperature();
+            var task = temperatureModule.getTemperatureAsync();
 
             mockPort.ReceiveData($"01 04 02 {hexData} 00 00");
 

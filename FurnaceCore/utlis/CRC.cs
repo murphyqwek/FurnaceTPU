@@ -532,7 +532,7 @@ namespace FurnaceCore.Utils
             64
         };
 
-        public static byte[] CalculateCRC(byte[] command, bool isCommandContainsCRCPlaceHolder = true)
+        public static byte[] CalculateCRC(byte[] command)
         {
             byte[] CRC = new byte[]
             {
@@ -540,9 +540,7 @@ namespace FurnaceCore.Utils
                 byte.MaxValue
             };
 
-            int commandLength = isCommandContainsCRCPlaceHolder ? command.Length - 2 : command.Length;
-
-            for (int i = 0; i < commandLength; i++)
+            for (int i = 0; i < command.Length; i++)
             {
                 ushort num = (ushort)(CRC[0] ^ command[i]);
                 CRC[0] = (byte)(CRC[1] ^ CRC16Hi[num]);

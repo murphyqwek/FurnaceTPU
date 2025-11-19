@@ -19,8 +19,6 @@ namespace FurnaceCore.Model
             0x00, //3 - номер канала
             0xFF, //4
             0x00, //5
-            0x00, //6 - CRC
-            0x00, //7 - CRC
         };
 
         private byte[] _turnOffHeaterCommand = new byte[]
@@ -31,8 +29,6 @@ namespace FurnaceCore.Model
             0x00, //3 - номер канала
             0x00, //4
             0x00, //5
-            0x00, //6 - CRC
-            0x00, //7 - CRC
         };
 
         public HeaterModule(byte addressByte, byte channelByte, IOManager.IOManager ioManager) : base(addressByte, channelByte, ioManager)
@@ -43,16 +39,12 @@ namespace FurnaceCore.Model
 
         public void TurnOnHeater()
         {
-            InsertCRCToCommand(ref this._turnOnHeaterCommand);
-
-            _ioManager.SendDataToPort(this, _turnOnHeaterCommand);
+            _ioManager.SendDataToPort(this, GetCommandWithCRC(this._turnOnHeaterCommand));
         }
 
         public void TurnOffHeater()
         {
-            InsertCRCToCommand(ref this._turnOffHeaterCommand);
-
-            _ioManager.SendDataToPort(this, this._turnOffHeaterCommand);
+            _ioManager.SendDataToPort(this, GetCommandWithCRC(this._turnOffHeaterCommand));
         }
 
         public override void HandleData(string data) { }
