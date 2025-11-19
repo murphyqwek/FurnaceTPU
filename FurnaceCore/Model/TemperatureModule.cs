@@ -42,17 +42,16 @@ namespace FurnaceCore.Model
 
             var temp = rawData.Split(' ');
 
-            string temperatureRawDatta = temp[0];
+            string temperatureRawDatta = temp[3] + temp[4];
 
-            double temperature = parseData(rawData);
+            double temperature = parseData(temperatureRawDatta);
 
             return temperature;
         }
 
-        public static double parseData(string data)
+        public static double parseData(string tempData)
         {
-            string[] splitted = data.Split(' ');
-            double value = Convert.ToInt16("0x" + splitted[0] + splitted[1], 16) / 10.0;
+            double value = Convert.ToInt16("0x" + tempData, 16) / 10.0;
 
             return Math.Round(value, 1);
         }
