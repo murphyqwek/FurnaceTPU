@@ -9,8 +9,8 @@ namespace FurnaceCore.Model
 {
     public class TemperatureModule : BaseModbusFurnaceModule
     {
-        private event Action<double> _onTemperatureGet;
-        private TaskCompletionSource<string>? _completionSource;
+        public event Action<double> OnTemperatureGet;
+        private TaskCompletionSource<double>? _completionSource;
 
         private byte[] _getTemperatureCommand = new byte[]
         {
@@ -32,38 +32,42 @@ namespace FurnaceCore.Model
             if (_completionSource != null)
                 throw new InvalidOperationException("Last request in progress");
 
-            _ioManager.SendDataToPort(this, GetCommandWithCRC(this._getTemperatureCommand));
+            SendGetTemperatureCommand();
 
-            _completionSource = new TaskCompletionSource<string>();
+            _completionSource = new TaskCompletionSource<double>();
 
-            string rawData = await _completionSource.Task;
+            double temperature = await _completionSource.Task;
             
             _completionSource = null;
-
-            var temp = rawData.Split(' ');
-
-            string temperatureRawDatta = temp[3] + temp[4];
-
-            double temperature = parseData(temperatureRawDatta);
 
             return temperature;
         }
 
-        public static double parseData(string tempData)
+        public void SendGetTemperatureCommand()
         {
-            double value = Convert.ToInt16("0x" + tempData, 16) / 10.0;
+            _ioManager.SendDataToPort(this, GetCommandWithCRC(this._getTemperatureCommand));
+        }
+
+        private double parseData(string rawTemperatureData)
+        {
+            var temp = rawTemperatureData.Split(' ');
+
+            string temperatureBytes = temp[3] + temp[4];
+            double value = Convert.ToInt16("0x" + temperatureBytes, 16) / 10.0;
 
             return Math.Round(value, 1);
         }
 
         public override void HandleData(string data)
         {
-            if(_completionSource == null)
+            double temperature = parseData(data);
+
+            if(_completionSource != null)
             {
-                return;
+                _completionSource.SetResult(temperature);
             }
 
-            _completionSource.SetResult(data);
+            OnTemperatureGet?.Invoke(temperature);
         }
     }
 }
