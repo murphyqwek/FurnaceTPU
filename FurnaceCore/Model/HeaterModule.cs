@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FurnaceCore.Model
 {
-    public class HeaterModule : AddressChannelModbusFurnaceModule, IFurnaceHandleDataModule
+    public class HeaterModule : AddressChannelModbusFurnaceModule
     {
 
         private byte[] _turnOnHeaterCommand = new byte[]
@@ -46,7 +46,5 @@ namespace FurnaceCore.Model
         {
             _ioManager.SendDataToPort(this, GetCommandWithCRC(this._turnOffHeaterCommand));
         }
-
-        public void HandleData(string data) { }
     }
 }
