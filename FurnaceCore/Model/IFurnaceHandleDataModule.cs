@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace FurnaceCore.Model
 {
-    public interface IFurnaceModule
+    public interface IFurnaceHandleDataModule
     {
+        public void HandleData(string data);
     }
 }

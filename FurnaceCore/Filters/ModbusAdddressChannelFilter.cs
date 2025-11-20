@@ -12,7 +12,7 @@ namespace FurnaceCore.Filters
         private readonly byte firstChannelByte;
         private readonly byte secondChannelByte;
 
-        public ModbusAdddressChannelFilter(byte firstAddressByte, byte secondAddressByte, byte firstChannelByte, byte secondChannelByte, IFurnaceModule furnaceModule) : base(firstAddressByte, secondAddressByte, furnaceModule)
+        public ModbusAdddressChannelFilter(byte firstAddressByte, byte secondAddressByte, byte firstChannelByte, byte secondChannelByte, IFurnaceHandleDataModule furnaceModule) : base(firstAddressByte, secondAddressByte, furnaceModule)
         {
             this.firstChannelByte = firstChannelByte;
             this.secondChannelByte = secondChannelByte;

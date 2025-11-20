@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FurnaceCore.Model
 {
-    public class TemperatureModule : AddressChannelModbusFurnaceModule
+    public class TemperatureModule : AddressChannelModbusFurnaceModule, IFurnaceHandleDataModule
     {
         public event Action<double> OnTemperatureGet;
         private TaskCompletionSource<double>? _completionSource;
@@ -58,7 +58,7 @@ namespace FurnaceCore.Model
             return Math.Round(value, 1);
         }
 
-        public override void HandleData(string data)
+        public void HandleData(string data)
         {
             double temperature = parseData(data);
 

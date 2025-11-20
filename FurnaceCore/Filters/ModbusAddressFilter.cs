@@ -12,9 +12,9 @@ namespace FurnaceCore.Filters
     {
         private readonly byte firstAddressByte;
         private readonly byte secondAddressByte;
-        private readonly IFurnaceModule furnaceModule;
+        private readonly IFurnaceHandleDataModule furnaceModule;
 
-        public ModbusAddressFilter(byte firstAddressByte, byte secondAddressByte, IFurnaceModule furnaceModule)
+        public ModbusAddressFilter(byte firstAddressByte, byte secondAddressByte, IFurnaceHandleDataModule furnaceModule)
         {
             this.firstAddressByte = firstAddressByte;
             this.secondAddressByte = secondAddressByte;

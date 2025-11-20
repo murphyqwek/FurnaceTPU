@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FurnaceCore.Model
 {
-    public abstract class BaseModbusFurnaceModule
+    public abstract class BaseModbusFurnaceModule : IFurnaceModule
     {
         protected IOManager.IOManager _ioManager;
 
@@ -34,7 +34,5 @@ namespace FurnaceCore.Model
 
             return commandList.ToArray();
         }
-
-        public abstract void HandleData(string data);
     }
 }
