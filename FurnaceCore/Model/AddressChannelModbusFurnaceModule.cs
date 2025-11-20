@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace FurnaceCore.Model
 {
-    public abstract class BaseModbusFurnaceModule : IFurnaceModule
+    public abstract class AddressChannelModbusFurnaceModule : IFurnaceModule
     {
         public readonly byte addressByte;
         public readonly byte channelByte;
         protected IOManager.IOManager _ioManager;
 
-        public BaseModbusFurnaceModule(byte addressByte, byte channelByte, IOManager.IOManager ioManager)
+        public AddressChannelModbusFurnaceModule(byte addressByte, byte channelByte, IOManager.IOManager ioManager)
         {
             this.addressByte = addressByte;
             this.channelByte = channelByte;

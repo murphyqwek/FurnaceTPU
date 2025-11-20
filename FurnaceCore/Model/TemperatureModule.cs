@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FurnaceCore.Model
 {
-    public class TemperatureModule : BaseModbusFurnaceModule
+    public class TemperatureModule : AddressChannelModbusFurnaceModule
     {
         public event Action<double> OnTemperatureGet;
         private TaskCompletionSource<double>? _completionSource;

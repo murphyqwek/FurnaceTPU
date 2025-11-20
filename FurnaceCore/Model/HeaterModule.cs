@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FurnaceCore.Model
 {
-    public class HeaterModule : BaseModbusFurnaceModule
+    public class HeaterModule : AddressChannelModbusFurnaceModule
     {
 
         private byte[] _turnOnHeaterCommand = new byte[]
