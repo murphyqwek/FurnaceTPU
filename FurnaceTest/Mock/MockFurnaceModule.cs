@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FurnaceTest.Mock
 {
-    internal class MockFurnaceModule : IFurnaceHandleDataModule, IFilter
+    internal class MockFurnaceModule : IFurnaceModule, IFurnaceHandleDataModule, IFilter
     {
         private IOManager _iOManager;
         public string Tag = "TEST";
