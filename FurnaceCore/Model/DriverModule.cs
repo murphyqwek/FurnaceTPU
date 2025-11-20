@@ -10,13 +10,13 @@ namespace FurnaceCore.Model
 {
 
     [Flags]
-    public enum DriversPortEnum
+    public enum DriversPortEnum : byte
     {
-        Zero = 0,
-        One = 0x01,
-        Two = 0x02,
-        Three = 0x04,
-        Four = 0x08,
+        Zero = 0x01,
+        One = 0x02,
+        Two = 0x04,
+        Three = 0x08,
+        Four = 0x10,
     }
 
     public class DriverModule : BaseModbusFurnaceModule
@@ -31,7 +31,7 @@ namespace FurnaceCore.Model
             0x08, //5
             0x01, //6
             0x00, //7 адрес порта
-            0x01
+            0x01, //8
         };
 
         private byte[] _stopDriverCommand = new byte[]
@@ -44,7 +44,7 @@ namespace FurnaceCore.Model
             0x08, //5
             0x01, //6
             0x00, //7 адрес порта
-            0x00
+            0x00, //8
         };
 
         private byte[] _setDriverFrequency = new byte[]
@@ -68,17 +68,7 @@ namespace FurnaceCore.Model
 
         private byte DecodeDriverPort(DriversPortEnum port)
         {
-            byte result = 0x00;
-            if (port.HasFlag(DriversPortEnum.One))
-                result += 0x01;
-            if (port.HasFlag(DriversPortEnum.Two))
-                result += 0x02;
-            if (port.HasFlag(DriversPortEnum.Three))
-                result += 0x04;
-            if (port.HasFlag(DriversPortEnum.Four))
-                result += 0x10;
-
-            return result;
+            return (byte)port;
         }
 
         public void StartDriver(DriversPortEnum port)
@@ -104,7 +94,7 @@ namespace FurnaceCore.Model
 
             byte channelByte = (byte)(channel * 2);
             var command = (byte[])_setDriverFrequency.Clone();
-            command[3] = channelByte;
+            command[3] = (byte)(0xE0 + channelByte);
             command[7] = (byte)(frequency >> 8);
             command[8] = (byte)(frequency & 0xFF);
             _ioManager.SendDataToPort(this, GetCommandWithCRC(command));
