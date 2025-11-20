@@ -22,12 +22,21 @@ namespace FurnaceWPF.Models
         public void OpenPort() => IsOpenFlag = true;
         public void ClosePort() => IsOpenFlag = false;
         public bool IsOpen() => IsOpenFlag;
-        public void SendData(string data) => SentData.Add(data);
-        public void ReceiveData(string data) => _manager.HandleData(data);
+        public void SendData(string data) 
+        {
+            SentData.Add(data);
+            Console.WriteLine($"MockPort Sent Data: {data}");
+        }
+        public void ReceiveData(string data) 
+        { 
+            _manager.HandleData(data);
+            Console.WriteLine($"MockPort Received Data: {data}");
+        }
 
         public void SendData(byte[] data)
         {
             SentData.Add(BitConverter.ToString(data).Replace("-", " "));
+            Console.WriteLine($"MockPort Sent Data: {SentData.Last()}");
         }
     }
 }

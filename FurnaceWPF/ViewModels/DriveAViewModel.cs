@@ -1,4 +1,6 @@
-﻿using pechka4._8.Helpers;
+﻿using FurnaceCore.Model;
+using Microsoft.Extensions.DependencyInjection;
+using pechka4._8.Helpers;
 using System;
 using System.Windows.Input;
 
@@ -82,10 +84,21 @@ namespace pechka4._8.ViewModels
         public bool CanConfirmSpeed =>
             double.TryParse(InputSpeed, out var val) && val >= 0 && val <= 100 && Math.Abs(val - Speed) > 0.01;
 
+        private DriversPortEnum _driverPort = DriversPortEnum.Zero;
+        private int _driverChannel = 0;
+        private DriverModule _driverModule;
+        public DriveAViewModel()
+        {
+            this._driverModule = App.Services.GetRequiredService<DriverModule>();
+        }
+
         public ICommand ConfirmSpeedCommand => new RelayCommand(_ =>
         {
             if (double.TryParse(InputSpeed, out var val) && val >= 0 && val <= 100)
                 Speed = val;
+
+            _driverModule.StartDriver(_driverPort);
+            _driverModule.SetDriverFrequency(_driverChannel, (ushort)(Speed * 100));
         }, _ => CanConfirmSpeed);
     }
 }
