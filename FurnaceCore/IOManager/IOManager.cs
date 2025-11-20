@@ -14,14 +14,14 @@ namespace FurnaceCore.IOManager
     public class IOManager
     {
         private List<IFilter> _moduleFilters = new List<IFilter>();
-        private Dictionary<IFurnaceHandleDataModule, IPort> _modulePorts = new Dictionary<IFurnaceHandleDataModule, IPort>();
+        private Dictionary<IFurnaceModule, IPort> _modulePorts = new Dictionary<IFurnaceModule, IPort>();
 
         public void RegisterFilter(IFilter filter)
         {
             _moduleFilters.Add(filter);
         }
 
-        public void RegisterModulePort(IFurnaceHandleDataModule module, IPort port)
+        public void RegisterModulePort(IFurnaceModule module, IPort port)
         {
             _modulePorts[module] = port;
         }
@@ -43,7 +43,7 @@ namespace FurnaceCore.IOManager
             ProcessData(data);
         }
 
-        private IPort getPortByModule(IFurnaceHandleDataModule module)
+        private IPort getPortByModule(IFurnaceModule module)
         {
             if (_modulePorts.TryGetValue(module, out IPort? port) && port != null)
             {
@@ -55,12 +55,12 @@ namespace FurnaceCore.IOManager
             }
         }
 
-        public void SendDataToPort(IFurnaceHandleDataModule module, string data)
+        public void SendDataToPort(IFurnaceModule module, string data)
         {
             getPortByModule(module).SendData(data);
         }
 
-        public void SendDataToPort(IFurnaceHandleDataModule module, byte[] data)
+        public void SendDataToPort(IFurnaceModule module, byte[] data)
         {
             getPortByModule(module).SendData(data);
         }
