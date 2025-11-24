@@ -1,6 +1,6 @@
 ﻿<Window x:Class="pechka4._8.MainWindow"
         xmlns:local="clr-namespace:pechka4._8.ViewModels"
-        xmlns:conv="clr-namespace:pechka4._8.Models"
+        xmlns:conv="clr-namespace:FurnaceWPF.Converters"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -226,9 +226,9 @@ Margin="-124,176,0,0"/>
             </StackPanel>
             <StackPanel Grid.Column="3" HorizontalAlignment="Center">
                 <materialDesign:Card Grid.Column="1"
-    Width="180" Height="140" Padding="10"
-    HorizontalAlignment="Left" VerticalAlignment="Bottom"
-    Margin="-1030,0,0,0">
+                                    Width="180" Height="140" Padding="10"
+                                    HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                                    Margin="-1030,0,0,0">
                     <StackPanel>
                         <TextBlock Text="Привод А" FontSize="13" FontWeight="Bold" Margin="0,0,0,4"/>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,2" VerticalAlignment="Center">
@@ -262,11 +262,11 @@ Width="42" Height="42"
 Margin="0,0,0,0"
 Style="{StaticResource MaterialDesignIconButton}">
                                 <materialDesign:PackIcon 
-    Kind="ArrowRightBold"
-    Width="42" Height="42"
-    VerticalAlignment="Center"
-    HorizontalAlignment="Center"
-    Foreground="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}, Converter={StaticResource BoolToBrushConverter}}"/>
+                                                Kind="ArrowRightBold"
+                                                Width="42" Height="42"
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Center"
+                                                Foreground="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}, Converter={StaticResource BoolToBrushConverter}}"/>
                             </ToggleButton>
                         </StackPanel>
                     </StackPanel>

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FurnaceWPF.Models
+namespace FurnaceWPF.Converters
 {
     public class MockPort : IPort
     {

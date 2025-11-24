@@ -1,7 +1,7 @@
 ﻿using FurnaceCore.Filters;
 using FurnaceCore.IOManager;
 using FurnaceCore.Model;
-using FurnaceWPF.Models;
+using FurnaceWPF.Converters;
 using Microsoft.Extensions.DependencyInjection;
 using pechka4._8.ViewModels;
 using System;

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace pechka4._8.Models
+namespace FurnaceWPF.Converters
 {
     public class BoolToBrushConverter : IValueConverter
     {

@@ -112,7 +112,7 @@ namespace pechka4._8
 
             // Определяем нужный Storyboard
             string key = driveB.IsRight ? "ArrowFlowRight" :
-                         driveB.IsLeft ? "ArrowFlowLeft" : null;
+                        "ArrowFlowLeft";
 
             if (key == null || driveB.Speed <= 0)
                 return; // Не анимируем

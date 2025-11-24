@@ -1,6 +1,6 @@
 ﻿using FurnaceCore.Model;
 using FurnaceWPF.Commands;
-using FurnaceWPF.Models;
+using FurnaceWPF.Converters;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;

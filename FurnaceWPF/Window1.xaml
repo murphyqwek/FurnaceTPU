@@ -1,0 +1,145 @@
+﻿<Window x:Class="FurnaceWPF.Window1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:pechka4._8.ViewModels"
+        xmlns:controls="clr-namespace:FurnaceWPF.Views.Controls"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        Title="Window1" Height="600" Width="1200">
+    <Window.Resources>
+        <Storyboard x:Key="ArrowFlowUp" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="ArrowTrans1" Storyboard.TargetProperty="Y"
+                     From="35" To="0" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowTrans2" Storyboard.TargetProperty="Y"
+                     From="35" To="0" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowTrans3" Storyboard.TargetProperty="Y"
+                     From="35" To="0" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowTrans4" Storyboard.TargetProperty="Y"
+                     From="35" To="0" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowTrans5" Storyboard.TargetProperty="Y"
+                     From="35" To="0" Duration="0:0:1"/>
+        </Storyboard>
+        <Storyboard x:Key="ArrowFlowDown" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="ArrowTrans1" Storyboard.TargetProperty="Y"
+                     From="0" To="35" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowTrans2" Storyboard.TargetProperty="Y"
+                     From="0" To="35" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowTrans3" Storyboard.TargetProperty="Y"
+                     From="0" To="35" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowTrans4" Storyboard.TargetProperty="Y"
+                     From="0" To="35" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowTrans5" Storyboard.TargetProperty="Y"
+                     From="0" To="35" Duration="0:0:1"/>
+        </Storyboard>
+        <Storyboard x:Key="ArrowFlowRight" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="ArrowBTrans1" Storyboard.TargetProperty="X"
+                     From="-25" To="0" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowBTrans2" Storyboard.TargetProperty="X"
+                     From="-25" To="0" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowBTrans3" Storyboard.TargetProperty="X"
+                     From="-25" To="0" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowBTrans4" Storyboard.TargetProperty="X"
+                     From="-25" To="0" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowBTrans5" Storyboard.TargetProperty="X"
+                     From="-25" To="0" Duration="0:0:1"/>
+        </Storyboard>
+        <Storyboard x:Key="ArrowFlowLeft" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="ArrowBTrans1" Storyboard.TargetProperty="X"
+                     From="0" To="-25" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowBTrans2" Storyboard.TargetProperty="X"
+                     From="0" To="-25" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowBTrans3" Storyboard.TargetProperty="X"
+                     From="0" To="-25" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowBTrans4" Storyboard.TargetProperty="X"
+                     From="0" To="-25" Duration="0:0:1"/>
+            <DoubleAnimation Storyboard.TargetName="ArrowBTrans5" Storyboard.TargetProperty="X"
+                     From="0" To="-25" Duration="0:0:1"/>
+        </Storyboard>
+        <Storyboard x:Key="RotorSpinRight" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="DriveARotorRotate"
+                     Storyboard.TargetProperty="Angle"
+                     From="0" To="360"
+                     Duration="0:0:1"/>
+        </Storyboard>
+        <Storyboard x:Key="RotorSpinLeft" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="DriveARotorRotate"
+                     Storyboard.TargetProperty="Angle"
+                     From="0" To="-360"
+                     Duration="0:0:1"/>
+        </Storyboard>
+    </Window.Resources>
+
+    <Grid>
+        <Viewbox Stretch="Uniform">
+            <Canvas Width="2000" Height="1000">
+
+                <Image Source="/Resourses/Images/Tank_Up.PNG" Height="217" Width="208" Canvas.Left="245" Canvas.Top="45"/>
+                <Image Height="75" Canvas.Left="319" Source="/Resourses/Images/Tube_V.PNG" Stretch="Fill" Canvas.Top="262" Width="60" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <Image Height="98" Canvas.Left="299" Source="/Resourses/Images/Rotor.PNG" Stretch="Fill" Canvas.Top="337" Width="100" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <Image Height="75" Canvas.Left="319" Source="/Resourses/Images/Tube_V.PNG" Stretch="Fill" Canvas.Top="435" Width="60" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <Image Height="79" Canvas.Left="299" Source="/Resourses/Images/Screw_Tube_L.PNG" Stretch="Fill" Canvas.Top="510" Width="286" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <Image Height="237" Canvas.Left="585" Source="/Resourses/Images/pechka.PNG" Stretch="Fill" Canvas.Top="431" Width="1145"/>
+
+                <controls:TemperatureControl Canvas.Left="717" Canvas.Top="118" Height="230" Width="230" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <controls:TemperatureControl Canvas.Left="1042" Canvas.Top="118" Height="230" Width="230" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <controls:TemperatureControl Canvas.Left="1378" Canvas.Top="118" Height="230" Width="230" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+                <controls:DriverControl Canvas.Top="300" Height="196" Width="225" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <controls:DriverControl Canvas.Top="628" Height="196" Width="225" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="25"/>
+                <controls:DriverControl Canvas.Top="738" Height="196" Width="225" Canvas.Left="788" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <Image Height="170" Canvas.Left="627" Source="/Resourses/Images/Drive.PNG" Stretch="Fill" Canvas.Top="758" Width="23" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+
+                <materialDesign:PackIcon x:Name="ArrowAnim1">
+                    <materialDesign:PackIcon.RenderTransform>
+                        <TranslateTransform x:Name="ArrowTrans1" Y="0"/>
+                    </materialDesign:PackIcon.RenderTransform>
+                </materialDesign:PackIcon>
+
+                <!-- Аналогично для ArrowAnim2..5 -->
+
+                <Path x:Name="DriveARotor">
+                    <Path.RenderTransform>
+                        <RotateTransform x:Name="DriveARotorRotate" CenterX="0" CenterY="0"/>
+                    </Path.RenderTransform>
+                </Path>
+
+
+                <!--#region DriverB arrows-->
+                <materialDesign:PackIcon x:Name="ArrowBAnim1"
+Kind="{Binding DriveB.ArrowKind}" Width="16" Height="26" Canvas.Left="363" Canvas.Top="594">
+                    <materialDesign:PackIcon.RenderTransform>
+                        <TranslateTransform x:Name="ArrowBTrans1" Y="0"/>
+                    </materialDesign:PackIcon.RenderTransform>
+                </materialDesign:PackIcon>
+                <materialDesign:PackIcon x:Name="ArrowBAnim2"
+Kind="{Binding DriveB.ArrowKind}" Width="16" Height="26" Canvas.Left="394" Canvas.Top="594">
+                    <materialDesign:PackIcon.RenderTransform>
+                        <TranslateTransform x:Name="ArrowBTrans2" Y="0"/>
+                    </materialDesign:PackIcon.RenderTransform>
+                </materialDesign:PackIcon>
+                <materialDesign:PackIcon x:Name="ArrowBAnim3"
+Kind="{Binding DriveB.ArrowKind}" Width="16" Height="26" Canvas.Left="425" Canvas.Top="594">
+                    <materialDesign:PackIcon.RenderTransform>
+                        <TranslateTransform x:Name="ArrowBTrans3" Y="0"/>
+                    </materialDesign:PackIcon.RenderTransform>
+                </materialDesign:PackIcon>
+                <materialDesign:PackIcon x:Name="ArrowBAnim4"
+Kind="{Binding DriveB.ArrowKind}" Width="16" Height="26" Canvas.Left="456" Canvas.Top="594">
+                    <materialDesign:PackIcon.RenderTransform>
+                        <TranslateTransform x:Name="ArrowBTrans4" Y="0"/>
+                    </materialDesign:PackIcon.RenderTransform>
+                </materialDesign:PackIcon>
+                <materialDesign:PackIcon x:Name="ArrowBAnim5"
+Kind="{Binding DriveB.ArrowKind}" Width="16" Height="26" Canvas.Left="486" Canvas.Top="594">
+                    <materialDesign:PackIcon.RenderTransform>
+                        <TranslateTransform x:Name="ArrowBTrans5" Y="0"/>
+                    </materialDesign:PackIcon.RenderTransform>
+                </materialDesign:PackIcon>
+                <!--#endregion-->
+            </Canvas>
+        </Viewbox>
+    </Grid>
+</Window>
