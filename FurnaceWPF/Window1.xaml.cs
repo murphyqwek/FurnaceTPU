@@ -20,7 +20,6 @@ namespace FurnaceWPF
     /// </summary>
     public partial class Window1 : Window
     {
-        private TranslateTransform[] arrowBTransforms;
         private Storyboard _currentStoryboardB;
 
         public Window1()

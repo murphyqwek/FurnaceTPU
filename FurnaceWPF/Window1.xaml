@@ -77,7 +77,7 @@
 
                 <Image Source="/Resourses/Images/Tank_Up.PNG" Height="217" Width="208" Canvas.Left="245" Canvas.Top="45"/>
                 <Image Height="75" Canvas.Left="319" Source="/Resourses/Images/Tube_V.PNG" Stretch="Fill" Canvas.Top="262" Width="60" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                <Image Height="98" Canvas.Left="299" Source="/Resourses/Images/Rotor.PNG" Stretch="Fill" Canvas.Top="337" Width="100" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <Image Height="98" Canvas.Left="301" Source="/Resourses/Images/Rotor.PNG" Stretch="Fill" Canvas.Top="337" Width="96" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 <Image Height="75" Canvas.Left="319" Source="/Resourses/Images/Tube_V.PNG" Stretch="Fill" Canvas.Top="435" Width="60" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 <Image Height="79" Canvas.Left="299" Source="/Resourses/Images/Screw_Tube_L.PNG" Stretch="Fill" Canvas.Top="510" Width="286" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 <Image Height="237" Canvas.Left="585" Source="/Resourses/Images/pechka.PNG" Stretch="Fill" Canvas.Top="431" Width="1145"/>
