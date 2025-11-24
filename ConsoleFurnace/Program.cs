@@ -8,11 +8,7 @@ namespace ConsoleFurnace
     {
         static void Main(string[] args)
         {
-            const double coeff = 327.058824;
-
-            double value = HexConverter.ConvertHexChannelDataToDouble("02 30".Replace(" ", ""));
-
-            //Console.WriteLine(TemperatureModule.parseData("01 16"));
+            
         }
     }
 }
