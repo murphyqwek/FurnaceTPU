@@ -1,4 +1,5 @@
-﻿using FurnaceWPF.ViewModels;
+﻿using FurnaceCore.Port;
+using FurnaceWPF.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using pechka4._8;
 using System;

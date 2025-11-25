@@ -1,6 +1,7 @@
 ﻿using FurnaceCore.Filters;
 using FurnaceCore.IOManager;
 using FurnaceCore.Model;
+using FurnaceCore.Port;
 using FurnaceWPF.Converters;
 using Microsoft.Extensions.DependencyInjection;
 using pechka4._8.ViewModels;
@@ -28,7 +29,7 @@ namespace FurnaceWPF.Factories
             ModbusAddressFilter temperatureFilter = new ModbusAddressFilter(addressByte, 0x04, temperatureModule);
 
             ioManager.RegisterFilter(temperatureFilter);
-            ioManager.RegisterModulePort(temperatureModule, _serviceProvider.GetRequiredService<MockPort>());
+            ioManager.RegisterModulePort(temperatureModule, _serviceProvider.GetRequiredService<IPort>());
 
             return new ZoneViewModel(name, 0, temperatureModule);
         }

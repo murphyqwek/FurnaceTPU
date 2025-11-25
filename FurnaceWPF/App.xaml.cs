@@ -1,6 +1,7 @@
 ﻿using FurnaceCore.Filters;
 using FurnaceCore.IOManager;
 using FurnaceCore.Model;
+using FurnaceCore.Port;
 using FurnaceWPF;
 using FurnaceWPF.Converters;
 using FurnaceWPF.Factories;
@@ -11,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.IO.Ports;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -46,16 +48,16 @@ namespace pechka4._8
             HeaterModule heaterModule = new HeaterModule(0x02, 0x00, ioManager);
             DriverModule driverModule = new DriverModule(ioManager);
 
-            MockPort mockPort = new MockPort(ioManager);
+            PortModule port = new PortModule(new SerialPort(), ioManager);
 
 
-            ioManager.RegisterModulePort(heaterModule, mockPort);
-            ioManager.RegisterModulePort(driverModule, mockPort);
+            ioManager.RegisterModulePort(heaterModule, port);
+            ioManager.RegisterModulePort(driverModule, port);
 
             services.AddSingleton(ioManager);
             services.AddSingleton<ZoneViewModelFactory>();
             services.AddSingleton(heaterModule);
-            services.AddSingleton(mockPort);
+            services.AddSingleton<IPort>(port);
             services.AddSingleton(driverModule);
             services.AddSingleton<DriverViewModelFactory>();
             services.AddSingleton<FurnaceWindowViewModel>();

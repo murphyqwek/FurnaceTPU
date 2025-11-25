@@ -1,4 +1,5 @@
-﻿using FurnaceWPF.Commands;
+﻿using FurnaceCore.Port;
+using FurnaceWPF.Commands;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,6 +17,8 @@ namespace FurnaceWPF.ViewModels
 
         private IEnumerable<string> _availablePorts;
         private string _selectedPort;
+
+        private IPort _portModule;
 
         #region Properties
         public IEnumerable<string> AvailablePorts
@@ -37,6 +40,12 @@ namespace FurnaceWPF.ViewModels
                 {
                     _selectedPort = value;
                     OnPropertyChanged();
+                    if (SelectedPort != NO_AVAILABLE_PORTS)
+                    {
+                        _portModule.ClosePort();
+                        _portModule.Name = SelectedPort;
+                        _portModule.OpenPort();
+                    }
                 }
             }
         }
@@ -44,8 +53,9 @@ namespace FurnaceWPF.ViewModels
 
         public RemoteCommand RefreshCommand { get; }
 
-        public PortViewModel()
+        public PortViewModel(IPort portModule)
         {
+            _portModule = portModule;
             LoadAvailablePorts();
             RefreshCommand = new RemoteCommand(() => LoadAvailablePorts());
         }
