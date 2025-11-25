@@ -41,7 +41,7 @@ namespace FurnaceWPF
             {
                 if (timeline is DoubleAnimation anim)
                 {
-                    anim.Duration = new Duration(TimeSpan.FromSeconds(1));
+                    anim.Duration = new Duration(TimeSpan.FromSeconds(2));
                 }
             }
 
