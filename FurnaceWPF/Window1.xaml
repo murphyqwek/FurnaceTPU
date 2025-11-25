@@ -19,7 +19,7 @@
     <Grid>
         <Viewbox Stretch="Uniform">
             <Canvas Width="2000" Height="1000">
-                
+
                 <!--#region Furnace Images-->
                 <Image Source="/Resourses/Images/Tank_Up.PNG" Height="217" Width="208" Canvas.Left="245" Canvas.Top="45"/>
                 <Image Height="75" Canvas.Left="319" Source="/Resourses/Images/Tube_V.PNG" Stretch="Fill" Canvas.Top="262" Width="60" HorizontalAlignment="Left" VerticalAlignment="Top"/>
@@ -29,19 +29,45 @@
                 <Image Height="237" Canvas.Left="585" Source="/Resourses/Images/pechka.PNG" Stretch="Fill" Canvas.Top="431" Width="1145"/>
                 <Image Height="170" Canvas.Left="627" Source="/Resourses/Images/Drive.PNG" Stretch="Fill" Canvas.Top="758" Width="23" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 <!--#endregion-->
-                
+
                 <!--#region Temperature controlls -->
                 <controls:TemperatureControl Canvas.Left="717" Canvas.Top="118" Height="230" Width="230" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 <controls:TemperatureControl Canvas.Left="1042" Canvas.Top="118" Height="230" Width="230" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 <controls:TemperatureControl Canvas.Left="1378" Canvas.Top="118" Height="230" Width="230" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 <!--#endregion-->
-                
+
                 <!--#region Drive Controls-->
                 <controls:DriverControl Canvas.Top="55" Height="196" Width="225" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="10"/>
                 <controls:DriverControl Canvas.Top="607" Height="196" Width="225" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="58"/>
                 <controls:DriverControl Canvas.Top="738" Height="196" Width="225" Canvas.Left="788" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 <!--#endregion-->
 
+                <!--#region DriveA animation-->
+                <Path
+                        x:Name="DriveARotor"
+                        Fill="Gray"
+                        Stroke="DimGray"
+                        StrokeThickness="1"
+                        RenderTransformOrigin="0.5,0.5" Canvas.Left="156" Canvas.Top="346.5" Height="79" Stretch="Fill" Width="79">
+                    <Path.Data>
+                        <PathGeometry>
+                            <PathFigure StartPoint="25,0">
+                                <LineSegment Point="30,20"/>
+                                <LineSegment Point="50,25"/>
+                                <LineSegment Point="30,30"/>
+                                <LineSegment Point="25,50"/>
+                                <LineSegment Point="20,30"/>
+                                <LineSegment Point="0,25"/>
+                                <LineSegment Point="20,20"/>
+                                <LineSegment Point="25,0"/>
+                            </PathFigure>
+                        </PathGeometry>
+                    </Path.Data>
+                    <Path.RenderTransform>
+                        <RotateTransform x:Name="DriveARotorRotate" CenterX="0" CenterY="0" Angle="0"/>
+                    </Path.RenderTransform>
+                </Path>
+                <!--#endregion-->
 
                 <!--#region DriverB arrows-->
                 <materialDesign:PackIcon x:Name="ArrowBAnim1"
