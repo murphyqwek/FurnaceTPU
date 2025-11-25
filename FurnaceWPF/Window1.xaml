@@ -30,9 +30,9 @@
                 <!--#endregion-->
 
                 <!--#region Temperature controlls -->
-                <controls:TemperatureControl Canvas.Left="717" Canvas.Top="118" Height="230" Width="230" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                <controls:TemperatureControl Canvas.Left="1042" Canvas.Top="118" Height="230" Width="230" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                <controls:TemperatureControl Canvas.Left="1378" Canvas.Top="118" Height="230" Width="230" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <controls:TemperatureControl DataContext="{Binding Zone1}" Canvas.Left="717" Canvas.Top="118" Height="230" Width="230" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <controls:TemperatureControl DataContext="{Binding Zone2}" Canvas.Left="1042" Canvas.Top="118" Height="230" Width="230" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <controls:TemperatureControl DataContext="{Binding Zone3}"  Canvas.Left="1378" Canvas.Top="118" Height="230" Width="230" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 <!--#endregion-->
 
                 <!--#region Drive Controls-->

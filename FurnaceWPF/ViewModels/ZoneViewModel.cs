@@ -1,6 +1,7 @@
 ﻿using FurnaceCore.Model;
 using FurnaceWPF.Commands;
 using FurnaceWPF.Converters;
+using FurnaceWPF.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ using System.Windows.Media;
 
 namespace pechka4._8.ViewModels
 {
-    public class ZoneViewModel : INotifyPropertyChanged
+    public class ZoneViewModel : BaseViewModel
     {
         private double _temperature;
         public double Temperature
@@ -38,13 +39,6 @@ namespace pechka4._8.ViewModels
         public Brush TempBrush => InterpolateTempColor(Temperature);
 
         public string Name { get; set; }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged(string prop)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-        }
 
         // Градиент между синим и жёлтым
         public SolidColorBrush InterpolateTempColor(double temp)

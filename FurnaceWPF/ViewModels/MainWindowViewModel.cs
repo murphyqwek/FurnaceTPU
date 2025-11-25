@@ -14,9 +14,6 @@ namespace pechka4._8.ViewModels
 
         public MainWindowViewModel()
         {
-            Zone1 = new ZoneViewModel("Зона 1", 75);
-            Zone2 = new ZoneViewModel("Зона 2", 45);
-            Zone3 = new ZoneViewModel("Зона 3", 18);
             DriveC = new DriveCViewModel();
             DriveB = new DriveBViewModel();
             DriveA = new DriveAViewModel();

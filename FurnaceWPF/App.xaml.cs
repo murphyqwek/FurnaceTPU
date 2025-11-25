@@ -43,22 +43,17 @@ namespace pechka4._8
         private void ConfigureFurnaceModules(ServiceCollection services)
         {
             IOManager ioManager = new IOManager();
-            TemperatureModule temperatureModule = new TemperatureModule(0x01, 0x00, ioManager);
             HeaterModule heaterModule = new HeaterModule(0x02, 0x00, ioManager);
             DriverModule driverModule = new DriverModule(ioManager);
 
-            ModbusAddressFilter temperatureFilter = new ModbusAddressFilter(0x01, 0x04, temperatureModule);
-
             MockPort mockPort = new MockPort(ioManager);
 
-            ioManager.RegisterModulePort(temperatureModule, mockPort);
-            ioManager.RegisterFilter(temperatureFilter);
 
             ioManager.RegisterModulePort(heaterModule, mockPort);
             ioManager.RegisterModulePort(driverModule, mockPort);
 
             services.AddSingleton(ioManager);
-            services.AddSingleton(temperatureModule);
+            services.AddSingleton<ZoneViewModelFactory>();
             services.AddSingleton(heaterModule);
             services.AddSingleton(mockPort);
             services.AddSingleton(driverModule);

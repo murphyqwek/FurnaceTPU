@@ -16,13 +16,19 @@ namespace FurnaceWPF.ViewModels
         public DriverWithArrowViewModel DriveB { get; }
         public DriverWithArrowViewModel DriveC { get; }
 
-        public WindowViewModel()
-        {
-            var factory = App.Services.GetRequiredService<DriverViewModelFactory>();
+        public ZoneViewModel Zone1 { get; }
+        public ZoneViewModel Zone2 { get; }
+        public ZoneViewModel Zone3 { get; }
 
-            DriveA = factory.GetDriverA();
-            DriveB = factory.GetDriverB();
-            DriveC = factory.GetDriverC();
+        public WindowViewModel(DriverViewModelFactory driverFactory, ZoneViewModelFactory zoneFactory)
+        {
+            DriveA = driverFactory.GetDriverA();
+            DriveB = driverFactory.GetDriverB();
+            DriveC = driverFactory.GetDriverC();
+
+            Zone1 = zoneFactory.GetFirstZone();
+            Zone2 = zoneFactory.GetSecondZone();
+            Zone3 = zoneFactory.GetThirdZone();
         }
     }
 }
