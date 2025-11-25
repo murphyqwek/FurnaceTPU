@@ -1,4 +1,5 @@
-﻿using pechka4._8.Helpers;
+﻿using FurnaceWPF.ViewModels;
+using pechka4._8.Helpers;
 using System;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -6,7 +7,7 @@ using System.Windows.Threading;
 
 namespace pechka4._8.ViewModels
 {
-    public class CoolingSystemViewModel : ObservableObject
+    public class CoolingSystemViewModel : BaseViewModel
     {
         private double _temperature;
         private bool _isPumpOn;
@@ -16,15 +17,15 @@ namespace pechka4._8.ViewModels
             get => _temperature;
             set
             {
-                if (SetProperty(ref _temperature, value))
-                    OnPropertyChanged(nameof(CoolantBrush));
+                _temperature = value;
+                OnPropertyChanged(nameof(CoolantBrush));
             }
         }
 
         public bool IsPumpOn
         {
             get => _isPumpOn;
-            set => SetProperty(ref _isPumpOn, value);
+            set => _isPumpOn = value;
         }
 
         public Brush CoolantBrush => InterpolateBrush(CoolantTemperature);
