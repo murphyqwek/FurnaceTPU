@@ -29,10 +29,10 @@ namespace FurnaceWPF
 
         public FurnaceWindow()
         {
-            this.DataContext = App.Services.GetRequiredService<WindowViewModel>();
+            this.DataContext = App.Services.GetRequiredService<FurnaceWindowViewModel>();
 
             InitializeComponent();
-            var vm = this.DataContext as WindowViewModel;
+            var vm = this.DataContext as FurnaceWindowViewModel;
 
             vm.DriveA.AnimationSettingsChangeed += () => UpdateAnimation(ref _currentStoryboardA, vm.DriveA, "RotorSpinRight", "RotorSpinLeft");
             vm.DriveB.AnimationSettingsChangeed += () => UpdateAnimation(ref _currentStoryboardB, vm.DriveB, "ArrowFlowRight", "ArrowFlowLeft");

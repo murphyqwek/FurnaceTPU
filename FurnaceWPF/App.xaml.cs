@@ -58,7 +58,7 @@ namespace pechka4._8
             services.AddSingleton(mockPort);
             services.AddSingleton(driverModule);
             services.AddSingleton<DriverViewModelFactory>();
-            services.AddSingleton<WindowViewModel>();
+            services.AddSingleton<FurnaceWindowViewModel>();
         }
     }
 }

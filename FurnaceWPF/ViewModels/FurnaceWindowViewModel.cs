@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace FurnaceWPF.ViewModels
 {
-    public class WindowViewModel
+    public class FurnaceWindowViewModel
     {
         public DriverViewModel DriveA { get; }
         public DriverWithArrowViewModel DriveB { get; }
@@ -20,7 +20,7 @@ namespace FurnaceWPF.ViewModels
         public ZoneViewModel Zone2 { get; }
         public ZoneViewModel Zone3 { get; }
 
-        public WindowViewModel(DriverViewModelFactory driverFactory, ZoneViewModelFactory zoneFactory)
+        public FurnaceWindowViewModel(DriverViewModelFactory driverFactory, ZoneViewModelFactory zoneFactory)
         {
             DriveA = driverFactory.GetDriverA();
             DriveB = driverFactory.GetDriverB();
