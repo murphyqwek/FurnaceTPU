@@ -19,15 +19,15 @@ using System.Windows.Shapes;
 namespace FurnaceWPF
 {
     /// <summary>
-    /// Логика взаимодействия для Window1.xaml
+    /// Логика взаимодействия для FurnaceWindow.xaml
     /// </summary>
-    public partial class Window1 : Window
+    public partial class FurnaceWindow : Window
     {
         private Storyboard _currentStoryboardA = new Storyboard();
         private Storyboard _currentStoryboardB = new Storyboard();
         private Storyboard _currentStoryboardC = new Storyboard();
 
-        public Window1()
+        public FurnaceWindow()
         {
             this.DataContext = App.Services.GetRequiredService<WindowViewModel>();
 
