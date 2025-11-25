@@ -49,7 +49,7 @@ namespace pechka4._8
             DriverModule driverModule = new DriverModule(ioManager);
 
             PortModule port = new PortModule(new SerialPort(), ioManager);
-
+            //MockPort port = new MockPort(ioManager);
 
             ioManager.RegisterModulePort(heaterModule, port);
             ioManager.RegisterModulePort(driverModule, port);
