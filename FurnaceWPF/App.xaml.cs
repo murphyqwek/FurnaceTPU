@@ -59,6 +59,8 @@ namespace pechka4._8
             services.AddSingleton(driverModule);
             services.AddSingleton<DriverViewModelFactory>();
             services.AddSingleton<FurnaceWindowViewModel>();
+
+            services.AddTransient<PortViewModel>();
         }
     }
 }

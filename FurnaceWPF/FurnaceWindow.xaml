@@ -147,6 +147,10 @@ Kind="{Binding DriveB.ArrowKind}" Width="16" Height="26" Canvas.Left="486" Canva
                 <Border CornerRadius="15"
                     Background="{Binding Zone3.TempBrush}" Opacity="0.60" Height="92" Width="230" Canvas.Left="1378" Canvas.Top="505" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 <!--#endregion-->
+
+                <!--#region COM Port menu-->
+                <controls:PortControl HorizontalAlignment="Left" Canvas.Left="1627" VerticalAlignment="Center" Width="363" Canvas.Top="10" />
+                <!--#endregion-->
             </Canvas>
         </Viewbox>
     </Grid>
