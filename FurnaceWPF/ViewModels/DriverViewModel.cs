@@ -31,7 +31,7 @@ namespace FurnaceWPF.ViewModels
         private DriverDirectionEnum _direction = DriverDirectionEnum.Stop;
 
         #region Properties
-        public string Name => _name;
+        public string DriverName => _name;
         public DriverDirectionEnum DirectionEnum
         {
             get => _direction;

@@ -137,15 +137,15 @@ Kind="{Binding DriveB.ArrowKind}" Width="16" Height="26" Canvas.Left="486" Canva
                 <!--#region Furnace Temperature zones-->
                 <!-- Зона 1-->
                 <Border CornerRadius="15"
-                    Background="{Binding Zone1.TempBrush}" Height="92" Width="230" Opacity="0.60" Canvas.Left="717" Canvas.Top="500"/>
+                    Background="{Binding Zone1.TempBrush}" Height="92" Width="230" Opacity="0.60" Canvas.Left="717" Canvas.Top="505"/>
 
                 <!-- Зона 2 -->
                 <Border CornerRadius="15"
-                    Background="{Binding Zone2.TempBrush}" Opacity="0.60" Height="92" Width="230" Canvas.Left="1042" Canvas.Top="500" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    Background="{Binding Zone2.TempBrush}" Opacity="0.60" Height="92" Width="230" Canvas.Left="1042" Canvas.Top="505" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
                 <!-- Зона 3 -->
                 <Border CornerRadius="15"
-                    Background="{Binding Zone3.TempBrush}" Opacity="0.60" Height="92" Width="230" Canvas.Left="1378" Canvas.Top="5000" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    Background="{Binding Zone3.TempBrush}" Opacity="0.60" Height="92" Width="230" Canvas.Left="1378" Canvas.Top="505" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 <!--#endregion-->
             </Canvas>
         </Viewbox>
