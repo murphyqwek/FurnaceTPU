@@ -7,7 +7,7 @@
         xmlns:controls="clr-namespace:FurnaceWPF.Views.Controls"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="Window1" Height="600" Width="1200">
+        Title="Печка" Height="600" Width="1200">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -19,22 +19,28 @@
     <Grid>
         <Viewbox Stretch="Uniform">
             <Canvas Width="2000" Height="1000">
-
+                
+                <!--#region Furnace Images-->
                 <Image Source="/Resourses/Images/Tank_Up.PNG" Height="217" Width="208" Canvas.Left="245" Canvas.Top="45"/>
                 <Image Height="75" Canvas.Left="319" Source="/Resourses/Images/Tube_V.PNG" Stretch="Fill" Canvas.Top="262" Width="60" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 <Image Height="98" Canvas.Left="301" Source="/Resourses/Images/Rotor.PNG" Stretch="Fill" Canvas.Top="337" Width="96" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 <Image Height="75" Canvas.Left="319" Source="/Resourses/Images/Tube_V.PNG" Stretch="Fill" Canvas.Top="435" Width="60" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 <Image Height="79" Canvas.Left="299" Source="/Resourses/Images/Screw_Tube_L.PNG" Stretch="Fill" Canvas.Top="510" Width="286" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 <Image Height="237" Canvas.Left="585" Source="/Resourses/Images/pechka.PNG" Stretch="Fill" Canvas.Top="431" Width="1145"/>
-
+                <Image Height="170" Canvas.Left="627" Source="/Resourses/Images/Drive.PNG" Stretch="Fill" Canvas.Top="758" Width="23" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <!--#endregion-->
+                
+                <!--#region Temperature controlls -->
                 <controls:TemperatureControl Canvas.Left="717" Canvas.Top="118" Height="230" Width="230" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 <controls:TemperatureControl Canvas.Left="1042" Canvas.Top="118" Height="230" Width="230" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 <controls:TemperatureControl Canvas.Left="1378" Canvas.Top="118" Height="230" Width="230" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-
+                <!--#endregion-->
+                
+                <!--#region Drive Controls-->
                 <controls:DriverControl Canvas.Top="55" Height="196" Width="225" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="10"/>
                 <controls:DriverControl Canvas.Top="607" Height="196" Width="225" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="58"/>
                 <controls:DriverControl Canvas.Top="738" Height="196" Width="225" Canvas.Left="788" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                <Image Height="170" Canvas.Left="627" Source="/Resourses/Images/Drive.PNG" Stretch="Fill" Canvas.Top="758" Width="23" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <!--#endregion-->
 
 
                 <!--#region DriverB arrows-->
