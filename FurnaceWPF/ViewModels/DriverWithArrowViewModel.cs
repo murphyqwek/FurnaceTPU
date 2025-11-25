@@ -30,9 +30,6 @@ namespace FurnaceWPF.ViewModels
             _ => "Stop"
         };
 
-
-        
-
         public DriverWithArrowViewModel(PackIconKind forward, PackIconKind backward, PackIconKind stop, DriverModule driverModule, string name) : base(driverModule, name)
         {
             this._forwardArrowKind = forward;

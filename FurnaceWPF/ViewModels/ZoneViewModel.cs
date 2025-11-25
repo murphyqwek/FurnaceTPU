@@ -47,7 +47,7 @@ namespace pechka4._8.ViewModels
         }
 
         // Градиент между синим и жёлтым
-        public static SolidColorBrush InterpolateTempColor(double temp)
+        public SolidColorBrush InterpolateTempColor(double temp)
         {
             Color cold = (Color)ColorConverter.ConvertFromString("#197692");
             Color hot = (Color)ColorConverter.ConvertFromString("#E8E26B");
@@ -61,14 +61,14 @@ namespace pechka4._8.ViewModels
 
         public RemoteCommand remoteCommand { get; }
 
-        public ZoneViewModel(string name, double initialTemperature)
+        public ZoneViewModel(string name, double initialTemperature, TemperatureModule temperatureModule)
         {
             remoteCommand = new RemoteCommand(() => 
                 { 
                     App.Services.GetRequiredService<MockPort>().ReceiveData("01 04 02 01 16 00 00"); 
                 }
             );
-            this.temperatureModule = App.Services.GetRequiredService<TemperatureModule>();
+            this.temperatureModule = temperatureModule;
             Name = name;
             Temperature = initialTemperature;
 
