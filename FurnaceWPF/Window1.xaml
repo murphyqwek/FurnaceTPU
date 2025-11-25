@@ -9,66 +9,11 @@
         mc:Ignorable="d"
         Title="Window1" Height="600" Width="1200">
     <Window.Resources>
-        <Storyboard x:Key="ArrowFlowUp" RepeatBehavior="Forever">
-            <DoubleAnimation Storyboard.TargetName="ArrowTrans1" Storyboard.TargetProperty="Y"
-                     From="35" To="0" Duration="0:0:1"/>
-            <DoubleAnimation Storyboard.TargetName="ArrowTrans2" Storyboard.TargetProperty="Y"
-                     From="35" To="0" Duration="0:0:1"/>
-            <DoubleAnimation Storyboard.TargetName="ArrowTrans3" Storyboard.TargetProperty="Y"
-                     From="35" To="0" Duration="0:0:1"/>
-            <DoubleAnimation Storyboard.TargetName="ArrowTrans4" Storyboard.TargetProperty="Y"
-                     From="35" To="0" Duration="0:0:1"/>
-            <DoubleAnimation Storyboard.TargetName="ArrowTrans5" Storyboard.TargetProperty="Y"
-                     From="35" To="0" Duration="0:0:1"/>
-        </Storyboard>
-        <Storyboard x:Key="ArrowFlowDown" RepeatBehavior="Forever">
-            <DoubleAnimation Storyboard.TargetName="ArrowTrans1" Storyboard.TargetProperty="Y"
-                     From="0" To="35" Duration="0:0:1"/>
-            <DoubleAnimation Storyboard.TargetName="ArrowTrans2" Storyboard.TargetProperty="Y"
-                     From="0" To="35" Duration="0:0:1"/>
-            <DoubleAnimation Storyboard.TargetName="ArrowTrans3" Storyboard.TargetProperty="Y"
-                     From="0" To="35" Duration="0:0:1"/>
-            <DoubleAnimation Storyboard.TargetName="ArrowTrans4" Storyboard.TargetProperty="Y"
-                     From="0" To="35" Duration="0:0:1"/>
-            <DoubleAnimation Storyboard.TargetName="ArrowTrans5" Storyboard.TargetProperty="Y"
-                     From="0" To="35" Duration="0:0:1"/>
-        </Storyboard>
-        <Storyboard x:Key="ArrowFlowRight" RepeatBehavior="Forever">
-            <DoubleAnimation Storyboard.TargetName="ArrowBTrans1" Storyboard.TargetProperty="X"
-                     From="-25" To="0" Duration="0:0:1"/>
-            <DoubleAnimation Storyboard.TargetName="ArrowBTrans2" Storyboard.TargetProperty="X"
-                     From="-25" To="0" Duration="0:0:1"/>
-            <DoubleAnimation Storyboard.TargetName="ArrowBTrans3" Storyboard.TargetProperty="X"
-                     From="-25" To="0" Duration="0:0:1"/>
-            <DoubleAnimation Storyboard.TargetName="ArrowBTrans4" Storyboard.TargetProperty="X"
-                     From="-25" To="0" Duration="0:0:1"/>
-            <DoubleAnimation Storyboard.TargetName="ArrowBTrans5" Storyboard.TargetProperty="X"
-                     From="-25" To="0" Duration="0:0:1"/>
-        </Storyboard>
-        <Storyboard x:Key="ArrowFlowLeft" RepeatBehavior="Forever">
-            <DoubleAnimation Storyboard.TargetName="ArrowBTrans1" Storyboard.TargetProperty="X"
-                     From="0" To="-25" Duration="0:0:1"/>
-            <DoubleAnimation Storyboard.TargetName="ArrowBTrans2" Storyboard.TargetProperty="X"
-                     From="0" To="-25" Duration="0:0:1"/>
-            <DoubleAnimation Storyboard.TargetName="ArrowBTrans3" Storyboard.TargetProperty="X"
-                     From="0" To="-25" Duration="0:0:1"/>
-            <DoubleAnimation Storyboard.TargetName="ArrowBTrans4" Storyboard.TargetProperty="X"
-                     From="0" To="-25" Duration="0:0:1"/>
-            <DoubleAnimation Storyboard.TargetName="ArrowBTrans5" Storyboard.TargetProperty="X"
-                     From="0" To="-25" Duration="0:0:1"/>
-        </Storyboard>
-        <Storyboard x:Key="RotorSpinRight" RepeatBehavior="Forever">
-            <DoubleAnimation Storyboard.TargetName="DriveARotorRotate"
-                     Storyboard.TargetProperty="Angle"
-                     From="0" To="360"
-                     Duration="0:0:1"/>
-        </Storyboard>
-        <Storyboard x:Key="RotorSpinLeft" RepeatBehavior="Forever">
-            <DoubleAnimation Storyboard.TargetName="DriveARotorRotate"
-                     Storyboard.TargetProperty="Angle"
-                     From="0" To="-360"
-                     Duration="0:0:1"/>
-        </Storyboard>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resourses/Dictionaries/Animation.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Window.Resources>
 
     <Grid>
@@ -156,6 +101,20 @@ Kind="{Binding DriveB.ArrowKind}" Width="16" Height="26" Canvas.Left="486" Canva
                         <TranslateTransform x:Name="ArrowTrans5" Y="0"/>
                     </materialDesign:PackIcon.RenderTransform>
                 </materialDesign:PackIcon>
+                <!--#endregion-->
+
+                <!--#region Furnace Temperature zones-->
+                <!-- Зона 1-->
+                <Border CornerRadius="15"
+                    Background="{Binding Zone1.TempBrush}" Height="92" Width="230" Opacity="0.60" Canvas.Left="717" Canvas.Top="500"/>
+
+                <!-- Зона 2 -->
+                <Border CornerRadius="15"
+                    Background="{Binding Zone2.TempBrush}" Opacity="0.60" Height="92" Width="230" Canvas.Left="1042" Canvas.Top="500" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                <!-- Зона 3 -->
+                <Border CornerRadius="15"
+                    Background="{Binding Zone3.TempBrush}" Opacity="0.60" Height="92" Width="230" Canvas.Left="1378" Canvas.Top="5000" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 <!--#endregion-->
             </Canvas>
         </Viewbox>
