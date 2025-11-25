@@ -102,31 +102,31 @@ Kind="{Binding DriveB.ArrowKind}" Width="16" Height="26" Canvas.Left="486" Canva
                 <!--#endregion-->
 
                 <!--#region DriveC arrows-->
-                <materialDesign:PackIcon x:Name="ArrowAnim1" Width="16" Height="26"
+                <materialDesign:PackIcon x:Name="ArrowAnim1" Width="16" Height="26" Kind="{Binding DriveC.ArrowKind}"
                                            Canvas.Left="630" Canvas.Top="474" HorizontalAlignment="Center">
                     <materialDesign:PackIcon.RenderTransform>
                         <TranslateTransform x:Name="ArrowTrans1" Y="0"/>
                     </materialDesign:PackIcon.RenderTransform>
                 </materialDesign:PackIcon>
-                <materialDesign:PackIcon x:Name="ArrowAnim2" Width="16" Height="26"
+                <materialDesign:PackIcon x:Name="ArrowAnim2" Width="16" Height="26" Kind="{Binding DriveC.ArrowKind}"
                                         Canvas.Left="630" Canvas.Top="536" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <materialDesign:PackIcon.RenderTransform>
                         <TranslateTransform x:Name="ArrowTrans2" Y="0"/>
                     </materialDesign:PackIcon.RenderTransform>
                 </materialDesign:PackIcon>
-                <materialDesign:PackIcon x:Name="ArrowAnim3" Width="16" Height="26"
+                <materialDesign:PackIcon x:Name="ArrowAnim3" Width="16" Height="26" Kind="{Binding DriveC.ArrowKind}"
     Canvas.Left="630" Canvas.Top="607" VerticalAlignment="Center">
                     <materialDesign:PackIcon.RenderTransform>
                         <TranslateTransform x:Name="ArrowTrans3" Y="0"/>
                     </materialDesign:PackIcon.RenderTransform>
                 </materialDesign:PackIcon>
-                <materialDesign:PackIcon x:Name="ArrowAnim4" Width="16" Height="26"
+                <materialDesign:PackIcon x:Name="ArrowAnim4" Width="16" Height="26" Kind="{Binding DriveC.ArrowKind}"
     Canvas.Left="630" Canvas.Top="668" VerticalAlignment="Center">
                     <materialDesign:PackIcon.RenderTransform>
                         <TranslateTransform x:Name="ArrowTrans4" Y="0"/>
                     </materialDesign:PackIcon.RenderTransform>
                 </materialDesign:PackIcon>
-                <materialDesign:PackIcon x:Name="ArrowAnim5" Width="16" Height="26"
+                <materialDesign:PackIcon x:Name="ArrowAnim5" Width="16" Height="26" Kind="{Binding DriveC.ArrowKind}"
     Canvas.Left="630" Canvas.Top="720" VerticalAlignment="Center">
                     <materialDesign:PackIcon.RenderTransform>
                         <TranslateTransform x:Name="ArrowTrans5" Y="0"/>

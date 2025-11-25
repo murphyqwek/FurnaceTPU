@@ -132,7 +132,7 @@ namespace FurnaceWPF.ViewModels
         }, _ => CanConfirmSpeed);
         #endregion
 
-        public event Action AnimationSettingsChangeed;
+        public event Action? AnimationSettingsChangeed;
         public DriverViewModel(DriverModule driverModule, string name)
         {
             this._driverModule = driverModule;

@@ -34,13 +34,13 @@ namespace FurnaceWPF
             InitializeComponent();
             var vm = this.DataContext as WindowViewModel;
 
-            vm.DriveA.AnimationSettingsChangeed += () => UpdateAnimation(_currentStoryboardA, vm.DriveA, "RotorSpinRight", "RotorSpinLeft");
-            vm.DriveB.AnimationSettingsChangeed += () => UpdateAnimation(_currentStoryboardB, vm.DriveB, "ArrowFlowRight", "ArrowFlowLeft");
-            vm.DriveC.AnimationSettingsChangeed += () => UpdateAnimation(_currentStoryboardC, vm.DriveC, "ArrowFlowUp", "ArrowFlowDown");
+            vm.DriveA.AnimationSettingsChangeed += () => UpdateAnimation(ref _currentStoryboardA, vm.DriveA, "RotorSpinRight", "RotorSpinLeft");
+            vm.DriveB.AnimationSettingsChangeed += () => UpdateAnimation(ref _currentStoryboardB, vm.DriveB, "ArrowFlowRight", "ArrowFlowLeft");
+            vm.DriveC.AnimationSettingsChangeed += () => UpdateAnimation(ref _currentStoryboardC, vm.DriveC, "ArrowFlowUp", "ArrowFlowDown");
         }
 
 
-        private void UpdateAnimation(Storyboard driveStoryboard, DriverViewModel driveVM, string forwardKeyAnimation, string backwardKeyAnimation)
+        private void UpdateAnimation(ref Storyboard driveStoryboard, DriverViewModel driveVM, string forwardKeyAnimation, string backwardKeyAnimation)
         {
             driveStoryboard.Stop(this);
 

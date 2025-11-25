@@ -31,11 +31,22 @@ namespace FurnaceWPF.ViewModels
         };
 
 
+        
+
         public DriverWithArrowViewModel(PackIconKind forward, PackIconKind backward, PackIconKind stop, DriverModule driverModule, string name) : base(driverModule, name)
         {
             this._forwardArrowKind = forward;
             this._backwardArrowKind = backward;
             this._stopArrowKind = stop;
+
+            this.PropertyChanged += (sender, e) =>
+            {
+                if (e.PropertyName == nameof(DirectionEnum))
+                {
+                    OnPropertyChanged(nameof(ArrowKind));
+                    OnPropertyChanged(nameof(ArrowDirection));
+                }
+            };          
         }
     }
 }

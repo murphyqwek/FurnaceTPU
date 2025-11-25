@@ -30,14 +30,14 @@ namespace FurnaceWPF.Factories
         {
             DriverModule driverModule = _serviceProvider.GetRequiredService<DriverModule>();
 
-            return new DriverWithArrowViewModel(PackIconKind.ArrowLeftBold, PackIconKind.ArrowRightBold, PackIconKind.ArrowLeftBold, driverModule, "B");
+            return new DriverWithArrowViewModel(PackIconKind.ArrowRightBold, PackIconKind.ArrowLeftBold, PackIconKind.ArrowRightBold, driverModule, "B");
         }
 
         public DriverWithArrowViewModel GetDriverC()
         {
             DriverModule driverModule = _serviceProvider.GetRequiredService<DriverModule>();
 
-            return new DriverWithArrowViewModel(PackIconKind.ArrowDownBold, PackIconKind.ArrowUpBold, PackIconKind.ArrowDownBold, driverModule, "C");
+            return new DriverWithArrowViewModel(PackIconKind.ArrowUpBold, PackIconKind.ArrowDownBold, PackIconKind.ArrowUpBold, driverModule, "C");
         }
     }
 }
