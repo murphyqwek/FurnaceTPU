@@ -33,9 +33,10 @@
                      materialDesign:HintAssist.Hint="Задать температуру"
                      FontSize="16"
                      Margin="0,6,0,10"
-                     Width="140"
+                     MinWidth="150"
                      HorizontalAlignment="Center"
                      VerticalAlignment="Center"
+                     PreviewTextInput="Input_TextPrewview"
                      />
 
             <Button Grid.Row="4" Content="Управлять"

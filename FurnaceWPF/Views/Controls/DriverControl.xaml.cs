@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,5 +25,14 @@ namespace FurnaceWPF.Views.Controls
         {
             InitializeComponent();
         }
+
+        private void Input_TextPrewview(object sender, TextCompositionEventArgs e)
+        {
+            var textBox = sender as TextBox;
+            string fullText = textBox.Text.Insert(textBox.SelectionStart, e.Text);
+            // Разрешаем только числа и максимум одну точку, максимум 1 знак после точки
+            e.Handled = !Regex.IsMatch(fullText, @"^\d{0,3}([.,]\d?)?$");
+        }
+
     }
 }
