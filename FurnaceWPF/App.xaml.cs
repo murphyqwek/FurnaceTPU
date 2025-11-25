@@ -1,7 +1,10 @@
 ﻿using FurnaceCore.Filters;
 using FurnaceCore.IOManager;
 using FurnaceCore.Model;
+using FurnaceWPF;
 using FurnaceWPF.Converters;
+using FurnaceWPF.Factories;
+using FurnaceWPF.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using pechka4._8.ViewModels;
 using System;
@@ -35,9 +38,6 @@ namespace pechka4._8
         private void ConfigureServices(ServiceCollection services)
         {
             ConfigureFurnaceModules(services);
-
-            // Views
-            services.AddTransient<MainWindow>();
         }
 
         private void ConfigureFurnaceModules(ServiceCollection services)
@@ -62,6 +62,8 @@ namespace pechka4._8
             services.AddSingleton(heaterModule);
             services.AddSingleton(mockPort);
             services.AddSingleton(driverModule);
+            services.AddSingleton<DriverViewModelFactory>();
+            services.AddSingleton<WindowViewModel>();
         }
     }
 }

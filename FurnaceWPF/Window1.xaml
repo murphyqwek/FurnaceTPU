@@ -2,8 +2,8 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:FurnaceWPF.ViewModels"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:vm="clr-namespace:pechka4._8.ViewModels"
         xmlns:controls="clr-namespace:FurnaceWPF.Views.Controls"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
@@ -15,7 +15,6 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-
     <Grid>
         <Viewbox Stretch="Uniform">
             <Canvas Width="2000" Height="1000">
@@ -37,9 +36,9 @@
                 <!--#endregion-->
 
                 <!--#region Drive Controls-->
-                <controls:DriverControl Canvas.Top="55" Height="196" Width="225" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="10"/>
-                <controls:DriverControl Canvas.Top="607" Height="196" Width="225" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="58"/>
-                <controls:DriverControl Canvas.Top="738" Height="196" Width="225" Canvas.Left="788" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <controls:DriverControl DataContext="{Binding DriveA}" Canvas.Top="55" Height="196" Width="225" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="10"/>
+                <controls:DriverControl DataContext="{Binding DriveB}" Canvas.Top="607" Height="196" Width="225" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="58"/>
+                <controls:DriverControl DataContext="{Binding DriveC}" Canvas.Top="738" Height="196" Width="225" Canvas.Left="788" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 <!--#endregion-->
 
                 <!--#region DriveA animation-->
