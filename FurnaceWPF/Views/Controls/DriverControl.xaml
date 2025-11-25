@@ -31,7 +31,7 @@
             </StackPanel>
 
             <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,10" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBox Width="70" Margin="0,0,10,0"
+                <TextBox Width="81" Margin="0,0,10,0"
                          Text="{Binding InputSpeed, UpdateSourceTrigger=PropertyChanged}"
                          FontSize="18"/>
                 <Button Content="Применить"
