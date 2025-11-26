@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FurnaceCore.Filters
 {
-    public class AddressFilter
+    public class AddressFilter : IFilter
     {
         private readonly Func<byte> _getAddressByteFunc;
         private IFurnaceHandleDataModule furnaceModule;

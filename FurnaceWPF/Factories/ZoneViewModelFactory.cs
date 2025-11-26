@@ -26,7 +26,7 @@ namespace FurnaceWPF.Factories
         {
             var ioManager = _serviceProvider.GetRequiredService<IOManager>();
             TemperatureModule temperatureModule = new TemperatureModule(addressByte, channelByte, ioManager);
-            ModbusAddressFilter temperatureFilter = new ModbusAddressFilter(addressByte, 0x04, temperatureModule);
+            AddressFilter temperatureFilter = new AddressFilter(temperatureModule.GetAddressByte, temperatureModule);
 
             ioManager.RegisterFilter(temperatureFilter);
             ioManager.RegisterModulePort(temperatureModule, _serviceProvider.GetRequiredService<IPort>());

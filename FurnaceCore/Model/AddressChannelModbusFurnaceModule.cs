@@ -23,5 +23,15 @@ namespace FurnaceCore.Model
             command[0] = addressByte;
             command[3] = channelByte;
         }
+
+        public byte GetAddressByte()
+        {
+            return addressByte;
+        }
+
+        public byte GetChannelByte()
+        {
+            return channelByte;
+        }
     }
 }
