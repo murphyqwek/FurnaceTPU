@@ -14,8 +14,6 @@ namespace FurnaceWPF.Models.Controllers
     public class DriverContoller : INotifyPropertyChanged
     {
         private Timer _rampingTimer;
-        private const ushort STEP_SIZE = 500;
-        private const int UPDATE_INTERVAL = 100; // Интервал 100 мс
         
         private ushort _targetFrequence;
         private DriverModule _driver;
@@ -42,21 +40,23 @@ namespace FurnaceWPF.Models.Controllers
             this._targetFrequence = newTarget;
 
             this._driver.StartDriver(_driversPort);
-            _rampingTimer = new Timer(RampingTick, null, UPDATE_INTERVAL, UPDATE_INTERVAL);
+            _rampingTimer = new Timer(RampingTick, null, _settings.DriverUpdateInterval, _settings.DriverUpdateInterval);
         }
 
         private void RampingTick(object? state)
         {
             ushort error = (ushort)(_targetFrequence - CurrentFrequency);
 
-            if (Math.Abs(error) < STEP_SIZE)
+            var stepSize = _settings.StepSizeDriver;
+
+            if (Math.Abs(error) < stepSize)
             {
                 CurrentFrequency = _targetFrequence;
                 
             }
             else
             {
-                CurrentFrequency = (ushort)(error < 0 ? CurrentFrequency - STEP_SIZE : CurrentFrequency + STEP_SIZE);
+                CurrentFrequency = (ushort)(error < 0 ? CurrentFrequency - stepSize : CurrentFrequency + stepSize);
             }
 
 
