@@ -27,7 +27,7 @@ namespace FurnaceCore.Model
             InsertAddressesToCommand(ref this._getTemperatureCommand);
         }
 
-        public async Task<double> GetTemperatureAsync()
+        public async Task<double> GetTemperatureAsync(int timeOut, CancellationToken cancellationToken)
         {
             if (_completionSource != null)
                 throw new InvalidOperationException("Last request in progress");
@@ -35,8 +35,17 @@ namespace FurnaceCore.Model
             SendGetTemperatureCommand();
 
             _completionSource = new TaskCompletionSource<double>();
+            double temperature;
 
-            double temperature = await _completionSource.Task;
+            try
+            {
+                temperature = await _completionSource.Task.WaitAsync(TimeSpan.FromMilliseconds(timeOut), cancellationToken);
+            }
+            catch (Exception)
+            {
+                _completionSource = null;
+                throw;
+            }
             
             _completionSource = null;
 
