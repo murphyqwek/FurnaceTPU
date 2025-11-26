@@ -35,12 +35,13 @@ namespace FurnaceWPF.Factories
         public ZoneViewModel GetZone(string name, byte addressByte, byte channelByte)
         {
             TemperatureModule temperatureModule = new TemperatureModule(addressByte, channelByte, _ioManager);
+            ZoneController zoneController = new ZoneController(temperatureModule, _heaterModule, _zoneLogger, _settings);
             AddressFilter temperatureFilter = new AddressFilter(temperatureModule.GetAddressByte, temperatureModule);
 
             _ioManager.RegisterFilter(temperatureFilter);
             _ioManager.RegisterModulePort(temperatureModule, _port);
 
-            return new ZoneViewModel(name, 0, temperatureModule);
+            return new ZoneViewModel(name, 0, zoneController);
         }
 
         public ZoneViewModel GetFirstZone()

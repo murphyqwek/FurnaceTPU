@@ -5,8 +5,20 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FurnaceWPF.Views.Controls"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:FurnaceWPF.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <converters:ConfigurableBooleanConverter x:Key="TurnOnOffButtonStateConverterr">
+            <converters:ConfigurableBooleanConverter.TrueValue>
+                <SolidColorBrush Color="#21c445"/>
+            </converters:ConfigurableBooleanConverter.TrueValue>
+
+            <converters:ConfigurableBooleanConverter.FalseValue>
+                <SolidColorBrush Color="#e60e23"/>
+            </converters:ConfigurableBooleanConverter.FalseValue>
+        </converters:ConfigurableBooleanConverter>
+    </UserControl.Resources>
     <materialDesign:Card Padding="14">
         <Grid>
             <Grid.RowDefinitions>
@@ -17,19 +29,32 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8" VerticalAlignment="Center">
-                <materialDesign:PackIcon Kind="Thermometer" Width="28" Height="28" />
-                <TextBlock Text="{Binding Name}" FontSize="20" FontWeight="SemiBold" Margin="8,0,0,0"/>
-            </StackPanel>
+            <Grid Grid.Row="0" Margin="0,0,0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-            <ProgressBar Grid.Row="1" Value="{Binding Temperature}" Maximum="700" Height="10" Margin="0,0,0,6"
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <materialDesign:PackIcon Kind="Thermometer" Width="28" Height="28" />
+                    <TextBlock Text="{Binding Name}" FontSize="20" FontWeight="SemiBold" Margin="8,0,0,0"/>
+                </StackPanel>
+
+                <ToggleButton Grid.Column="1" IsChecked="{Binding IsActive, Mode=TwoWay}"
+                            Style="{StaticResource MaterialDesignIconButton}">
+                    <materialDesign:PackIcon Kind="Power" Width="48" Height="48"
+                             Foreground="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}, Converter={StaticResource TurnOnOffButtonStateConverterr}}" Cursor=""/>
+                </ToggleButton>
+            </Grid>
+
+            <ProgressBar Grid.Row="1" Value="{Binding CurrentTemperature, Mode=OneWay}" Maximum="700" Height="10" Margin="0,0,0,6"
                          Foreground="{Binding TempBrush}" />
 
-            <TextBlock Grid.Row="2" Text="{Binding TemperatureText}" FontSize="18" FontWeight="Bold" HorizontalAlignment="Right"/>
+            <TextBlock Grid.Row="2" Text="{Binding TemperatureText, Mode=OneWay}" FontSize="18" FontWeight="Bold" HorizontalAlignment="Right"/>
 
             <TextBox Grid.Row="3"
                      Style="{DynamicResource MaterialDesignFloatingHintTextBox}"
-                     Text="{Binding Temperature, UpdateSourceTrigger=PropertyChanged, StringFormat=F1}"
+                     Text="{Binding InputTemperature, UpdateSourceTrigger=PropertyChanged, StringFormat=F1}"
                      materialDesign:HintAssist.Hint="Задать температуру"
                      FontSize="24"
                      Margin="0,6,0,10"

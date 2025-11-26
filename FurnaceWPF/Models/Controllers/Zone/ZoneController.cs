@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Converters;
+using System.Windows.Threading;
 
 namespace FurnaceWPF.Models.Controllers.Zone
 {
@@ -17,16 +18,57 @@ namespace FurnaceWPF.Models.Controllers.Zone
         private Timer _tempreaturePollingTimer;
         private Timer _heaterPollingTimer;
 
+        private double _currentTemperature;
+        private bool _isHeating;
+        private bool _isPollingTemperature;
+
         private TemperatureModule _temperatureModule;
         private HeaterModule _heaterModule;
         private ILogger<ZoneController> _logger;
         private Settings _settings;
         private double _targetTemperature;
-        
-        public double CurrentTemperature { get; private set; }
-        public bool IsHeating { get; private set; }
-        public bool IsPollingTemperature { get; private set; }
-        
+        private CancellationTokenSource _pollingCts;
+
+        #region Properties
+        public double CurrentTemperature 
+        { 
+            get => _currentTemperature;
+            private set
+            {
+                if (_currentTemperature != value)
+                {
+                    _currentTemperature = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public bool IsHeating
+        {
+            get => _isHeating;
+            private set
+            {
+                if (_isHeating != value)
+                {
+                    _isHeating = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public bool IsPollingTemperature
+        {
+            get => _isPollingTemperature;
+            private set
+            {
+                if (_isPollingTemperature != value)
+                {
+                    _isPollingTemperature = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
+
+        public event Action<string>? ErrorEvent;
 
         public ZoneController(TemperatureModule temperatureModule, HeaterModule heaterModule, ILogger<ZoneController> logger, Settings settings) 
         { 
@@ -38,33 +80,73 @@ namespace FurnaceWPF.Models.Controllers.Zone
             this.IsPollingTemperature = false;
         }
 
-        public void StartPollingTemperature(double targetTemperature)
+        public void StartPollingTemperature()
         {
-            this.IsPollingTemperature = true;
-            _targetTemperature = targetTemperature;
-            _logger.LogInformation($"Начат опрос датчиков с интервалом {_settings.ZonePollingInterval} мс до {targetTemperature} градусов");
-            _tempreaturePollingTimer = new Timer(PollTemperature, null, 0, _settings.ZonePollingInterval);
+            if (IsPollingTemperature) return;
+
+            IsPollingTemperature = true;
+            _logger.LogInformation($"Начат опрос температуры с интервалом {_settings.ZonePollingInterval} мс. Таймаут чтения: {_settings.ZonePollingTimeout} мс.");
+
+            _pollingCts = new CancellationTokenSource();
+
+            Task.Run(() => PollTemperatureLoop(_pollingCts.Token));
         }
 
         public void StopPollingTemperature()
         {
-            this.IsPollingTemperature = false;
-            _tempreaturePollingTimer?.Change(Timeout.Infinite, Timeout.Infinite);
-            _logger.LogInformation("Опрос датчиков остановлен");
+            if(!IsPollingTemperature) return;
+
+            _pollingCts.Cancel();
+            _logger.LogInformation($"Опрос температуры преркащён");
+            IsPollingTemperature = false;
+            
         }
 
-        private void PollTemperature(object? o)
+        private async Task PollTemperatureLoop(CancellationToken token)
         {
-            double currentTemperature = _temperatureModule.GetTemperatureAsync().Result;
-            CurrentTemperature = currentTemperature;
+            while (!token.IsCancellationRequested)
+            {
+                try
+                {
+                    double currentTemperature = 0;
 
-            App.Current.Dispatcher.Invoke(() => OnPropertyChanged(nameof(CurrentTemperature)));
+                    try
+                    {
+                        currentTemperature = await _temperatureModule.GetTemperatureAsync(_settings.ZonePollingTimeout, token);
+                        Dispatcher.CurrentDispatcher.Invoke(() => CurrentTemperature = currentTemperature);
+                    }
+                    catch (TimeoutException)
+                    {
+                        _logger.LogWarning($"Таймаут чтения температуры ({_settings.ZonePollingTimeout} мс) истек");
+                        Dispatcher.CurrentDispatcher.Invoke(() => StopPollingTemperature());
+                        Dispatcher.CurrentDispatcher.Invoke(() => ErrorEvent?.Invoke($"Таймаут чтения температуры ({_settings.ZonePollingTimeout} мс) истек"));
+                        
+                        break;
+                    }
+
+                    await Task.Delay(_settings.ZonePollingInterval, token);
+                }
+                catch (TaskCanceledException) when (token.IsCancellationRequested)
+                {
+                    _logger.LogDebug("Опрос температуры отменен");
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Критическая ошибка при опросе температуры. " + ex.Message);
+                    Dispatcher.CurrentDispatcher.Invoke(() => StopPollingTemperature());
+                    Dispatcher.CurrentDispatcher.Invoke(() => ErrorEvent?.Invoke("Критическая ошибка при опросе температуры (см. логги)"));
+                    break;
+                }
+            }
         }
+    
 
-        public void StartPollingHeater()
+        public void StartPollingHeater(double targetTemperature)
         {
             this.IsHeating = true;
-            _logger.LogInformation($"Начат нагрев с интервалом {_settings.ZoneHeatCheckingInterval} мс");
+            _targetTemperature = targetTemperature;
+            _logger.LogInformation($"Начат нагрев с интервалом {_settings.ZoneHeatCheckingInterval} мс до {_targetTemperature}");
             _heaterModule.TurnOnHeater();
             _heaterPollingTimer = new Timer(PollHeater, null, 0, _settings.ZoneHeatCheckingInterval);
         }
@@ -87,6 +169,11 @@ namespace FurnaceWPF.Models.Controllers.Zone
             }
 
             _logger.LogInformation($"Температура не прошла порог, продолжаем нагрев");
+        }
+
+        public void SetAddressByte(byte newAddress)
+        {
+            _temperatureModule.SetAddressByte(newAddress);
         }
 
     }

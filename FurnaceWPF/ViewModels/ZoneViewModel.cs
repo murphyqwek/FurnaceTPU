@@ -2,42 +2,58 @@
 using FurnaceCore.Port;
 using FurnaceWPF.Commands;
 using FurnaceWPF.Models;
+using FurnaceWPF.Models.Controllers.Zone;
 using FurnaceWPF.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Security.RightsManagement;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Converters;
 
 namespace pechka4._8.ViewModels
 {
     public class ZoneViewModel : BaseObservable
     {
-        private double _temperature;
-        public double Temperature
+        private double _inputTemperature = 0;
+
+        private ZoneController _zoneController;
+
+        #region Properties
+
+        public bool IsActive 
+        { 
+            get => _zoneController.IsPollingTemperature;
+            set => UpdateTemperaturePolling(value);
+        }
+        public double InputTemperature
         {
-            get => _temperature;
+            get => _inputTemperature;
             set
             {
                 // Ограничение диапазона и округление
                 double val = Math.Max(0, Math.Min(700, Math.Round(value, 1)));
-                if (_temperature != val)
+                if (_inputTemperature != val)
                 {
-                    _temperature = val;
-                    OnPropertyChanged(nameof(Temperature));
-                    OnPropertyChanged(nameof(TemperatureText));
-                    OnPropertyChanged(nameof(TempBrush));
+                    _inputTemperature = val;
+                    OnPropertyChanged();
                 }
             }
         }
 
-        public string TemperatureText => $"{Temperature:0.#}°C";
+        public double CurrentTemperature
+        {
+            get => _zoneController.CurrentTemperature;
+        }
 
-        public Brush TempBrush => InterpolateTempColor(Temperature);
+        public string TemperatureText => $"{CurrentTemperature:0.#}°C";
+
+        public Brush TempBrush => InterpolateTempColor(CurrentTemperature);
 
         public string Name { get; set; }
 
@@ -51,29 +67,56 @@ namespace pechka4._8.ViewModels
             byte b = (byte)(cold.B + (hot.B - cold.B) * temp / 700);
             return new SolidColorBrush(Color.FromRgb(r, g, b));
         }
-
-        private TemperatureModule temperatureModule;
+        #endregion
+        
 
         public RemoteCommand remoteCommand { get; }
 
-        public ZoneViewModel(string name, double initialTemperature, TemperatureModule temperatureModule)
-        {
-            var port = App.Services.GetRequiredService<IPort>();
-            this.temperatureModule = temperatureModule;
-            Name = name;
-            Temperature = initialTemperature;
 
-            this.temperatureModule.OnTemperatureGet += TemperatureModule_OnTemperatureGet;
-        }
 
-        private void TemperatureModule_OnTemperatureGet(double temperature)
+        public ZoneViewModel(string name, double initialTemperature, ZoneController zoneController)
         {
-            Application.Current.Dispatcher.Invoke(() => { Temperature = temperature; });
+            this._zoneController = zoneController;
+            this.Name = name;
+            this.InputTemperature = initialTemperature;
+
+            _zoneController.ErrorEvent += PollingErrorEventHandler;
+            _zoneController.PropertyChanged += (s, e) =>
+            {
+                if(e.PropertyName == nameof(ZoneController.CurrentTemperature))
+                {
+                    OnPropertyChanged(nameof(CurrentTemperature));
+                    OnPropertyChanged(nameof(TemperatureText));
+                    OnPropertyChanged(nameof(TempBrush));
+                }
+
+                if(e.PropertyName == nameof(ZoneController.IsPollingTemperature))
+                {
+                    OnPropertyChanged(nameof(IsActive));
+                }
+            };
         }
 
         public void UpdateZoneAddress(byte newAddress)
         {
-            this.temperatureModule.SetAddressByte(newAddress);
+            this._zoneController.SetAddressByte(newAddress);
+        }
+
+        private void UpdateTemperaturePolling(bool isActive)
+        {
+            if (isActive)
+            {
+                _zoneController.StartPollingTemperature();
+            }
+            else
+            {
+                _zoneController.StopPollingTemperature();
+            }
+        }
+
+        private void PollingErrorEventHandler(string errorMessage)
+        {
+            MessageBox.Show(errorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
