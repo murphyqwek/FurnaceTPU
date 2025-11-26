@@ -27,9 +27,9 @@ namespace FurnaceWPF
         private Storyboard _currentStoryboardB = new Storyboard();
         private Storyboard _currentStoryboardC = new Storyboard();
 
-        public FurnaceWindow()
+        public FurnaceWindow(FurnaceWindowViewModel viewModel)
         {
-            this.DataContext = App.Services.GetRequiredService<FurnaceWindowViewModel>();
+            this.DataContext = viewModel;
 
             InitializeComponent();
             var vm = this.DataContext as FurnaceWindowViewModel;

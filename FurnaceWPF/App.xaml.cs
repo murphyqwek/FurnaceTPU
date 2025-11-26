@@ -35,6 +35,10 @@ namespace pechka4._8
 
             Services = services.BuildServiceProvider();
 
+            var mainWindow = Services.GetRequiredService<FurnaceWindow>();
+
+            mainWindow.Show();
+
             base.OnStartup(e);
         }
 
@@ -53,6 +57,7 @@ namespace pechka4._8
             ConfigureFactories(services);
             ConfigureViewModels(services);
             ConfigureFurnaceModules(services);
+            ConfigureWindow(services);
         }
 
         private void ConfigureFactories(ServiceCollection services)
@@ -68,6 +73,11 @@ namespace pechka4._8
             {
                 return () => sp.GetRequiredService<PortModule>();
             });
+        }
+
+        private void ConfigureWindow(ServiceCollection services)
+        {
+            services.AddSingleton<FurnaceWindow>();
         }
 
         private void ConfigureViewModels(ServiceCollection services)
@@ -95,6 +105,17 @@ namespace pechka4._8
                 var settings = sp.GetRequiredService<Settings>();
                 SwitchingPort port = new SwitchingPort(settings.IsDebug, mockFactory, portModuleFactory, sp.GetRequiredService<ILogger<SwitchingPort>>());
                 return port;
+            });
+
+            services.AddSingleton<HeaterModule>(sp =>
+            {
+                var ioManager = sp.GetRequiredService<IOManager>();
+                var port = sp.GetRequiredService<IPort>();
+                HeaterModule heaterModule = new HeaterModule(0x0, 0x0, ioManager);
+
+                ioManager.RegisterModulePort(heaterModule, port);
+
+                return heaterModule;
             });
 
             services.AddSingleton<DriverModule>(sp =>
