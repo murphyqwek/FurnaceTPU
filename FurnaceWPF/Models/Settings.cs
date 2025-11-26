@@ -14,7 +14,7 @@ namespace FurnaceWPF.Models
         private byte _zoneOneAddress = 0x01;
         private byte _zoneTwoAddress = 0x01;
         private byte _zoneThreeAddress = 0x01;
-        private bool _isRunning = false;
+        private bool _isRunning;
 
         #region Properties
         public bool IsDebug
@@ -83,6 +83,11 @@ namespace FurnaceWPF.Models
             }
         }
         #endregion
+
+        public Settings()
+        {
+            this._isRunning = false;
+        }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 

@@ -14,6 +14,8 @@ namespace FurnaceWPF.ViewModels
         private bool _hasUnsavedChanges = false;
 
         #region Properties
+        public bool IsAvailable => !_settings.IsRunning;
+
         public bool IsDebug
         {
             get => _settings.IsDebug;
@@ -88,6 +90,14 @@ namespace FurnaceWPF.ViewModels
             _settings.PropertyChanged += (s, e) =>
             {
                 OnPropertyChanged(e.PropertyName);
+            };
+
+            _settings.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(Settings.IsRunning))
+                {
+                    OnPropertyChanged(nameof(IsAvailable));
+                }
             };
         }
     }
