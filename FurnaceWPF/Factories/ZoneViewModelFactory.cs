@@ -38,17 +38,17 @@ namespace FurnaceWPF.Factories
 
         public ZoneViewModel GetFirstZone()
         {
-            return GetZoneAndSubscribeToAddressChagned("Зона 1", 0x01, 0x01, 1);
+            return GetZoneAndSubscribeToAddressChagned("Зона 1", _settings.ZoneOneAddress, 0x01, 1);
         }
 
         public ZoneViewModel GetSecondZone()
         {
-            return GetZoneAndSubscribeToAddressChagned("Зона 2", 0x01, 0x01, 2);
+            return GetZoneAndSubscribeToAddressChagned("Зона 2", _settings.ZoneTwoAddress, 0x01, 2);
         }
 
         public ZoneViewModel GetThirdZone()
         {
-            return GetZoneAndSubscribeToAddressChagned("Зона 3", 0x01, 0x01, 3);
+            return GetZoneAndSubscribeToAddressChagned("Зона 3", _settings.ZoneThreeAddress, 0x01, 3);
         }
         
         private ZoneViewModel GetZoneAndSubscribeToAddressChagned(string name, byte addressByte, byte channelByte, int zoneNumber)
