@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FurnaceWPF.ViewModels
 {
-    public class SettingsViewModel : BaseViewModel
+    public class SettingsViewModel : BaseObservable
     {
         private readonly Settings _settings;
         private bool _hasUnsavedChanges = false;

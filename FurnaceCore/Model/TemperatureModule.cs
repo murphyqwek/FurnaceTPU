@@ -27,7 +27,7 @@ namespace FurnaceCore.Model
             InsertAddressesToCommand(ref this._getTemperatureCommand);
         }
 
-        public async Task<double> getTemperatureAsync()
+        public async Task<double> GetTemperatureAsync()
         {
             if (_completionSource != null)
                 throw new InvalidOperationException("Last request in progress");

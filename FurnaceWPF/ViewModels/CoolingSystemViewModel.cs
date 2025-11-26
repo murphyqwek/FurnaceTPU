@@ -7,7 +7,7 @@ using System.Windows.Threading;
 
 namespace pechka4._8.ViewModels
 {
-    public class CoolingSystemViewModel : BaseViewModel
+    public class CoolingSystemViewModel : BaseObservable
     {
         private double _temperature;
         private bool _isPumpOn;

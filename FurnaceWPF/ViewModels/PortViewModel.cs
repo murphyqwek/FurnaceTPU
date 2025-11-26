@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace FurnaceWPF.ViewModels
 {
-    public class PortViewModel : BaseViewModel
+    public class PortViewModel : BaseObservable
     {
         private const string NO_AVAILABLE_PORTS = "Нет доступных портов";
 

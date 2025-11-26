@@ -15,7 +15,7 @@ using System.Windows.Media;
 
 namespace pechka4._8.ViewModels
 {
-    public class ZoneViewModel : BaseViewModel
+    public class ZoneViewModel : BaseObservable
     {
         private double _temperature;
         public double Temperature

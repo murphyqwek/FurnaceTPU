@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FurnaceWPF.ViewModels
 {
-    public class BaseViewModel : INotifyPropertyChanged
+    public class BaseObservable : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 

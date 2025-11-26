@@ -20,7 +20,7 @@ namespace FurnaceWPF.ViewModels
         Backward = -1
     }
 
-    public class DriverViewModel : BaseViewModel
+    public class DriverViewModel : BaseObservable
     {
         private DriverContoller _driverController;
         private string _name;

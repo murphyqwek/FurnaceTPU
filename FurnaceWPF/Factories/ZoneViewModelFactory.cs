@@ -3,7 +3,9 @@ using FurnaceCore.IOManager;
 using FurnaceCore.Model;
 using FurnaceCore.Port;
 using FurnaceWPF.Models;
+using FurnaceWPF.Models.Controllers.Zone;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using pechka4._8.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -18,12 +20,16 @@ namespace FurnaceWPF.Factories
         private readonly IPort _port;
         private readonly Settings _settings;
         private readonly IOManager _ioManager;
+        private readonly HeaterModule _heaterModule;
+        private readonly ILogger<ZoneController> _zoneLogger;
 
-        public ZoneViewModelFactory(IPort port, IOManager ioManager, Settings settings)
+        public ZoneViewModelFactory(IPort port, IOManager ioManager, HeaterModule heaterModule, Settings settings, ILogger<ZoneController> zoneLogger)
         {
             _port = port;
             _ioManager = ioManager;
             _settings = settings;
+            _heaterModule = heaterModule;
+            _zoneLogger = zoneLogger;
         }
 
         public ZoneViewModel GetZone(string name, byte addressByte, byte channelByte)
