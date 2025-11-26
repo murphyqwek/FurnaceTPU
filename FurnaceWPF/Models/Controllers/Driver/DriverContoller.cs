@@ -45,7 +45,7 @@ namespace FurnaceWPF.Models.Controllers
 
         private void RampingTick(object? state)
         {
-            ushort error = (ushort)(_targetFrequence - CurrentFrequency);
+            int error = _targetFrequence - CurrentFrequency;
 
             var stepSize = _settings.StepSizeDriver;
 

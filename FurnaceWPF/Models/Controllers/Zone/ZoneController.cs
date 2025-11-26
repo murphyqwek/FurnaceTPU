@@ -15,7 +15,6 @@ namespace FurnaceWPF.Models.Controllers.Zone
 {
     public class ZoneController : BaseObservable
     {
-        private Timer _tempreaturePollingTimer;
         private Timer _heaterPollingTimer;
 
         private double _currentTemperature;
