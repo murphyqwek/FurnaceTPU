@@ -9,29 +9,34 @@ namespace FurnaceCore.Model
 {
     public abstract class AddressChannelModbusFurnaceModule : BaseModbusFurnaceModule
     {
-        public readonly byte addressByte;
-        public readonly byte channelByte;
+        private byte _addressByte;
+        private byte _channelByte;
 
         public AddressChannelModbusFurnaceModule(byte addressByte, byte channelByte, IOManager.IOManager ioManager): base(ioManager)
         {
-            this.addressByte = addressByte;
-            this.channelByte = channelByte;
+            this._addressByte = addressByte;
+            this._channelByte = channelByte;
         }
 
         protected void InsertAddressesToCommand(ref byte[] command)
         {
-            command[0] = addressByte;
-            command[3] = channelByte;
+            command[0] = _addressByte;
+            command[3] = _channelByte;
         }
-
+        
         public byte GetAddressByte()
         {
-            return addressByte;
+            return _addressByte;
+        }
+
+        public void SetAddressByte(byte newAddress)
+        {
+            this._addressByte = newAddress;
         }
 
         public byte GetChannelByte()
         {
-            return channelByte;
+            return _channelByte;
         }
     }
 }

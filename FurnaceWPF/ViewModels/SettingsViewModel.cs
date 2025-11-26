@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FurnaceWPF.ViewModels
 {
-    class SettingsViewModel : BaseViewModel
+    public class SettingsViewModel : BaseViewModel
     {
         private readonly Settings _settings;
 

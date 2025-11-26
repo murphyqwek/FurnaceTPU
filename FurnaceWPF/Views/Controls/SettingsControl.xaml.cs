@@ -1,4 +1,7 @@
-﻿using System;
+﻿using FurnaceWPF.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using pechka4._8;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +25,7 @@ namespace FurnaceWPF.Views.Controls
     {
         public SettingsControl()
         {
+            this.DataContext = App.Services.GetRequiredService<SettingsViewModel>();
             InitializeComponent();
         }
     }

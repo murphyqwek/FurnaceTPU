@@ -2,7 +2,7 @@
 using FurnaceCore.IOManager;
 using FurnaceCore.Model;
 using FurnaceCore.Port;
-using FurnaceWPF.Converters;
+using FurnaceWPF.Models;
 using Microsoft.Extensions.DependencyInjection;
 using pechka4._8.ViewModels;
 using System;
@@ -16,10 +16,12 @@ namespace FurnaceWPF.Factories
     public class ZoneViewModelFactory
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly Settings _settings;
 
-        public ZoneViewModelFactory(IServiceProvider serviceProvider)
+        public ZoneViewModelFactory(IServiceProvider serviceProvider, Settings settings)
         {
             _serviceProvider = serviceProvider;
+            _settings = settings;
         }
 
         public ZoneViewModel GetZone(string name, byte addressByte, byte channelByte)
@@ -36,17 +38,52 @@ namespace FurnaceWPF.Factories
 
         public ZoneViewModel GetFirstZone()
         {
-            return GetZone("Зона 1", 0x01, 0x01);
+            return GetZoneAndSubscribeToAddressChagned("Зона 1", 0x01, 0x01, 1);
         }
 
         public ZoneViewModel GetSecondZone()
         {
-            return GetZone("Зона 2", 0x01, 0x01);
+            return GetZoneAndSubscribeToAddressChagned("Зона 2", 0x01, 0x01, 2);
         }
 
         public ZoneViewModel GetThirdZone()
         {
-            return GetZone("Зона 3", 0x01, 0x01);
+            return GetZoneAndSubscribeToAddressChagned("Зона 3", 0x01, 0x01, 3);
+        }
+        
+        private ZoneViewModel GetZoneAndSubscribeToAddressChagned(string name, byte addressByte, byte channelByte, int zoneNumber)
+        {
+            var zone = GetZone(name, addressByte, channelByte);
+            SubscribeToZoneAddressChanged(zoneNumber, zone);
+
+            return zone;
+        }
+
+        private void SubscribeToZoneAddressChanged(int zoneNumber, ZoneViewModel zoneViewModel)
+        {
+            string propertyName = zoneNumber switch
+            {
+                1 => nameof(Settings.ZoneOneAddress),
+                2 => nameof(Settings.ZoneTwoAddress),
+                3 => nameof(Settings.ZoneThreeAddress),
+                _ => throw new Exception("Not all zones could be subcribed")
+            };
+
+            _settings.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == propertyName)
+                {
+                    byte newAddress = zoneNumber switch
+                    {
+                        1 => _settings.ZoneOneAddress,
+                        2 => _settings.ZoneTwoAddress,
+                        3 => _settings.ZoneThreeAddress,
+                        _ => throw new InvalidOperationException("Property name validation failed during update.")
+                    };
+
+                    zoneViewModel.UpdateZoneAddress(newAddress);
+                }
+            };
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using FurnaceCore.Model;
 using FurnaceCore.Port;
 using FurnaceWPF.Commands;
-using FurnaceWPF.Converters;
+using FurnaceWPF.Models;
 using FurnaceWPF.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -59,14 +59,6 @@ namespace pechka4._8.ViewModels
         public ZoneViewModel(string name, double initialTemperature, TemperatureModule temperatureModule)
         {
             var port = App.Services.GetRequiredService<IPort>();
-            if (port is MockPort)
-            {
-                remoteCommand = new RemoteCommand(() =>
-                    {
-                        App.Services.GetRequiredService<MockPort>().ReceiveData("01 04 02 01 16 00 00");
-                    }
-                );
-            }
             this.temperatureModule = temperatureModule;
             Name = name;
             Temperature = initialTemperature;
@@ -77,6 +69,11 @@ namespace pechka4._8.ViewModels
         private void TemperatureModule_OnTemperatureGet(double temperature)
         {
             Application.Current.Dispatcher.Invoke(() => { Temperature = temperature; });
+        }
+
+        public void UpdateZoneAddress(byte newAddress)
+        {
+            this.temperatureModule.SetAddressByte(newAddress);
         }
     }
 

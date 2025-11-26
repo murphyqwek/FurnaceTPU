@@ -3,8 +3,9 @@ using FurnaceCore.IOManager;
 using FurnaceCore.Model;
 using FurnaceCore.Port;
 using FurnaceWPF;
-using FurnaceWPF.Converters;
+using FurnaceWPF.Models;
 using FurnaceWPF.Factories;
+using FurnaceWPF.Models;
 using FurnaceWPF.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using pechka4._8.ViewModels;
@@ -48,12 +49,12 @@ namespace pechka4._8
             HeaterModule heaterModule = new HeaterModule(0x02, 0x00, ioManager);
             DriverModule driverModule = new DriverModule(ioManager);
 
-            PortModule port = new PortModule(new SerialPort(), ioManager);
-            //MockPort port = new MockPort(ioManager);
+            SwitchingPort port = new SwitchingPort(ioManager, false);
 
             ioManager.RegisterModulePort(heaterModule, port);
             ioManager.RegisterModulePort(driverModule, port);
 
+            services.AddSingleton<Settings>();
             services.AddSingleton(ioManager);
             services.AddSingleton<ZoneViewModelFactory>();
             services.AddSingleton(heaterModule);
@@ -63,6 +64,7 @@ namespace pechka4._8
             services.AddSingleton<FurnaceWindowViewModel>();
 
             services.AddTransient<PortViewModel>();
+            services.AddTransient<SettingsViewModel>();
         }
     }
 }
