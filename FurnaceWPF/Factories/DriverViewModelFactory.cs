@@ -1,4 +1,5 @@
 ﻿using FurnaceCore.Model;
+using FurnaceWPF.Models;
 using FurnaceWPF.Models.Controllers;
 using FurnaceWPF.ViewModels;
 using MaterialDesignThemes.Wpf;
@@ -13,11 +14,13 @@ namespace FurnaceWPF.Factories
 {
     public class DriverViewModelFactory
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly DriverModule _driverModule;
+        private readonly Settings _settings;
 
-        public DriverViewModelFactory(IServiceProvider serviceProvider)
+        public DriverViewModelFactory(DriverModule driverModule, Settings settings)
         {
-            _serviceProvider = serviceProvider;
+            this._driverModule = driverModule;
+            this._settings = settings;
         }
 
         public DriverViewModel GetDriverA()
@@ -43,8 +46,7 @@ namespace FurnaceWPF.Factories
 
         private DriverContoller GetDriverController(int channel, DriversPortEnum driversPort)
         {
-            DriverModule driverModule = _serviceProvider.GetRequiredService<DriverModule>();
-            DriverContoller driverContoller = new DriverContoller(driverModule, channel, driversPort);
+            DriverContoller driverContoller = new DriverContoller(_driverModule, channel, driversPort, _settings);
 
             return driverContoller;
         }

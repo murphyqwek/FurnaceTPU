@@ -1,5 +1,7 @@
 ﻿using FurnaceCore.IOManager;
 using FurnaceCore.Port;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO.Ports;
@@ -16,19 +18,25 @@ namespace FurnaceWPF.Models
         public string Name { get => _currentPort.Name; set => _currentPort.Name = value; }
         
         private IPort _currentPort;
-        private IOManager _ioManager;
+        private Func<MockPort> _mockPortFactory;
+        private Func<PortModule> _portModuleFactory;
+        private ILogger<SwitchingPort> _logger;
 
-        public SwitchingPort(IOManager ioManager)
+        public SwitchingPort(Func<MockPort> mockPortFactory, Func<PortModule> _portModuleFactory, ILogger<SwitchingPort> logger)
         {
-            this._ioManager = ioManager;
-            _currentPort = new MockPort(ioManager);
+            this._mockPortFactory = mockPortFactory;
+            this._portModuleFactory = _portModuleFactory;
+            this._currentPort = mockPortFactory();
+            this._logger = logger;
             SwitchToMockPort();
         }
 
-        public SwitchingPort(IOManager ioManager, bool isMockPort)
+        public SwitchingPort(bool isMockPort, Func<MockPort> mockPortFactory, Func<PortModule> portModuleFactory, ILogger<SwitchingPort> logger)
         {
-            this._ioManager = ioManager;
-            _currentPort = new MockPort(ioManager);
+            this._mockPortFactory = mockPortFactory;
+            this._portModuleFactory = portModuleFactory;
+            this._currentPort = mockPortFactory();
+            this._logger = logger;
             if (isMockPort)
             {
                 SwitchToMockPort();
@@ -66,16 +74,16 @@ namespace FurnaceWPF.Models
 
         public void SwitchToSerialPort()
         {
-            var serialPort = new SerialPort();
-
-            var portModule = new PortModule(serialPort, this._ioManager);
+            _logger.LogInformation("Switching port to serial");
+            var portModule = _portModuleFactory();
 
             this.SetPort(portModule);
         }
 
         public void SwitchToMockPort()
         {
-            var mockPort = new MockPort(this._ioManager);
+            _logger.LogInformation("Switching port to mock");
+            var mockPort = this._mockPortFactory();
 
             SetPort(mockPort);
         }

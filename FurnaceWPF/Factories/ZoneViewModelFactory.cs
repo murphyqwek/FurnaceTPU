@@ -15,23 +15,24 @@ namespace FurnaceWPF.Factories
 {
     public class ZoneViewModelFactory
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IPort _port;
         private readonly Settings _settings;
+        private readonly IOManager _ioManager;
 
-        public ZoneViewModelFactory(IServiceProvider serviceProvider, Settings settings)
+        public ZoneViewModelFactory(IPort port, IOManager ioManager, Settings settings)
         {
-            _serviceProvider = serviceProvider;
+            _port = port;
+            _ioManager = ioManager;
             _settings = settings;
         }
 
         public ZoneViewModel GetZone(string name, byte addressByte, byte channelByte)
         {
-            var ioManager = _serviceProvider.GetRequiredService<IOManager>();
-            TemperatureModule temperatureModule = new TemperatureModule(addressByte, channelByte, ioManager);
+            TemperatureModule temperatureModule = new TemperatureModule(addressByte, channelByte, _ioManager);
             AddressFilter temperatureFilter = new AddressFilter(temperatureModule.GetAddressByte, temperatureModule);
 
-            ioManager.RegisterFilter(temperatureFilter);
-            ioManager.RegisterModulePort(temperatureModule, _serviceProvider.GetRequiredService<IPort>());
+            _ioManager.RegisterFilter(temperatureFilter);
+            _ioManager.RegisterModulePort(temperatureModule, _port);
 
             return new ZoneViewModel(name, 0, temperatureModule);
         }

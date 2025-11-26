@@ -1,5 +1,8 @@
 ﻿using FurnaceCore.IOManager;
 using FurnaceCore.Port;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using pechka4._8;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +14,11 @@ namespace FurnaceWPF.Models
     public class MockPort : IPort
     {
         private IOManager _manager;
-        public MockPort(IOManager manager)
+        private readonly ILogger<MockPort> _logger;
+        public MockPort(IOManager manager, ILogger<MockPort> logger)
         {
-            _manager = manager;
+            this._manager = manager;
+            this._logger = logger;
         }
 
         public string Name { get; set; } = "COM1";
@@ -25,18 +30,18 @@ namespace FurnaceWPF.Models
         public void SendData(string data) 
         {
             SentData.Add(data);
-            Console.WriteLine($"MockPort Sent Data: {data}");
+            _logger.LogInformation($"MockPort Sent Data: {data}");
         }
         public void ReceiveData(string data) 
         { 
             _manager.HandleData(data);
-            Console.WriteLine($"MockPort Received Data: {data}");
+            _logger.LogInformation($"MockPort Received Data: {data}");
         }
 
         public void SendData(byte[] data)
         {
             SentData.Add(BitConverter.ToString(data).Replace("-", " "));
-            Console.WriteLine($"MockPort Sent Data: {SentData.Last()}");
+            _logger.LogInformation($"MockPort Sent Data: {SentData.Last()}");
         }
     }
 }

@@ -21,17 +21,19 @@ namespace FurnaceWPF.Models.Controllers
         private DriverModule _driver;
         private int _channel;
         private DriversPortEnum _driversPort;
+        private Settings _settings;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public ushort CurrentFrequency { get; private set; } = 0;
         public bool IsDriverRunning { get; private set; }
 
-        public DriverContoller(DriverModule driver, int channel, DriversPortEnum driversPort)
+        public DriverContoller(DriverModule driver, int channel, DriversPortEnum driversPort, Settings settings)
         {
             this._driver = driver;
             this._channel = channel;
             this._driversPort = driversPort;
+            this._settings = settings;
         }
 
         public void SetNewTarget(ushort newTarget)
@@ -50,16 +52,21 @@ namespace FurnaceWPF.Models.Controllers
             if (Math.Abs(error) < STEP_SIZE)
             {
                 CurrentFrequency = _targetFrequence;
-                this._driver.SetDriverFrequency(this._channel, CurrentFrequency);
-                Stop();
-                return;
+                
+            }
+            else
+            {
+                CurrentFrequency = (ushort)(error < 0 ? CurrentFrequency - STEP_SIZE : CurrentFrequency + STEP_SIZE);
             }
 
-            CurrentFrequency = (ushort)(error < 0 ? CurrentFrequency - STEP_SIZE : CurrentFrequency + STEP_SIZE);
-            
-            this._driver.SetDriverFrequency(_channel, CurrentFrequency);
 
+            this._driver.SetDriverFrequency(this._channel, CurrentFrequency);
             App.Current.Dispatcher.Invoke(() => { OnPropertyChanged(nameof(CurrentFrequency)); });
+
+            if(CurrentFrequency == _targetFrequence)
+            {
+                Stop();
+            }
         }
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -71,7 +78,7 @@ namespace FurnaceWPF.Models.Controllers
         {
             this._driver.StopDriver(this._driversPort);
             IsDriverRunning = false;
-            _rampingTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            _rampingTimer?.Change(Timeout.Infinite, Timeout.Infinite);
         }
     }
 }
