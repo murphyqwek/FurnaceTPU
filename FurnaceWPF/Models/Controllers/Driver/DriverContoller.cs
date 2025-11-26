@@ -24,7 +24,7 @@ namespace FurnaceWPF.Models.Controllers
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public ushort CurrentFrequency { get; private set; }
+        public ushort CurrentFrequency { get; private set; } = 0;
         public bool IsDriverRunning { get; private set; }
 
         public DriverContoller(DriverModule driver, int channel, DriversPortEnum driversPort)
@@ -36,6 +36,7 @@ namespace FurnaceWPF.Models.Controllers
 
         public void SetNewTarget(ushort newTarget)
         {
+            Stop();
             this._targetFrequence = newTarget;
 
             this._driver.StartDriver(_driversPort);

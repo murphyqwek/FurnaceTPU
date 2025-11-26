@@ -1,4 +1,5 @@
 ﻿using FurnaceCore.Model;
+using FurnaceWPF.Models.Controllers;
 using FurnaceWPF.ViewModels;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,23 +22,31 @@ namespace FurnaceWPF.Factories
 
         public DriverViewModel GetDriverA()
         {
-            DriverModule driverModule = _serviceProvider.GetRequiredService<DriverModule>();
+            var driverController = GetDriverController(0, DriversPortEnum.Zero);
 
-            return new DriverViewModel(driverModule, "А");
+            return new DriverViewModel(driverController, "А");
         }
 
         public DriverWithArrowViewModel GetDriverB()
         {
-            DriverModule driverModule = _serviceProvider.GetRequiredService<DriverModule>();
+            var driverController = GetDriverController(0, DriversPortEnum.One);
 
-            return new DriverWithArrowViewModel(PackIconKind.ArrowRightBold, PackIconKind.ArrowLeftBold, PackIconKind.ArrowRightBold, driverModule, "B");
+            return new DriverWithArrowViewModel(PackIconKind.ArrowRightBold, PackIconKind.ArrowLeftBold, PackIconKind.ArrowRightBold, driverController, "B");
         }
 
         public DriverWithArrowViewModel GetDriverC()
         {
-            DriverModule driverModule = _serviceProvider.GetRequiredService<DriverModule>();
+            var driverController = GetDriverController(0, DriversPortEnum.Two);
 
-            return new DriverWithArrowViewModel(PackIconKind.ArrowUpBold, PackIconKind.ArrowDownBold, PackIconKind.ArrowUpBold, driverModule, "C");
+            return new DriverWithArrowViewModel(PackIconKind.ArrowUpBold, PackIconKind.ArrowDownBold, PackIconKind.ArrowUpBold, driverController, "C");
+        }
+
+        private DriverContoller GetDriverController(int channel, DriversPortEnum driversPort)
+        {
+            DriverModule driverModule = _serviceProvider.GetRequiredService<DriverModule>();
+            DriverContoller driverContoller = new DriverContoller(driverModule, channel, driversPort);
+
+            return driverContoller;
         }
     }
 }

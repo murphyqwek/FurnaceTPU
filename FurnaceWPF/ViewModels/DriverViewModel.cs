@@ -1,4 +1,5 @@
 ﻿using FurnaceCore.Model;
+using FurnaceWPF.Models.Controllers;
 using Microsoft.Extensions.DependencyInjection;
 using pechka4._8;
 using pechka4._8.Helpers;
@@ -21,12 +22,9 @@ namespace FurnaceWPF.ViewModels
 
     public class DriverViewModel : BaseViewModel
     {
-        private DriversPortEnum _driverPort = DriversPortEnum.Zero;
-        private int _driverChannel = 0;
-        private DriverModule _driverModule;
-        private double _speed;
-        private string _inputSpeed = "0";
+        private DriverContoller _driverController;
         private string _name;
+        private string _inputSpeed;
 
         private DriverDirectionEnum _direction = DriverDirectionEnum.Stop;
 
@@ -83,17 +81,7 @@ namespace FurnaceWPF.ViewModels
 
         public double Speed
         {
-            get => _speed;
-            set
-            {
-                if (_speed != value)
-                {
-                    _speed = value;
-                    OnPropertyChanged();
-                    OnPropertyChanged(nameof(AnimationDuration));
-                    AnimationSettingsChangeed?.Invoke();
-                }
-            }
+            get => _driverController.CurrentFrequency / 80;
         }
 
         public string InputSpeed
@@ -125,18 +113,27 @@ namespace FurnaceWPF.ViewModels
         public ICommand ConfirmSpeedCommand => new RelayCommand(_ =>
         {
             if (double.TryParse(InputSpeed, out var val) && val >= 0 && val <= 100)
-                Speed = val;
+                _driverController.SetNewTarget((ushort)(val * 80));
 
-            _driverModule.StartDriver(_driverPort);
-            _driverModule.SetDriverFrequency(_driverChannel, (ushort)(Speed * 100));
         }, _ => CanConfirmSpeed);
         #endregion
 
         public event Action? AnimationSettingsChangeed;
-        public DriverViewModel(DriverModule driverModule, string name)
+        public DriverViewModel(DriverContoller driverController, string name)
         {
-            this._driverModule = driverModule;
+            this._driverController = driverController;
             this._name = name;
+
+
+            driverController.PropertyChanged += DriverController_PropertyChanged;
+        }
+
+        private void DriverController_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName == nameof(DriverContoller.CurrentFrequency))
+            {
+                OnPropertyChanged(nameof(Speed));
+            }
         }
     }
 }
