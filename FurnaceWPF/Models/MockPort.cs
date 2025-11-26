@@ -16,7 +16,7 @@ namespace FurnaceWPF.Models
             _manager = manager;
         }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = "COM1";
         public bool IsOpenFlag { get; private set; } = false;
         public List<string> SentData { get; } = new List<string>();
         public void OpenPort() => IsOpenFlag = true;

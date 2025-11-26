@@ -2,6 +2,7 @@
 using FurnaceCore.Port;
 using System;
 using System.Collections.Generic;
+using System.IO.Ports;
 using System.Linq;
 using System.Security.RightsManagement;
 using System.Text;
@@ -12,22 +13,23 @@ namespace FurnaceWPF.Models
 {
     class SwitchingPort : IPort
     {
-        public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string Name { get => _currentPort.Name; set => _currentPort.Name = value; }
         
-        private IPort currentPort;
+        private IPort _currentPort;
         private IOManager _ioManager;
 
         public SwitchingPort(IOManager ioManager)
         {
             this._ioManager = ioManager;
+            _currentPort = new MockPort(ioManager);
             SwitchToMockPort();
         }
 
         public SwitchingPort(IOManager ioManager, bool isMockPort)
         {
             this._ioManager = ioManager;
-
-            if(isMockPort)
+            _currentPort = new MockPort(ioManager);
+            if (isMockPort)
             {
                 SwitchToMockPort();
             }
@@ -39,53 +41,56 @@ namespace FurnaceWPF.Models
 
         public void ClosePort()
         {
-            this.currentPort.ClosePort();
+            this._currentPort.ClosePort();
         }
 
         public bool IsOpen()
         {
-            return this.currentPort.IsOpen();
+            return this._currentPort.IsOpen();
         }
 
         public void OpenPort()
         {
-            this.currentPort.OpenPort();
+            this._currentPort.OpenPort();
         }
 
         public void SendData(string data)
         {
-            this.currentPort.SendData(data);
+            this._currentPort.SendData(data);
         }
 
         public void SendData(byte[] data)
         {
-            this.currentPort.SendData(data);
+            this._currentPort.SendData(data);
         }
 
         public void SwitchToSerialPort()
         {
-            var serialPort = new PortModule(new System.IO.Ports.SerialPort(Name), this._ioManager);
+            var serialPort = new SerialPort();
 
-            this.SetPort(serialPort);
+            var portModule = new PortModule(serialPort, this._ioManager);
+
+            this.SetPort(portModule);
         }
 
         public void SwitchToMockPort()
         {
             var mockPort = new MockPort(this._ioManager);
-            mockPort.Name = Name;
 
             SetPort(mockPort);
         }
 
         private void SetPort(IPort port)
         {
+            port.Name = _currentPort.Name;
+
             if (IsOpen())
             {
                 ClosePort();
                 port.OpenPort();
             }
 
-            this.currentPort = port;
+            this._currentPort = port;
         }
     }
 }

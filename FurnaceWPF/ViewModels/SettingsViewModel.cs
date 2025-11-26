@@ -1,4 +1,5 @@
-﻿using FurnaceWPF.Models;
+﻿using FurnaceWPF.Commands;
+using FurnaceWPF.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace FurnaceWPF.ViewModels
     public class SettingsViewModel : BaseViewModel
     {
         private readonly Settings _settings;
+        private bool _hasUnsavedChanges = false;
 
         #region Properties
         public bool IsDebug
@@ -65,8 +67,19 @@ namespace FurnaceWPF.ViewModels
             }
         }
 
+        public bool HasUnsavedChanges
+        {
+            get => _hasUnsavedChanges;
+            set
+            {
+                if (_hasUnsavedChanges != value)
+                {
+                    _hasUnsavedChanges = value;
+                    OnPropertyChanged(nameof(HasUnsavedChanges));
+                }
+            }
+        }
         #endregion
-
 
         public SettingsViewModel(Settings settings)
         {

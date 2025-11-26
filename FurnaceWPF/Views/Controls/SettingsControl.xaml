@@ -7,6 +7,7 @@
              xmlns:validator="clr-namespace:FurnaceWPF.Validators"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    
     <UserControl.Resources>
         <Style x:Key="ValidatingTextBoxStyle" TargetType="{x:Type TextBox}">
             <Setter Property="BorderBrush" Value="Gray"/>
@@ -21,21 +22,43 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <Style x:Key="FlatButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#388E3C"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="Margin" Value="0,20,0,0"/>
+
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding HasUnsavedChanges}" Value="True">
+                    <Setter Property="Background" Value="#1976D2"/>
+                </DataTrigger>
+
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Opacity" Value="0.9"/>
+                </Trigger>
+
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="#BDBDBD"/>
+                    <Setter Property="Foreground" Value="#616161"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
 
     <StackPanel Margin="10">
         <CheckBox Content="Режим отладки (Debug Mode)" 
-                  IsChecked="{Binding **IsDebug**}"
+                  IsChecked="{Binding IsDebug}"
                   Margin="0,0,0,15"
                   FontSize="20"/>
 
         <TextBlock Text="Настройки зон (0-255):" FontWeight="Bold" FontSize="20" Margin="0,0,0,5"/>
 
         <TextBlock Text="Адрес Зоны 1:" FontSize="20" Margin="0,5,0,0"/>
-        <TextBox Style="{StaticResource ValidatingTextBoxStyle}" FontSize="20" Margin="0,2,0,5">
+        <TextBox Name="Zone1TextBox" Style="{StaticResource ValidatingTextBoxStyle}" TextChanged="OnTextChanged" FontSize="20" Margin="0,2,0,5">
             <TextBox.Text>
-                <Binding Path="**ZoneOneAddress**" 
-                         UpdateSourceTrigger="LostFocus"
+                <Binding Path="ZoneOneAddress" 
+                         UpdateSourceTrigger="Explicit"
                          ValidatesOnDataErrors="True"
                          TargetNullValue="0">
                     <Binding.ValidationRules>
@@ -46,10 +69,10 @@
         </TextBox>
 
         <TextBlock Text="Адрес Зоны 2:" FontSize="20" Margin="0,5,0,0"/>
-        <TextBox Style="{StaticResource ValidatingTextBoxStyle}" FontSize="20" Margin="0,2,0,5">
+        <TextBox Name="Zone2TextBox" Style="{StaticResource ValidatingTextBoxStyle}" TextChanged="OnTextChanged"  FontSize="20" Margin="0,2,0,5">
             <TextBox.Text>
-                <Binding Path="**ZoneTwoAddress**" 
-                         UpdateSourceTrigger="LostFocus"
+                <Binding Path="ZoneTwoAddress" 
+                         UpdateSourceTrigger="Explicit"
                          ValidatesOnDataErrors="True"
                          TargetNullValue="0">
                     <Binding.ValidationRules>
@@ -60,10 +83,10 @@
         </TextBox>
 
         <TextBlock Text="Адрес Зоны 3:" FontSize="20" Margin="0,5,0,0"/>
-        <TextBox Style="{StaticResource ValidatingTextBoxStyle}" FontSize="20" Margin="0,2,0,5">
+        <TextBox Name="Zone3TextBox" Style="{StaticResource ValidatingTextBoxStyle}" TextChanged="OnTextChanged"  FontSize="20" Margin="0,2,0,5" Cursor="">
             <TextBox.Text>
-                <Binding Path="**ZoneThreeAddress**" 
-                         UpdateSourceTrigger="LostFocus"
+                <Binding Path="ZoneThreeAddress" 
+                         UpdateSourceTrigger="Explicit"
                          ValidatesOnDataErrors="True"
                          TargetNullValue="0">
                     <Binding.ValidationRules>
@@ -72,5 +95,10 @@
                 </Binding>
             </TextBox.Text>
         </TextBox>
+
+        <Button Content="Применить" 
+                FontSize="24" 
+                Margin="0 20 0 0" 
+                Click="Apply_Click" MinHeight="42"/>
     </StackPanel>
 </UserControl>
