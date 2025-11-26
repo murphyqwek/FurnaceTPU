@@ -55,7 +55,7 @@
         <TextBlock Text="Настройки зон (0-255):" FontWeight="Bold" FontSize="20" Margin="0,0,0,5"/>
 
         <TextBlock Text="Адрес Зоны 1:" FontSize="20" Margin="0,5,0,0"/>
-        <TextBox Name="Zone1TextBox" Style="{StaticResource ValidatingTextBoxStyle}" TextChanged="OnTextChanged" FontSize="20" Margin="0,2,0,5">
+        <TextBox Name="Zone1TextBox" Style="{StaticResource ValidatingTextBoxStyle}" FontSize="20" Margin="0,2,0,5">
             <TextBox.Text>
                 <Binding Path="ZoneOneAddress" 
                          UpdateSourceTrigger="Explicit"
@@ -69,7 +69,7 @@
         </TextBox>
 
         <TextBlock Text="Адрес Зоны 2:" FontSize="20" Margin="0,5,0,0"/>
-        <TextBox Name="Zone2TextBox" Style="{StaticResource ValidatingTextBoxStyle}" TextChanged="OnTextChanged"  FontSize="20" Margin="0,2,0,5">
+        <TextBox Name="Zone2TextBox" Style="{StaticResource ValidatingTextBoxStyle}" FontSize="20" Margin="0,2,0,5">
             <TextBox.Text>
                 <Binding Path="ZoneTwoAddress" 
                          UpdateSourceTrigger="Explicit"
@@ -83,7 +83,7 @@
         </TextBox>
 
         <TextBlock Text="Адрес Зоны 3:" FontSize="20" Margin="0,5,0,0"/>
-        <TextBox Name="Zone3TextBox" Style="{StaticResource ValidatingTextBoxStyle}" TextChanged="OnTextChanged"  FontSize="20" Margin="0,2,0,5" Cursor="">
+        <TextBox Name="Zone3TextBox" Style="{StaticResource ValidatingTextBoxStyle}"  FontSize="20" Margin="0,2,0,5" Cursor="">
             <TextBox.Text>
                 <Binding Path="ZoneThreeAddress" 
                          UpdateSourceTrigger="Explicit"
