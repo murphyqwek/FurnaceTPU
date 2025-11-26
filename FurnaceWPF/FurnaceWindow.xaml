@@ -151,6 +151,8 @@ Kind="{Binding DriveB.ArrowKind}" Width="16" Height="26" Canvas.Left="486" Canva
                 <!--#region COM Port menu-->
                 <controls:PortControl HorizontalAlignment="Left" Canvas.Left="1627" VerticalAlignment="Center" Width="363" Canvas.Top="10" />
                 <!--#endregion-->
+
+                <controls:SettingsControl Canvas.Left="1651" Canvas.Top="681" HorizontalAlignment="Left" VerticalAlignment="Center" Width="329"/>
             </Canvas>
         </Viewbox>
     </Grid>
