@@ -83,8 +83,8 @@ namespace FurnaceWPF.Models
             }
         }
 
-        public ushort StepSize { get => 500; }
-        public int UpdateInterval { get => 100; } // Интервал указан в мс
+        public ushort StepSizeDriver { get => 500; }
+        public int DriverUpdateInterval { get => 100; } // Интервал указан в мс
         #endregion
 
         public Settings()
