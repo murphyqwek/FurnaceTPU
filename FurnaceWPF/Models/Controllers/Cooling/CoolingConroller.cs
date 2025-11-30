@@ -75,6 +75,7 @@ namespace FurnaceWPF.Models.Controllers.Cooling
         {
             _coolingModule.TurnOffCooling();
             _pollingCts?.Cancel();
+            _pollingCts = null;
             _logger.LogInformation($"Опрос температуры холодильника преркащён");
             IsWorking = false;
         }

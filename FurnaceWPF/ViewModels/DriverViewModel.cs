@@ -135,5 +135,10 @@ namespace FurnaceWPF.ViewModels
                 OnPropertyChanged(nameof(Speed));
             }
         }
+
+        public void Dispose()
+        {
+            this._driverController.Dispose();
+        }
     }
 }

@@ -37,8 +37,16 @@ namespace FurnaceWPF
             vm.DriveA.AnimationSettingsChangeed += () => UpdateAnimation(ref _currentStoryboardA, vm.DriveA, "RotorSpinRight", "RotorSpinLeft");
             vm.DriveB.AnimationSettingsChangeed += () => UpdateAnimation(ref _currentStoryboardB, vm.DriveB, "ArrowFlowRight", "ArrowFlowLeft");
             vm.DriveC.AnimationSettingsChangeed += () => UpdateAnimation(ref _currentStoryboardC, vm.DriveC, "ArrowFlowUp", "ArrowFlowDown");
+            this.Closed += OnClosed;
         }
 
+        private void OnClosed(object? sender, EventArgs e)
+        {
+            Application.Current.Shutdown();
+            Environment.Exit(0);
+
+            base.OnClosed(e);
+        }
 
         private void UpdateAnimation(ref Storyboard driveStoryboard, DriverViewModel driveVM, string forwardKeyAnimation, string backwardKeyAnimation)
         {

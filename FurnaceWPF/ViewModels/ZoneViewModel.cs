@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Security.RightsManagement;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -123,6 +124,11 @@ namespace pechka4._8.ViewModels
         public void SetTemperatireHandler()
         {
             this._zoneController.StartPollingHeater(InputTemperature);
+        }
+
+        public void Dispose()
+        {
+            this._zoneController?.Dispose();
         }
     }
 

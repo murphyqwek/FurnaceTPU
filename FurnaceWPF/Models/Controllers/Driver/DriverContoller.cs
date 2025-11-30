@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace FurnaceWPF.Models.Controllers
 {
-    public class DriverContoller : INotifyPropertyChanged
+    public class DriverContoller : INotifyPropertyChanged, IDisposable
     {
         private Timer _rampingTimer;
         
@@ -79,6 +79,12 @@ namespace FurnaceWPF.Models.Controllers
             this._driver.StopDriver(this._driversPort);
             IsDriverRunning = false;
             _rampingTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+        }
+
+        public void Dispose()
+        {
+            _rampingTimer?.Dispose();
+            _rampingTimer = null;
         }
     }
 }

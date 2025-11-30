@@ -7,13 +7,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Converters;
 using System.Windows.Threading;
 
 namespace FurnaceWPF.Models.Controllers.Zone
 {
-    public class ZoneController : BaseObservable
+    public class ZoneController : BaseObservable, IDisposable
     {
         private Timer _heaterPollingTimer;
         private bool _heatModuleStatus = false;
@@ -209,6 +210,13 @@ namespace FurnaceWPF.Models.Controllers.Zone
             _temperatureModule.SetAddressByte(newAddress);
         }
 
+        public void Dispose()
+        {
+            _pollingCts?.Cancel();
+            _pollingCts?.Dispose();
+            _heaterPollingTimer?.Dispose();
+            _heaterPollingTimer = null;
+        }
     }
 
 }
