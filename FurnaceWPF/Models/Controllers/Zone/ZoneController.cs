@@ -13,10 +13,17 @@ using System.Windows.Threading;
 
 namespace FurnaceWPF.Models.Controllers.Zone
 {
+    enum ZoneHeatingStatus
+    {
+        Hold,
+        HeatingOrColding
+    }
+
     public class ZoneController : BaseObservable
     {
         private Timer _heaterPollingTimer;
-
+        private ZoneHeatingStatus _zoneHeatingStatus;
+        private bool _heatModuleStatus = false;
         private double _currentTemperature;
         private bool _isHeating;
         private bool _isPollingTemperature;
@@ -77,6 +84,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
             this._settings = settings;
             this.IsHeating = false;
             this.IsPollingTemperature = false;
+            this._zoneHeatingStatus = ZoneHeatingStatus.HeatingOrColding;
         }
 
         public void StartPollingTemperature()
@@ -117,7 +125,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
                     catch (TimeoutException)
                     {
                         _logger.LogWarning($"Таймаут чтения температуры ({_settings.ZonePollingTimeout} мс) истек");
-                        Dispatcher.CurrentDispatcher.Invoke(() => StopPollingTemperature());
+                        Dispatcher.CurrentDispatcher.Invoke(StopPollingTemperature);
                         Dispatcher.CurrentDispatcher.Invoke(() => ErrorEvent?.Invoke($"Таймаут чтения температуры ({_settings.ZonePollingTimeout} мс) истек"));
                         
                         break;
@@ -145,6 +153,8 @@ namespace FurnaceWPF.Models.Controllers.Zone
         {
             this.IsHeating = true;
             _targetTemperature = targetTemperature;
+            this._zoneHeatingStatus = ZoneHeatingStatus.HeatingOrColding;
+            this._heatModuleStatus = false;
             _logger.LogInformation($"Начат нагрев с интервалом {_settings.ZoneHeatCheckingInterval} мс до {_targetTemperature}");
             _heaterModule.TurnOnHeater();
             _heaterPollingTimer = new Timer(PollHeater, null, 0, _settings.ZoneHeatCheckingInterval);
@@ -160,14 +170,47 @@ namespace FurnaceWPF.Models.Controllers.Zone
 
         private void PollHeater(object? o)
         {
-            if(CurrentTemperature - _settings.ZoneTreshold <= _targetTemperature)
+            if (this.IsPollingTemperature)
             {
-                _logger.LogInformation($"Температура прошла порог, дальше нагрев до {_targetTemperature} градусов пойдёт по инецрии");
-                StopPollingHeater();
+                _logger.LogInformation("Опрос температуры остановлен, прекращаем нагрев");
+                Dispatcher.CurrentDispatcher.Invoke(StopPollingHeater);
                 return;
             }
 
-            _logger.LogInformation($"Температура не прошла порог, продолжаем нагрев");
+            if(CurrentTemperature < _targetTemperature + _settings.ZoneTreshold && CurrentTemperature > _targetTemperature - _settings.ZoneTreshold)
+            {
+                _logger.LogInformation("Текущая температура в допустимых пределах заданной");
+                _heaterModule.TurnOffHeater();
+                this._heatModuleStatus = false;
+            }
+            else
+            {
+                HeatOrCold();
+            }
+
+        }
+
+        private void HeatOrCold()
+        {
+            if(_targetTemperature - _settings.ZoneTreshold >= CurrentTemperature)
+            {
+                _logger.LogInformation($"Текущая температура ниже установленной. Идёт нагрев");
+                if (!this._heatModuleStatus)
+                {
+                    _heaterModule.TurnOnHeater();
+                    this._heatModuleStatus = true;
+                }
+            }
+
+            if (_targetTemperature + _settings.ZoneTreshold <= CurrentTemperature)
+            {
+                _logger.LogInformation($"Текущая температура выше установленной. Идёт охлаждение");
+                if (this._heatModuleStatus)
+                {
+                    _heaterModule.TurnOffHeater();
+                    this._heatModuleStatus = false;
+                }
+            }
         }
 
         public void SetAddressByte(byte newAddress)
