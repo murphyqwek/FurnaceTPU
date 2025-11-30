@@ -70,7 +70,7 @@
                     Style="{DynamicResource MaterialDesignFilledButton}"
                     Width="110" Height="35"
                     HorizontalAlignment="Center"
-                    Command="{Binding remoteCommand}"/>
+                    Command="{Binding SetTemperature}"/>
         </Grid>
     </materialDesign:Card>
 </UserControl>

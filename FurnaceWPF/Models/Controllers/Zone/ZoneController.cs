@@ -13,16 +13,9 @@ using System.Windows.Threading;
 
 namespace FurnaceWPF.Models.Controllers.Zone
 {
-    enum ZoneHeatingStatus
-    {
-        Hold,
-        HeatingOrColding
-    }
-
     public class ZoneController : BaseObservable
     {
         private Timer _heaterPollingTimer;
-        private ZoneHeatingStatus _zoneHeatingStatus;
         private bool _heatModuleStatus = false;
         private double _currentTemperature;
         private bool _isHeating;
@@ -84,7 +77,6 @@ namespace FurnaceWPF.Models.Controllers.Zone
             this._settings = settings;
             this.IsHeating = false;
             this.IsPollingTemperature = false;
-            this._zoneHeatingStatus = ZoneHeatingStatus.HeatingOrColding;
         }
 
         public void StartPollingTemperature()
@@ -153,7 +145,6 @@ namespace FurnaceWPF.Models.Controllers.Zone
         {
             this.IsHeating = true;
             _targetTemperature = targetTemperature;
-            this._zoneHeatingStatus = ZoneHeatingStatus.HeatingOrColding;
             this._heatModuleStatus = false;
             _logger.LogInformation($"Начат нагрев с интервалом {_settings.ZoneHeatCheckingInterval} мс до {_targetTemperature}");
             _heaterModule.TurnOnHeater();

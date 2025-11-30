@@ -70,7 +70,7 @@ namespace pechka4._8.ViewModels
         #endregion
         
 
-        public RemoteCommand remoteCommand { get; }
+        public RemoteCommand SetTemperature { get; }
 
 
 
@@ -110,6 +110,7 @@ namespace pechka4._8.ViewModels
             }
             else
             {
+                _zoneController.StopPollingHeater();
                 _zoneController.StopPollingTemperature();
             }
         }
@@ -117,6 +118,11 @@ namespace pechka4._8.ViewModels
         private void PollingErrorEventHandler(string errorMessage)
         {
             MessageBox.Show(errorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        public void SetTemperatireHandler()
+        {
+            this._zoneController.StartPollingHeater(InputTemperature);
         }
     }
 
