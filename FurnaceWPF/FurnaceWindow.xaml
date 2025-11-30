@@ -8,7 +8,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Focusable="True"
-        Title="Печка" Height="600" Width="1200">
+        Title="Печка" Height="500" Width="1300">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -18,7 +18,7 @@
     </Window.Resources>
     <Grid>
         <Viewbox Stretch="Uniform">
-            <Canvas Width="2000" Height="1000">
+            <Canvas Width="2600" Height="1000">
 
                 <!--#region Furnace Images-->
                 <Image Source="/Resourses/Images/Tank_Up.PNG" Height="217" Width="208" Canvas.Left="245" Canvas.Top="45"/>
@@ -149,11 +149,22 @@ Kind="{Binding DriveB.ArrowKind}" Width="16" Height="26" Canvas.Left="486" Canva
                     Background="{Binding Zone3.TempBrush}" Opacity="0.60" Height="92" Width="230" Canvas.Left="1378" Canvas.Top="505" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 <!--#endregion-->
 
-                <!--#region COM Port menu-->
-                <controls:PortControl HorizontalAlignment="Left" Canvas.Left="1627" VerticalAlignment="Center" Width="363" Canvas.Top="10" />
-                <!--#endregion-->
 
-                <controls:SettingsControl Canvas.Left="1644" Canvas.Top="644" HorizontalAlignment="Left" VerticalAlignment="Top" Width="329"/>
+                <!--#region Settings button-->
+                <Button Canvas.Left="1979" Canvas.Top="20" 
+                        Height="61" Width="79" 
+                        HorizontalAlignment="Left" VerticalAlignment="Top"
+                        IsEnabled="{Binding IsSettingsAvalable}"
+                        Command="{Binding SettingsCommand}">
+                    <materialDesign:PackIcon Kind="Settings" Height="59" Width="49"/>
+                </Button>
+                <!--#endregion-->
+                <!--#region COM Port menu-->
+                <controls:PortControl HorizontalAlignment="Left" Canvas.Left="2189" VerticalAlignment="Top" Width="363" Canvas.Top="32" />
+                <!--#endregion-->
+                <Image Height="384" Canvas.Left="1932" Source="/Resourses/Images/Tube_V.PNG" Stretch="Fill" Canvas.Top="594" Width="397" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+
             </Canvas>
         </Viewbox>
     </Grid>

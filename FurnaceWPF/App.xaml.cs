@@ -17,6 +17,7 @@ using System.IO.Ports;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using FurnaceWPF.Views;
 
 namespace pechka4._8
 {
@@ -78,6 +79,7 @@ namespace pechka4._8
         private void ConfigureWindow(ServiceCollection services)
         {
             services.AddSingleton<FurnaceWindow>();
+            services.AddSingleton<SettingsWindow>();
         }
 
         private void ConfigureViewModels(ServiceCollection services)
@@ -86,6 +88,7 @@ namespace pechka4._8
 
             services.AddTransient<PortViewModel>();
             services.AddTransient<SettingsViewModel>();
+            services.AddTransient<SettingsWindowViewModel>();
         }
 
         private void ConfigureFurnaceModules(ServiceCollection services)

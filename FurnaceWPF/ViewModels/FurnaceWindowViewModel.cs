@@ -1,6 +1,8 @@
 ﻿using FurnaceCore.Port;
+using FurnaceWPF.Commands;
 using FurnaceWPF.Factories;
 using FurnaceWPF.Models;
+using FurnaceWPF.Views;
 using Microsoft.Extensions.DependencyInjection;
 using pechka4._8;
 using pechka4._8.ViewModels;
@@ -13,8 +15,9 @@ using System.Threading.Tasks;
 
 namespace FurnaceWPF.ViewModels
 {
-    public class FurnaceWindowViewModel
+    public class FurnaceWindowViewModel : BaseObservable
     {
+        #region Properties
         public DriverViewModel DriveA { get; }
         public DriverWithArrowViewModel DriveB { get; }
         public DriverWithArrowViewModel DriveC { get; }
@@ -23,10 +26,20 @@ namespace FurnaceWPF.ViewModels
         public ZoneViewModel Zone2 { get; }
         public ZoneViewModel Zone3 { get; }
 
+        public bool IsSettingsAvalable
+        {
+            get => !_settings.IsRunning;
+        }
+        #endregion
+
         private readonly Settings _settings;
         private readonly IServiceProvider _service;
 
-        public FurnaceWindowViewModel(DriverViewModelFactory driverFactory, ZoneViewModelFactory zoneFactory, Settings settings, IServiceProvider service)
+        private SettingsWindow _settingsWindow;
+
+        public RemoteCommand SettingsCommand { get; }
+
+        public FurnaceWindowViewModel(DriverViewModelFactory driverFactory, ZoneViewModelFactory zoneFactory, Settings settings, IServiceProvider service, SettingsWindow settingsWindow)
         {
             DriveA = driverFactory.GetDriverA();
             DriveB = driverFactory.GetDriverB();
@@ -36,10 +49,14 @@ namespace FurnaceWPF.ViewModels
             Zone2 = zoneFactory.GetSecondZone();
             Zone3 = zoneFactory.GetThirdZone();
 
-            _settings = settings;
-            _service = service;
+            this._settings = settings;
+            this._service = service;
 
-            _settings.PropertyChanged += OnSettingPropertiesChanged;
+            this._settingsWindow = settingsWindow;
+
+            this._settings.PropertyChanged += OnSettingPropertiesChanged;
+
+            SettingsCommand = new RemoteCommand(OnSettingsButtonClicked);
         }
 
         private void OnIsDebugChanged()
@@ -69,6 +86,16 @@ namespace FurnaceWPF.ViewModels
             {
                 OnIsDebugChanged();
             }
+
+            if(e.PropertyName == nameof(Settings.IsRunning))
+            {
+                OnPropertyChanged(nameof(Settings.IsRunning));
+            }
+        }
+
+        private void OnSettingsButtonClicked()
+        {
+            _settingsWindow.ShowDialog();
         }
     }
 }
