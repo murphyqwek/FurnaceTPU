@@ -100,5 +100,10 @@ namespace FurnaceWPF.Models
 
             this._currentPort = port;
         }
+
+        public void Dispose()
+        {
+            this._currentPort.Dispose();
+        }
     }
 }

@@ -69,5 +69,10 @@ namespace FurnaceCore.Port
             string receivedData = BitConverter.ToString(buffer).Replace("-", " ");
             _ioManager.HandleData(receivedData);
         }
+
+        public void Dispose()
+        {
+            _serialPort.Dispose();
+        }
     }
 }

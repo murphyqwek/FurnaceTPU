@@ -167,5 +167,12 @@ namespace pechka4._8
                 return driverModule;
             });
         }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            // Важно: освобождаем провайдер сервисов
+            (Services as IDisposable)?.Dispose();
+            base.OnExit(e);
+        }
     }
 }

@@ -64,5 +64,14 @@ namespace FurnaceCore.IOManager
         {
             getPortByModule(module).SendData(data);
         }
+
+
+        public void DisposeAllPorts()
+        {
+            foreach(var port in _modulePorts.Values)
+            {
+                port?.Dispose();
+            }
+        }
     }
 }

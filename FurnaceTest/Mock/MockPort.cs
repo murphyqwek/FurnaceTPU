@@ -30,5 +30,10 @@ namespace FurnaceTest.Mock
         {
             SentData.Add(BitConverter.ToString(data).Replace("-", " "));
         }
+
+        public void Dispose()
+        {
+
+        }
     }
 }
