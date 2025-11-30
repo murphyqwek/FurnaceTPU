@@ -1,4 +1,5 @@
-﻿using FurnaceWPF.ViewModels;
+﻿using FurnaceWPF.Models.Controllers.Cooling;
+using FurnaceWPF.ViewModels;
 using pechka4._8.Helpers;
 using System;
 using System.Windows.Input;
@@ -9,28 +10,39 @@ namespace pechka4._8.ViewModels
 {
     public class CoolingSystemViewModel : BaseObservable
     {
-        private double _temperature;
-        private bool _isPumpOn;
-
-        public double CoolantTemperature
+        #region Properties
+        public string CoolantTemperature
         {
-            get => _temperature;
-            set
-            {
-                _temperature = value;
-                OnPropertyChanged(nameof(CoolantBrush));
-            }
+            get => $"{_controller.CurrentTemperature:0.#}°C";
+        }
+
+        public double CoolantTemperatureDouble
+        {
+            get => _controller.CurrentTemperature;
         }
 
         public bool IsPumpOn
         {
-            get => _isPumpOn;
-            set => _isPumpOn = value;
+            get => _controller.IsWorking;
+            set
+            {
+                if(value)
+                {
+                    _controller.StartPollingTemperature();
+                }
+                else
+                {
+                    _controller.StopPollingTemperature();
+                }
+
+                OnPropertyChanged();
+            }
         }
 
-        public Brush CoolantBrush => InterpolateBrush(CoolantTemperature);
+        public string Name { get => "Холодильник"; }
 
-        public ICommand TogglePumpCommand => new RelayCommand(_ => IsPumpOn = !IsPumpOn);
+        public Brush CoolantBrush => InterpolateBrush(_controller.CurrentTemperature);
+        #endregion
 
         private static Brush InterpolateBrush(double temp)
         {
@@ -40,6 +52,33 @@ namespace pechka4._8.ViewModels
             byte g = (byte)(cold.G + (hot.G - cold.G) * temp / 100);
             byte b = (byte)(cold.B + (hot.B - cold.B) * temp / 100);
             return new SolidColorBrush(Color.FromRgb(r, g, b));
+        }
+
+        private CoolingConroller _controller;
+
+        public CoolingSystemViewModel(CoolingConroller coolingConroller)
+        {
+            this._controller = coolingConroller;
+
+            this.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(CoolingConroller.CurrentTemperature))
+                {
+                    OnPropertyChanged(nameof(CoolantTemperature));
+                    OnPropertyChanged(nameof(CoolantBrush));
+                    OnPropertyChanged(nameof(CoolantTemperatureDouble));
+                }
+            };
+        }
+
+        public void TurnOn()
+        {
+            _controller.StartPollingTemperature();
+        }
+
+        public void TurnOff()
+        {
+            _controller.StopPollingTemperature();
         }
     }
 }

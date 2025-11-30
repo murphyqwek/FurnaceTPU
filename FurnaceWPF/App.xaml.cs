@@ -18,6 +18,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using FurnaceWPF.Views;
+using FurnaceWPF.Models.Controllers.Cooling;
 
 namespace pechka4._8
 {
@@ -55,10 +56,33 @@ namespace pechka4._8
 
             services.AddSingleton<Settings>();
 
+            ConfigureControllers(services);
             ConfigureFactories(services);
             ConfigureViewModels(services);
             ConfigureFurnaceModules(services);
             ConfigureWindow(services);
+        }
+
+        private void ConfigureControllers(ServiceCollection services)
+        {
+            services.AddTransient<CoolingConroller>(sp =>
+            {
+                var ioManager = sp.GetRequiredService<IOManager>();
+                var port = sp.GetRequiredService<IPort>();
+
+                TemperatureModule temperatureModule = new TemperatureModule(0x01, 0x0, ioManager);
+                AddressFilter temperatureFilter = new AddressFilter(temperatureModule.GetAddressByte, temperatureModule);
+
+                ioManager.RegisterFilter(temperatureFilter);
+                ioManager.RegisterModulePort(temperatureModule, port);
+
+                CoolingModule coolingModule = sp.GetRequiredService<CoolingModule>();
+                ILogger<CoolingConroller> logger = sp.GetRequiredService<ILogger<CoolingConroller>>();
+                Settings settings = sp.GetRequiredService<Settings>();
+                CoolingConroller coolingConroller = new CoolingConroller(temperatureModule, coolingModule, logger, settings);
+
+                return coolingConroller;
+            });
         }
 
         private void ConfigureFactories(ServiceCollection services)
@@ -89,6 +113,7 @@ namespace pechka4._8
             services.AddTransient<PortViewModel>();
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsWindowViewModel>();
+            services.AddTransient<CoolingSystemViewModel>();
         }
 
         private void ConfigureFurnaceModules(ServiceCollection services)
@@ -119,6 +144,17 @@ namespace pechka4._8
                 ioManager.RegisterModulePort(heaterModule, port);
 
                 return heaterModule;
+            });
+
+            services.AddSingleton<CoolingModule>(sp =>
+            {
+                var ioManager = sp.GetRequiredService<IOManager>();
+                var port = sp.GetRequiredService<IPort>();
+                CoolingModule coolingModule = new CoolingModule(0x0, 0x0, ioManager);
+
+                ioManager.RegisterModulePort(coolingModule, port);
+
+                return coolingModule;
             });
 
             services.AddSingleton<DriverModule>(sp =>

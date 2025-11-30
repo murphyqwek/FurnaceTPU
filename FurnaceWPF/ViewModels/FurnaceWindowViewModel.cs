@@ -26,6 +26,8 @@ namespace FurnaceWPF.ViewModels
         public ZoneViewModel Zone2 { get; }
         public ZoneViewModel Zone3 { get; }
 
+        public CoolingSystemViewModel CoolingSystem { get; }
+
         public bool IsSettingsAvalable
         {
             get => !_settings.IsRunning;
@@ -39,7 +41,7 @@ namespace FurnaceWPF.ViewModels
 
         public RemoteCommand SettingsCommand { get; }
 
-        public FurnaceWindowViewModel(DriverViewModelFactory driverFactory, ZoneViewModelFactory zoneFactory, Settings settings, IServiceProvider service, SettingsWindow settingsWindow)
+        public FurnaceWindowViewModel(DriverViewModelFactory driverFactory, ZoneViewModelFactory zoneFactory, Settings settings, IServiceProvider service, SettingsWindow settingsWindow, CoolingSystemViewModel coolingSystem)
         {
             DriveA = driverFactory.GetDriverA();
             DriveB = driverFactory.GetDriverB();
@@ -48,6 +50,8 @@ namespace FurnaceWPF.ViewModels
             Zone1 = zoneFactory.GetFirstZone();
             Zone2 = zoneFactory.GetSecondZone();
             Zone3 = zoneFactory.GetThirdZone();
+
+            CoolingSystem = coolingSystem;
 
             this._settings = settings;
             this._service = service;

@@ -93,6 +93,10 @@ namespace FurnaceWPF.Models
         public double ZoneTreshold { get => 10.0; } //Трешхолд для нагревателя (TargetValue - ZoneTreshold)
 
         public int ZonePollingTimeout { get => 5 * 1000; } //Таймаут для опроса температуры
+
+        public int CoolingPollingTimeout { get => 5 * 1000; }
+
+        public int CoolingPollingTemperatureIntervall { get => 200; }
         #endregion
 
         public Settings()
