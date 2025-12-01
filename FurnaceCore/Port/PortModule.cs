@@ -12,7 +12,7 @@ namespace FurnaceCore.Port
     {
         private IOManager.IOManager _ioManager;
         private string _name;
-        private SerialPort _serialPort;
+        protected SerialPort _serialPort;
 
         public PortModule(SerialPort serialPort, IOManager.IOManager ioManager)
         {

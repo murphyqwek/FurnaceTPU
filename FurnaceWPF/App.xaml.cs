@@ -125,7 +125,7 @@ namespace pechka4._8
             services.AddTransient<PortModule>(sp =>
             {
                 var ioManager = sp.GetRequiredService<IOManager>();
-                PortModule module = new PortModule(new SerialPort(), ioManager);
+                PortModule module = new PortWrapper(new SerialPort(), ioManager, sp.GetRequiredService<ILogger<PortWrapper>>());
                 return module;
             });
             services.AddSingleton<IPort, SwitchingPort>(sp =>
@@ -141,7 +141,7 @@ namespace pechka4._8
             {
                 var ioManager = sp.GetRequiredService<IOManager>();
                 var port = sp.GetRequiredService<IPort>();
-                HeaterModule heaterModule = new HeaterModule(0x0, 0x0, ioManager);
+                HeaterModule heaterModule = new HeaterModule(0x1, 0x0, ioManager);
 
                 ioManager.RegisterModulePort(heaterModule, port);
 
