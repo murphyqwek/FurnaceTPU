@@ -48,11 +48,10 @@ namespace FurnaceWPF.Models.Controllers.Zone
                     byte[] channels = new byte[_callers.Keys.Count];
                     _callers.Keys.CopyTo(channels, 0);
 
-                    var pollingTasks = channels.Select(channel =>
-                        PollingTemeperature(channel, GetChannelToken(channel))
-                    ).ToArray();
-
-                    await Task.WhenAll(pollingTasks);
+                    foreach (byte channel in channels)
+                    {
+                        await PollingTemeperature(channel, GetChannelToken(channel));
+                    }
 
                     await Task.Delay(_settings.ZonePollingInterval, token);
                 }

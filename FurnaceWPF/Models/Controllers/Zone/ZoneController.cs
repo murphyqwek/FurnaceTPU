@@ -85,7 +85,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
             this.IsPollingTemperature = false;
             this._temperatureController = temperatureController;
 
-            _temperatureController.GlobalErrorEvent += ErrorHandle;
+            _temperatureController.GlobalErrorEvent += GlobalErrorHandle;
         }
 
         public void StartPollingTemperature()
@@ -210,6 +210,11 @@ namespace FurnaceWPF.Models.Controllers.Zone
             StopPollingTemperature();
             _logger.LogError(message);
             MessageBox.Show(message, "Ошибка", MessageBoxButton.OK);
+        }
+
+        private void GlobalErrorHandle(string message)
+        {
+            StopPollingTemperature();
         }
     }
 

@@ -2,6 +2,7 @@
 using FurnaceWPF.Commands;
 using FurnaceWPF.Factories;
 using FurnaceWPF.Models;
+using FurnaceWPF.Models.Controllers.Zone;
 using FurnaceWPF.Views;
 using Microsoft.Extensions.DependencyInjection;
 using pechka4._8;
@@ -62,6 +63,8 @@ namespace FurnaceWPF.ViewModels
             this._settings.PropertyChanged += OnSettingPropertiesChanged;
 
             SettingsCommand = new RemoteCommand(OnSettingsButtonClicked);
+
+            App.Services.GetRequiredService<TemperatureController>().GlobalErrorEvent += (m) => MessageBox.Show(m, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void OnIsDebugChanged()
