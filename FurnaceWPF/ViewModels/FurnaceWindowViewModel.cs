@@ -38,11 +38,11 @@ namespace FurnaceWPF.ViewModels
         private readonly Settings _settings;
         private readonly IServiceProvider _service;
 
-        private SettingsWindow _settingsWindow;
+        private Func<SettingsWindow> _getSettingsWindow;
 
         public RemoteCommand SettingsCommand { get; }
 
-        public FurnaceWindowViewModel(DriverViewModelFactory driverFactory, ZoneViewModelFactory zoneFactory, Settings settings, IServiceProvider service, SettingsWindow settingsWindow, CoolingSystemViewModel coolingSystem)
+        public FurnaceWindowViewModel(DriverViewModelFactory driverFactory, ZoneViewModelFactory zoneFactory, Settings settings, IServiceProvider service, Func<SettingsWindow> settingsWindow, CoolingSystemViewModel coolingSystem)
         {
             DriveA = driverFactory.GetDriverA();
             DriveB = driverFactory.GetDriverB();
@@ -57,7 +57,7 @@ namespace FurnaceWPF.ViewModels
             this._settings = settings;
             this._service = service;
 
-            this._settingsWindow = settingsWindow;
+            this._getSettingsWindow = settingsWindow;
 
             this._settings.PropertyChanged += OnSettingPropertiesChanged;
 
@@ -100,14 +100,7 @@ namespace FurnaceWPF.ViewModels
 
         private void OnSettingsButtonClicked()
         {
-            if (!_settingsWindow.IsVisible)
-            {
-                _settingsWindow.Show();
-            }
-            else
-            {
-                _settingsWindow.Activate();
-            }
+            _getSettingsWindow().ShowDialog();
         }
     }
 }

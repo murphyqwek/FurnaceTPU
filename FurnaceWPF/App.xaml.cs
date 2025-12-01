@@ -103,7 +103,9 @@ namespace pechka4._8
         private void ConfigureWindow(ServiceCollection services)
         {
             services.AddSingleton<FurnaceWindow>();
-            services.AddSingleton<SettingsWindow>();
+            services.AddTransient<SettingsWindow>();
+
+            services.AddSingleton<Func<SettingsWindow>>(sp => () => sp.GetRequiredService<SettingsWindow>());
         }
 
         private void ConfigureViewModels(ServiceCollection services)

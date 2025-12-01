@@ -113,6 +113,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
                     try
                     {
                         currentTemperature = await _temperatureModule.GetTemperatureAsync(_settings.ZonePollingTimeout, token);
+                        _logger.LogInformation($"Текущая температура: {currentTemperature}");
                         Dispatcher.CurrentDispatcher.Invoke(() => CurrentTemperature = currentTemperature);
                     }
                     catch (TimeoutException)

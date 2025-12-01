@@ -63,16 +63,19 @@ namespace FurnaceWPF.Models
 
         public void OpenPort()
         {
+            _logger.LogInformation("Open port");
             this._currentPort.OpenPort();
         }
 
         public void SendData(string data)
         {
+            _logger.LogInformation("Sending to port: " + data);
             this._currentPort.SendData(data);
         }
 
         public void SendData(byte[] data)
         {
+            _logger.LogInformation($"Sending data: {BitConverter.ToString(data).Replace("-", " ")}");
             this._currentPort.SendData(data);
         }
 
