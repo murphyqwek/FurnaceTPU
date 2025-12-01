@@ -125,7 +125,11 @@ namespace pechka4._8
             services.AddTransient<PortModule>(sp =>
             {
                 var ioManager = sp.GetRequiredService<IOManager>();
-                PortModule module = new PortWrapper(new SerialPort(), ioManager, sp.GetRequiredService<ILogger<PortWrapper>>());
+
+                SerialPort serialPort = new SerialPort();
+                serialPort.BaudRate = 115200;
+
+                PortModule module = new PortWrapper(serialPort, ioManager, sp.GetRequiredService<ILogger<PortWrapper>>());
                 return module;
             });
             services.AddSingleton<IPort, SwitchingPort>(sp =>

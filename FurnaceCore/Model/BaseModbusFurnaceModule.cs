@@ -34,5 +34,10 @@ namespace FurnaceCore.Model
 
             return commandList.ToArray();
         }
+
+        protected void SendCommand(byte[] command)
+        {
+            _ioManager.SendDataToPort(this, GetCommandWithCRC(command));
+        }
     }
 }

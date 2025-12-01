@@ -76,7 +76,7 @@ namespace FurnaceCore.Model
             byte portByte = DecodeDriverPort(port);
             var command = (byte[])_startDriverCommand.Clone();
             command[7] = portByte;
-            _ioManager.SendDataToPort(this, GetCommandWithCRC(command));
+            SendCommand(command);
         }
 
         public void StopDriver(DriversPortEnum port)
@@ -84,7 +84,7 @@ namespace FurnaceCore.Model
             byte portByte = DecodeDriverPort(port);
             var command = (byte[])_stopDriverCommand.Clone();
             command[7] = portByte;
-            _ioManager.SendDataToPort(this, GetCommandWithCRC(command));
+            SendCommand(command);
         }
 
         public void SetDriverFrequency(int channel, ushort frequency)
@@ -97,7 +97,7 @@ namespace FurnaceCore.Model
             command[3] = (byte)(0xE0 + channelByte);
             command[7] = (byte)(frequency >> 8);
             command[8] = (byte)(frequency & 0xFF);
-            _ioManager.SendDataToPort(this, GetCommandWithCRC(command));
+            SendCommand(command);
         }
 
     }

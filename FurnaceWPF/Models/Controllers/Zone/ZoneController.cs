@@ -220,6 +220,11 @@ namespace FurnaceWPF.Models.Controllers.Zone
             _temperatureModule.SetAddressByte(newAddress);
         }
 
+        public void SetChannelByte(byte newChannel)
+        {
+            _temperatureModule.SetAddressByte
+        }
+
         public void Dispose()
         {
             _pollingCts?.Cancel();

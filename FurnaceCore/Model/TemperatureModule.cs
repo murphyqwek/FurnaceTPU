@@ -53,8 +53,7 @@ namespace FurnaceCore.Model
 
         public void SendGetTemperatureCommand()
         {
-            InsertAddressesToCommand(ref this._getTemperatureCommand);
-            _ioManager.SendDataToPort(this, GetCommandWithCRC(this._getTemperatureCommand));
+            SendCommand(_getTemperatureCommand);
         }
 
         private double parseData(string rawTemperatureData)

@@ -9,7 +9,7 @@ namespace FurnaceCore.Model
     public class CoolingModule : AddressChannelModbusFurnaceModule
     {
 
-        private byte[] _turnOnHeaterCommand = new byte[]
+        private byte[] _turnOnCoolingCommand = new byte[]
         {
             0x01, //0 - адрес модуля
             0x05, //1
@@ -19,7 +19,7 @@ namespace FurnaceCore.Model
             0x00, //5
         };
 
-        private byte[] _turnOffHeaterCommand = new byte[]
+        private byte[] _turnOffCoolingCommand = new byte[]
         {
             0x01, //0 - адрес модуля
             0x05, //1
@@ -31,18 +31,17 @@ namespace FurnaceCore.Model
 
         public CoolingModule(byte addressByte, byte channelByte, IOManager.IOManager ioManager) : base(addressByte, channelByte, ioManager)
         {
-            InsertAddressesToCommand(ref this._turnOnHeaterCommand);
-            InsertAddressesToCommand(ref this._turnOffHeaterCommand);
+           
         }
 
         public void TurnOnCooling()
         {
-            _ioManager.SendDataToPort(this, GetCommandWithCRC(this._turnOnHeaterCommand));
+            SendCommand(this._turnOnCoolingCommand);
         }
 
         public void TurnOffCooling()
         {
-            _ioManager.SendDataToPort(this, GetCommandWithCRC(this._turnOffHeaterCommand));
+            SendCommand(this._turnOffCoolingCommand);
         }
     }
 }

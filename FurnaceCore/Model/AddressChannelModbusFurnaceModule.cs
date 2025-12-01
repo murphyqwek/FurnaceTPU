@@ -34,9 +34,20 @@ namespace FurnaceCore.Model
             this._addressByte = newAddress;
         }
 
+        public void SetChannelByte(byte newChannel)
+        {
+            this._channelByte = newChannel;
+        }
+
         public byte GetChannelByte()
         {
             return _channelByte;
+        }
+
+        protected new void SendCommand(byte[] command)
+        {
+            InsertAddressesToCommand(ref command);
+            _ioManager.SendDataToPort(this, GetCommandWithCRC(command));
         }
     }
 }

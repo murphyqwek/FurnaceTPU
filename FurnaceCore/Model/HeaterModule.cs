@@ -37,14 +37,12 @@ namespace FurnaceCore.Model
 
         public void TurnOnHeater()
         {
-            InsertAddressesToCommand(ref this._turnOnHeaterCommand);
-            _ioManager.SendDataToPort(this, GetCommandWithCRC(this._turnOnHeaterCommand));
+            SendCommand(_turnOnHeaterCommand);
         }
 
         public void TurnOffHeater()
         {
-            InsertAddressesToCommand(ref this._turnOffHeaterCommand);
-            _ioManager.SendDataToPort(this, GetCommandWithCRC(this._turnOffHeaterCommand));
+            SendCommand(_turnOffHeaterCommand);
         }
     }
 }

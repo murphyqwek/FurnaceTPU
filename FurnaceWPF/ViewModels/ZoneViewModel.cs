@@ -119,7 +119,7 @@ namespace pechka4._8.ViewModels
 
         public void UpdateZoneAddress(byte newAddress)
         {
-            this._zoneController.SetAddressByte(newAddress);
+            this._zoneController.(newAddress);
         }
 
         private void UpdateTemperaturePolling(bool isActive)
