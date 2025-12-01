@@ -1,4 +1,5 @@
 ﻿using FurnaceCore.Model;
+using FurnaceCore.utlis;
 using FurnaceWPF.Models.Controllers.Zone;
 using FurnaceWPF.ViewModels;
 using Microsoft.Extensions.Logging;
@@ -82,22 +83,44 @@ namespace FurnaceWPF.Models.Controllers.Cooling
 
         private async Task PollTemperatureLoop(CancellationToken token)
         {
+            int errorCount = 0;
             while (!token.IsCancellationRequested)
             {
                 try
                 {
-                    double currentTemperature = 0;
+                    Result<double> currentTemperature;
 
                     try
                     {
-                        currentTemperature = await _temperatureModule.GetTemperatureAsync(_settings.CoolingPollingTimeout, token);
-                        Dispatcher.CurrentDispatcher.Invoke(() => CurrentTemperature = currentTemperature);
+                        currentTemperature = await _temperatureModule.GetTemperatureAsync(_settings.ZonePollingTimeout, token);
+
+                        if (currentTemperature.Success)
+                        {
+                            _logger.LogInformation($"Текущая температура холодильника: {currentTemperature.Value}");
+                            Dispatcher.CurrentDispatcher.Invoke(() => CurrentTemperature = currentTemperature.Value);
+                            errorCount = 0;
+                        }
+                        else
+                        {
+                            errorCount++;
+                            _logger.LogWarning($"Произошла ошибка ({errorCount}) получния данных темепратуры холодильника: {currentTemperature.ErrorMessage}");
+
+                            if (errorCount == 5)
+                            {
+                                _logger.LogError($"Прошёл порог ошибок получения данных. Прекращаем опрос");
+                                Dispatcher.CurrentDispatcher.Invoke(StopPollingTemperature);
+                                Dispatcher.CurrentDispatcher.Invoke(() => ErrorEvent?.Invoke($"Модуль температуры получает данные с ошибками"));
+                                break;
+                            }
+
+                            _logger.LogWarning("Попытка получить данные ещё раз");
+                        }
                     }
                     catch (TimeoutException)
                     {
-                        _logger.LogWarning($"Таймаут чтения температуры ({_settings.CoolingPollingTimeout} мс) истек");
+                        _logger.LogWarning($"Таймаут чтения температуры холодильника ({_settings.ZonePollingTimeout} мс) истек");
                         Dispatcher.CurrentDispatcher.Invoke(StopPollingTemperature);
-                        Dispatcher.CurrentDispatcher.Invoke(() => ErrorEvent?.Invoke($"Таймаут чтения температуры ({_settings.CoolingPollingTimeout} мс) истек"));
+                        Dispatcher.CurrentDispatcher.Invoke(() => ErrorEvent?.Invoke($"Таймаут чтения температуры холодильника ({_settings.ZonePollingTimeout} мс) истек"));
 
                         break;
                     }
@@ -106,14 +129,14 @@ namespace FurnaceWPF.Models.Controllers.Cooling
                 }
                 catch (TaskCanceledException) when (token.IsCancellationRequested)
                 {
-                    _logger.LogDebug("Опрос температуры отменен");
+                    _logger.LogDebug("Опрос температуры холодильника отменен");
                     break;
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Критическая ошибка при опросе температуры. " + ex.Message);
+                    _logger.LogError(ex, "Критическая ошибка при опросе температуры холодильника. " + ex.Message);
                     Dispatcher.CurrentDispatcher.Invoke(() => StopPollingTemperature());
-                    Dispatcher.CurrentDispatcher.Invoke(() => ErrorEvent?.Invoke("Критическая ошибка при опросе температуры (см. логги)"));
+                    Dispatcher.CurrentDispatcher.Invoke(() => ErrorEvent?.Invoke("Критическая ошибка при опросе температуры холодильника (см. логги)"));
                     break;
                 }
             }

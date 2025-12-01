@@ -29,19 +29,20 @@ namespace FurnaceWPF.Models
         public bool IsOpen() => IsOpenFlag;
         public void SendData(string data) 
         {
-            SentData.Add(data);
             _logger.LogInformation($"MockPort Sent Data: {data}");
+            SentData.Add(data);
         }
         public void ReceiveData(string data) 
-        { 
-            _manager.HandleData(data);
+        {
             _logger.LogInformation($"MockPort Received Data: {data}");
+            _manager.HandleData(data);
         }
 
         public void SendData(byte[] data)
         {
             SentData.Add(BitConverter.ToString(data).Replace("-", " "));
             _logger.LogInformation($"MockPort Sent Data: {SentData.Last()}");
+            ReceiveData("01 04 00 01");
         }
 
         public void Dispose()

@@ -33,7 +33,6 @@ namespace FurnaceCore.IOManager
                 if (filter.CanHandle(data))
                 {
                     filter.HandleData(data);
-                    break;
                 }
             }
         }

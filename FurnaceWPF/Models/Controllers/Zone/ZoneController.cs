@@ -1,4 +1,5 @@
 ﻿using FurnaceCore.Model;
+using FurnaceCore.utlis;
 using FurnaceWPF.ViewModels;
 using FurnaceWPF.Views.Controls;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Converters;
 using System.Windows.Threading;
 
@@ -104,17 +106,38 @@ namespace FurnaceWPF.Models.Controllers.Zone
 
         private async Task PollTemperatureLoop(CancellationToken token)
         {
+            int errorCount = 0;
             while (!token.IsCancellationRequested)
             {
                 try
                 {
-                    double currentTemperature = 0;
+                    Result<double> currentTemperature;
 
                     try
                     {
                         currentTemperature = await _temperatureModule.GetTemperatureAsync(_settings.ZonePollingTimeout, token);
-                        _logger.LogInformation($"Текущая температура: {currentTemperature}");
-                        Dispatcher.CurrentDispatcher.Invoke(() => CurrentTemperature = currentTemperature);
+
+                        if (currentTemperature.Success)
+                        {
+                            _logger.LogInformation($"Текущая температура: {currentTemperature.Value}");
+                            Dispatcher.CurrentDispatcher.Invoke(() => CurrentTemperature = currentTemperature.Value);
+                            errorCount = 0;
+                        }
+                        else
+                        {
+                            errorCount++;
+                            _logger.LogWarning($"Произошла ошибка ({errorCount}) получния данных темепратуры: {currentTemperature.ErrorMessage}");
+                            
+                            if(errorCount == 5)
+                            {
+                                _logger.LogError($"Прошёл порог ошибок получения данных. Прекращаем опрос");
+                                Dispatcher.CurrentDispatcher.Invoke(StopPollingTemperature);
+                                Dispatcher.CurrentDispatcher.Invoke(() => ErrorEvent?.Invoke($"Модуль температуры получает данные с ошибками"));
+                                break;
+                            }
+
+                            _logger.LogWarning("Попытка получить данные ещё раз");
+                        }
                     }
                     catch (TimeoutException)
                     {
