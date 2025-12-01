@@ -163,24 +163,33 @@ namespace FurnaceWPF.Models.Controllers.Zone
 
         private void PollHeater(object? o)
         {
-            if (this.IsPollingTemperature)
+            try
             {
-                _logger.LogInformation("Опрос температуры остановлен, прекращаем нагрев");
-                Dispatcher.CurrentDispatcher.Invoke(StopPollingHeater);
-                return;
-            }
+                if (this.IsPollingTemperature)
+                {
+                    _logger.LogInformation("Опрос температуры остановлен, прекращаем нагрев");
+                    Dispatcher.CurrentDispatcher.Invoke(StopPollingHeater);
+                    return;
+                }
 
-            if(CurrentTemperature < _targetTemperature + _settings.ZoneTreshold && CurrentTemperature > _targetTemperature - _settings.ZoneTreshold)
+                if (CurrentTemperature < _targetTemperature + _settings.ZoneTreshold && CurrentTemperature > _targetTemperature - _settings.ZoneTreshold)
+                {
+                    _logger.LogInformation("Текущая температура в допустимых пределах заданной");
+                    _heaterModule.TurnOffHeater();
+                    this._heatModuleStatus = false;
+                }
+                else
+                {
+                    HeatOrCold();
+                }
+            }
+            catch (Exception ex)
             {
-                _logger.LogInformation("Текущая температура в допустимых пределах заданной");
-                _heaterModule.TurnOffHeater();
+                _logger.LogError(ex.ToString());
                 this._heatModuleStatus = false;
+                _heaterPollingTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+                _logger.LogInformation("Нагрев остановлен");
             }
-            else
-            {
-                HeatOrCold();
-            }
-
         }
 
         private void HeatOrCold()
