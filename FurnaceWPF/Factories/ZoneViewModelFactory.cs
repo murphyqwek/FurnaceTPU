@@ -46,12 +46,12 @@ namespace FurnaceWPF.Factories
 
         public ZoneViewModel GetFirstZone()
         {
-            return GetZoneAndSubscribeToAddressChagned("Зона 1", _settings.ZoneOneAddress, 0x01, 1);
+            return GetZoneAndSubscribeToAddressChagned("Зона 1", _settings.ZoneOneAddress, 0x03, 1);
         }
 
         public ZoneViewModel GetSecondZone()
         {
-            return GetZoneAndSubscribeToAddressChagned("Зона 2", _settings.ZoneTwoAddress, 0x02, 2);
+            return GetZoneAndSubscribeToAddressChagned("Зона 2", _settings.ZoneTwoAddress, 0x03, 2);
         }
 
         public ZoneViewModel GetThirdZone()
