@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using FurnaceWPF.Views;
 using FurnaceWPF.Models.Controllers.Cooling;
+using FurnaceWPF.Models.Controllers.Zone;
 
 namespace pechka4._8
 {
@@ -83,6 +84,8 @@ namespace pechka4._8
 
                 return coolingConroller;
             });
+
+            services.AddSingleton<TemperatureController>();
         }
 
         private void ConfigureFactories(ServiceCollection services)
@@ -139,6 +142,19 @@ namespace pechka4._8
                 var settings = sp.GetRequiredService<Settings>();
                 SwitchingPort port = new SwitchingPort(settings.IsDebug, mockFactory, portModuleFactory, sp.GetRequiredService<ILogger<SwitchingPort>>());
                 return port;
+            });
+
+            services.AddSingleton<TemperatureModule>(sp =>
+            {
+                var ioManager = sp.GetRequiredService<IOManager>();
+                var port = sp.GetRequiredService<IPort>();
+                TemperatureModule temperatureModule = new TemperatureModule(0x3, 0x0, ioManager);
+                AddressFilter addressFilter = new AddressFilter(temperatureModule.GetAddressByte, temperatureModule);
+
+                ioManager.RegisterModulePort(temperatureModule, port);
+                ioManager.RegisterFilter(addressFilter);
+
+                return temperatureModule;
             });
 
             services.AddSingleton<HeaterModule>(sp =>

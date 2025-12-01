@@ -22,46 +22,44 @@ namespace FurnaceWPF.Factories
         private readonly IOManager _ioManager;
         private readonly HeaterModule _heaterModule;
         private readonly ILogger<ZoneController> _zoneLogger;
+        private readonly TemperatureController _temperatureController;
         
-        public ZoneViewModelFactory(IPort port, IOManager ioManager, HeaterModule heaterModule, Settings settings, ILogger<ZoneController> zoneLogger)
+        public ZoneViewModelFactory(IPort port, IOManager ioManager, HeaterModule heaterModule, Settings settings, ILogger<ZoneController> zoneLogger, TemperatureController temperatureController)
         {
             _port = port;
             _ioManager = ioManager;
             _settings = settings;
             _heaterModule = heaterModule;
             _zoneLogger = zoneLogger;
+            _temperatureController = temperatureController;
         }
 
-        public ZoneViewModel GetZone(string name, byte addressByte, byte channelByte)
+        public ZoneViewModel GetZone(string name, byte channelByte)
         {
-            TemperatureModule temperatureModule = new TemperatureModule(addressByte, channelByte, _ioManager);
-            ZoneController zoneController = new ZoneController(temperatureModule, _heaterModule, _zoneLogger, _settings);
-            AddressFilter temperatureFilter = new AddressFilter(temperatureModule.GetAddressByte, temperatureModule);
+            ZoneController zoneController = new ZoneController(channelByte, _heaterModule, _zoneLogger, _settings, _temperatureController);
 
-            _ioManager.RegisterFilter(temperatureFilter);
-            _ioManager.RegisterModulePort(temperatureModule, _port);
 
             return new ZoneViewModel(name, 0, zoneController, _settings);
         }
 
         public ZoneViewModel GetFirstZone()
         {
-            return GetZoneAndSubscribeToAddressChagned("Зона 1", _settings.ZoneOneAddress, 0x03, 1);
+            return GetZoneAndSubscribeToAddressChagned("Зона 1", _settings.ZoneOneChannel, 1);
         }
 
         public ZoneViewModel GetSecondZone()
         {
-            return GetZoneAndSubscribeToAddressChagned("Зона 2", _settings.ZoneTwoAddress, 0x03, 2);
+            return GetZoneAndSubscribeToAddressChagned("Зона 2", _settings.ZoneTwoChannel, 2);
         }
 
         public ZoneViewModel GetThirdZone()
         {
-            return GetZoneAndSubscribeToAddressChagned("Зона 3", _settings.ZoneThreeAddress, 0x03, 3);
+            return GetZoneAndSubscribeToAddressChagned("Зона 3", _settings.ZoneThreeChannell, 3);
         }
         
-        private ZoneViewModel GetZoneAndSubscribeToAddressChagned(string name, byte addressByte, byte channelByte, int zoneNumber)
+        private ZoneViewModel GetZoneAndSubscribeToAddressChagned(string name, byte channelByte, int zoneNumber)
         {
-            var zone = GetZone(name, addressByte, channelByte);
+            var zone = GetZone(name, channelByte);
             SubscribeToZoneAddressChanged(zoneNumber, zone);
 
             return zone;
@@ -71,9 +69,9 @@ namespace FurnaceWPF.Factories
         {
             string propertyName = zoneNumber switch
             {
-                1 => nameof(Settings.ZoneOneAddress),
-                2 => nameof(Settings.ZoneTwoAddress),
-                3 => nameof(Settings.ZoneThreeAddress),
+                1 => nameof(Settings.ZoneOneChannel),
+                2 => nameof(Settings.ZoneTwoChannel),
+                3 => nameof(Settings.ZoneThreeChannell),
                 _ => throw new Exception("Not all zones could be subcribed")
             };
 
@@ -81,15 +79,15 @@ namespace FurnaceWPF.Factories
             {
                 if (e.PropertyName == propertyName)
                 {
-                    byte newAddress = zoneNumber switch
+                    byte newChanneel = zoneNumber switch
                     {
-                        1 => _settings.ZoneOneAddress,
-                        2 => _settings.ZoneTwoAddress,
-                        3 => _settings.ZoneThreeAddress,
+                        1 => _settings.ZoneOneChannel,
+                        2 => _settings.ZoneTwoChannel,
+                        3 => _settings.ZoneThreeChannell,
                         _ => throw new InvalidOperationException("Property name validation failed during update.")
                     };
 
-                    zoneViewModel.UpdateZoneChannel(newAddress);
+                    zoneViewModel.UpdateZoneChannel(newChanneel);
                 }
             };
         }

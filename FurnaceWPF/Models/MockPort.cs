@@ -42,6 +42,7 @@ namespace FurnaceWPF.Models
         {
             SentData.Add(BitConverter.ToString(data).Replace("-", " "));
             _logger.LogInformation($"MockPort Sent Data: {SentData.Last()}");
+            ReceiveData("03 04 02 01 16");
         }
 
         public void Dispose()

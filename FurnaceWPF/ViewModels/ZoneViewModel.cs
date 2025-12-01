@@ -94,14 +94,14 @@ namespace pechka4._8.ViewModels
             _zoneController.ErrorEvent += PollingErrorEventHandler;
             _zoneController.PropertyChanged += (s, e) =>
             {
-                if(e.PropertyName == nameof(ZoneController.CurrentTemperature))
+                if (e.PropertyName == nameof(ZoneController.CurrentTemperature))
                 {
                     OnPropertyChanged(nameof(CurrentTemperature));
                     OnPropertyChanged(nameof(TemperatureText));
                     OnPropertyChanged(nameof(TempBrush));
                 }
 
-                if(e.PropertyName == nameof(ZoneController.IsPollingTemperature))
+                if (e.PropertyName == nameof(ZoneController.IsPollingTemperature))
                 {
                     OnPropertyChanged(nameof(IsActive));
                 }
@@ -109,7 +109,7 @@ namespace pechka4._8.ViewModels
 
             this._settings.PropertyChanged += (s, e) =>
             {
-                if(e.PropertyName == nameof(Settings.IsPortOpen))
+                if (e.PropertyName == nameof(Settings.IsPortOpen))
                 {
                     OnPropertyChanged(nameof(IsActive));
                     OnPropertyChanged(nameof(IsEnabled));
@@ -117,9 +117,9 @@ namespace pechka4._8.ViewModels
             };
         }
 
-        public void UpdateZoneChannel(byte newAddress)
+        public void UpdateZoneChannel(byte newChannel)
         {
-            this._zoneController.SetChannelByte(newAddress);
+            this._zoneController.SetChannelByte(newChannel);
         }
 
         private void UpdateTemperaturePolling(bool isActive)

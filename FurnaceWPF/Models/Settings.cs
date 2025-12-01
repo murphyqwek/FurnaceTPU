@@ -12,8 +12,8 @@ namespace FurnaceWPF.Models
     {
         private bool _isDebug = false;
         private byte _zoneOneAddress = 0x01;
-        private byte _zoneTwoAddress = 0x01;
-        private byte _zoneThreeAddress = 0x01;
+        private byte _zoneTwoAddress = 0x02;
+        private byte _zoneThreeAddress = 0x03;
         private bool _isRunning;
         private bool _isPortOpen = false;
 
@@ -32,7 +32,7 @@ namespace FurnaceWPF.Models
             }
         }
 
-        public byte ZoneOneAddress
+        public byte ZoneOneChannel
         {
             get => _zoneOneAddress;
             set
@@ -45,7 +45,7 @@ namespace FurnaceWPF.Models
             }
         }
 
-        public byte ZoneTwoAddress
+        public byte ZoneTwoChannel
         {
             get => _zoneTwoAddress;
             set
@@ -58,7 +58,7 @@ namespace FurnaceWPF.Models
             }
         }
 
-        public byte ZoneThreeAddress
+        public byte ZoneThreeChannell
         {
             get => _zoneThreeAddress;
             set

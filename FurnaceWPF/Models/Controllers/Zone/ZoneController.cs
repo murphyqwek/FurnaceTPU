@@ -7,9 +7,11 @@ using pechka4._8;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.RightsManagement;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Converters;
 using System.Windows.Threading;
@@ -23,13 +25,14 @@ namespace FurnaceWPF.Models.Controllers.Zone
         private double _currentTemperature;
         private bool _isHeating;
         private bool _isPollingTemperature;
+        private byte _channel;
 
-        private TemperatureModule _temperatureModule;
         private HeaterModule _heaterModule;
         private ILogger<ZoneController> _logger;
         private Settings _settings;
         private double _targetTemperature;
-        private CancellationTokenSource _pollingCts;
+
+        private TemperatureController _temperatureController;
 
         #region Properties
         public double CurrentTemperature 
@@ -72,14 +75,17 @@ namespace FurnaceWPF.Models.Controllers.Zone
 
         public event Action<string>? ErrorEvent;
 
-        public ZoneController(TemperatureModule temperatureModule, HeaterModule heaterModule, ILogger<ZoneController> logger, Settings settings) 
+        public ZoneController(byte channel, HeaterModule heaterModule, ILogger<ZoneController> logger, Settings settings, TemperatureController temperatureController) 
         { 
-            this._temperatureModule = temperatureModule;
+            this._channel = channel;
             this._heaterModule = heaterModule;
             this._logger = logger;
             this._settings = settings;
             this.IsHeating = false;
             this.IsPollingTemperature = false;
+            this._temperatureController = temperatureController;
+
+            _temperatureController.GlobalErrorEvent += ErrorHandle;
         }
 
         public void StartPollingTemperature()
@@ -87,84 +93,25 @@ namespace FurnaceWPF.Models.Controllers.Zone
             if (IsPollingTemperature) return;
 
             IsPollingTemperature = true;
+
             _logger.LogInformation($"Начат опрос температуры с интервалом {_settings.ZonePollingInterval} мс. Таймаут чтения: {_settings.ZonePollingTimeout} мс.");
 
-            _pollingCts = new CancellationTokenSource();
-
-            Task.Run(() => PollTemperatureLoop(_pollingCts.Token));
+            _temperatureController.AddCaller(this._channel, new TemperatureEvent { reciveError = ErrorHandle, reciveTemperatue = TemperatureHande });
         }
 
         public void StopPollingTemperature()
         {
             if(!IsPollingTemperature) return;
 
-            _pollingCts.Cancel();
-            _logger.LogInformation($"Опрос температуры преркащён");
+            IsPollingTemperature = false;
+            OnPropertyChanged(nameof(IsPollingTemperature));
+
+            _temperatureController.RemoveCaller(_channel);
+
+            _logger.LogInformation($"Опрос температуры канала {this._channel} преркащён");
             IsPollingTemperature = false;
             
         }
-
-        private async Task PollTemperatureLoop(CancellationToken token)
-        {
-            int errorCount = 0;
-            while (!token.IsCancellationRequested)
-            {
-                try
-                {
-                    Result<double> currentTemperature;
-
-                    try
-                    {
-                        currentTemperature = await _temperatureModule.GetTemperatureAsync(_settings.ZonePollingTimeout, token);
-
-                        if (currentTemperature.Success)
-                        {
-                            _logger.LogInformation($"Текущая температура: {currentTemperature.Value}");
-                            Dispatcher.CurrentDispatcher.Invoke(() => CurrentTemperature = currentTemperature.Value);
-                            errorCount = 0;
-                        }
-                        else
-                        {
-                            errorCount++;
-                            _logger.LogWarning($"Произошла ошибка ({errorCount}) получния данных темепратуры: {currentTemperature.ErrorMessage}");
-                            
-                            if(errorCount == 5)
-                            {
-                                _logger.LogError($"Прошёл порог ошибок получения данных. Прекращаем опрос");
-                                Dispatcher.CurrentDispatcher.Invoke(StopPollingTemperature);
-                                Dispatcher.CurrentDispatcher.Invoke(() => ErrorEvent?.Invoke($"Модуль температуры получает данные с ошибками"));
-                                break;
-                            }
-
-                            _logger.LogWarning("Попытка получить данные ещё раз");
-                        }
-                    }
-                    catch (TimeoutException)
-                    {
-                        _logger.LogWarning($"Таймаут чтения температуры ({_settings.ZonePollingTimeout} мс) истек");
-                        Dispatcher.CurrentDispatcher.Invoke(StopPollingTemperature);
-                        Dispatcher.CurrentDispatcher.Invoke(() => ErrorEvent?.Invoke($"Таймаут чтения температуры ({_settings.ZonePollingTimeout} мс) истек"));
-                        
-                        break;
-                    }
-
-                    await Task.Delay(_settings.ZonePollingInterval, token);
-                }
-                catch (TaskCanceledException) when (token.IsCancellationRequested)
-                {
-                    _logger.LogDebug("Опрос температуры отменен");
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Критическая ошибка при опросе температуры. " + ex.Message);
-                    Dispatcher.CurrentDispatcher.Invoke(() => StopPollingTemperature());
-                    Dispatcher.CurrentDispatcher.Invoke(() => ErrorEvent?.Invoke("Критическая ошибка при опросе температуры (см. логги)"));
-                    break;
-                }
-            }
-        }
-    
 
         public void StartPollingHeater(double targetTemperature)
         {
@@ -190,7 +137,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
             {
                 if (this.IsPollingTemperature)
                 {
-                    _logger.LogInformation("Опрос температуры остановлен, прекращаем нагрев");
+                    _logger.LogInformation($"Опрос температуры канала {this._channel} остановлен, прекращаем нагрев");
                     Dispatcher.CurrentDispatcher.Invoke(StopPollingHeater);
                     return;
                 }
@@ -238,22 +185,31 @@ namespace FurnaceWPF.Models.Controllers.Zone
             }
         }
 
-        public void SetAddressByte(byte newAddress)
-        {
-            _temperatureModule.SetAddressByte(newAddress);
-        }
-
         public void SetChannelByte(byte newChannel)
         {
-            _temperatureModule.SetChannelByte(newChannel);
+            _temperatureController.ChangeChannel(this._channel, newChannel);
+            _logger.LogInformation($"Контроллер зоны поменял канал с {this._channel} на {newChannel}");
+            this._channel = newChannel;
         }
 
         public void Dispose()
         {
-            _pollingCts?.Cancel();
-            _pollingCts?.Dispose();
             _heaterPollingTimer?.Dispose();
             _heaterPollingTimer = null;
+        }
+
+        private void TemperatureHande(double temperature)
+        {
+            _logger.LogInformation($"Контроллер зоны получил новые данные по температуре: {temperature}");
+            this.CurrentTemperature = temperature;
+            OnPropertyChanged(nameof(CurrentTemperature));
+        }
+
+        private void ErrorHandle(string message)
+        {
+            StopPollingTemperature();
+            _logger.LogError(message);
+            MessageBox.Show(message, "Ошибка", MessageBoxButton.OK);
         }
     }
 

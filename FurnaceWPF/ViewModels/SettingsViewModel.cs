@@ -32,12 +32,12 @@ namespace FurnaceWPF.ViewModels
 
         public byte ZoneOneAddress
         {
-            get => _settings.ZoneOneAddress;
+            get => _settings.ZoneOneChannel;
             set
             {
-                if (_settings.ZoneOneAddress != value)
+                if (_settings.ZoneOneChannel != value)
                 {
-                    _settings.ZoneOneAddress = value;
+                    _settings.ZoneOneChannel = value;
                     OnPropertyChanged();
                 }
             }
@@ -45,12 +45,12 @@ namespace FurnaceWPF.ViewModels
 
         public byte ZoneTwoAddress
         {
-            get => _settings.ZoneTwoAddress;
+            get => _settings.ZoneTwoChannel;
             set
             {
-                if (_settings.ZoneTwoAddress != value)
+                if (_settings.ZoneTwoChannel != value)
                 {
-                    _settings.ZoneTwoAddress = value;
+                    _settings.ZoneTwoChannel = value;
                     OnPropertyChanged();
                 }
             }
@@ -58,12 +58,12 @@ namespace FurnaceWPF.ViewModels
 
         public byte ZoneThreeAddress
         {
-            get => _settings.ZoneThreeAddress;
+            get => _settings.ZoneThreeChannell;
             set
             {
-                if (_settings.ZoneThreeAddress != value)
+                if (_settings.ZoneThreeChannell != value)
                 {
-                    _settings.ZoneThreeAddress = value;
+                    _settings.ZoneThreeChannell = value;
                     OnPropertyChanged();
                 }
             }
