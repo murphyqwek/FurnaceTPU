@@ -22,7 +22,7 @@ namespace FurnaceWPF.Factories
         private readonly IOManager _ioManager;
         private readonly HeaterModule _heaterModule;
         private readonly ILogger<ZoneController> _zoneLogger;
-
+        
         public ZoneViewModelFactory(IPort port, IOManager ioManager, HeaterModule heaterModule, Settings settings, ILogger<ZoneController> zoneLogger)
         {
             _port = port;
@@ -41,7 +41,7 @@ namespace FurnaceWPF.Factories
             _ioManager.RegisterFilter(temperatureFilter);
             _ioManager.RegisterModulePort(temperatureModule, _port);
 
-            return new ZoneViewModel(name, 0, zoneController);
+            return new ZoneViewModel(name, 0, zoneController, _settings);
         }
 
         public ZoneViewModel GetFirstZone()

@@ -41,7 +41,8 @@
                 </StackPanel>
 
                 <ToggleButton Grid.Column="1" IsChecked="{Binding IsActive, Mode=TwoWay}"
-                            Style="{StaticResource MaterialDesignIconButton}">
+                            Style="{StaticResource MaterialDesignIconButton}"
+                            IsEnabled="{Binding IsEnabled}">
                     <materialDesign:PackIcon Kind="Power" Width="48" Height="48"
                              Foreground="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}, Converter={StaticResource TurnOnOffButtonStateConverterr}}" Cursor=""/>
                 </ToggleButton>
@@ -70,7 +71,8 @@
                     Style="{DynamicResource MaterialDesignFilledButton}"
                     Width="110" Height="35"
                     HorizontalAlignment="Center"
-                    Command="{Binding SetTemperature}"/>
+                    Command="{Binding SetTemperature}"
+                    IsEnabled="{Binding IsActive}"/>
         </Grid>
     </materialDesign:Card>
 </UserControl>

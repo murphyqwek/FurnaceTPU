@@ -15,6 +15,7 @@ namespace FurnaceWPF.Models
         private byte _zoneTwoAddress = 0x01;
         private byte _zoneThreeAddress = 0x01;
         private bool _isRunning;
+        private bool _isPortOpen = false;
 
         #region Properties
         public bool IsDebug
@@ -98,7 +99,18 @@ namespace FurnaceWPF.Models
 
         public int CoolingPollingTemperatureIntervall { get => 200; }
 
-        public bool IsPortOpen { get; set; }
+        public bool IsPortOpen 
+        { 
+            get => _isPortOpen;
+            set
+            {
+                if (_isPortOpen != value)
+                {
+                    _isPortOpen = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
         #endregion
 
         public Settings()

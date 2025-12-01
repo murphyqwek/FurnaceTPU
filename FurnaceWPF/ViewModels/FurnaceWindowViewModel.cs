@@ -12,6 +12,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace FurnaceWPF.ViewModels
 {
@@ -99,7 +100,14 @@ namespace FurnaceWPF.ViewModels
 
         private void OnSettingsButtonClicked()
         {
-            _settingsWindow.ShowDialog();
+            if (!_settingsWindow.IsVisible)
+            {
+                _settingsWindow.Show();
+            }
+            else
+            {
+                _settingsWindow.Activate();
+            }
         }
     }
 }

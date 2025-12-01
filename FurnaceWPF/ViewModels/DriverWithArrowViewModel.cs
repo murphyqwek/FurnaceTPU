@@ -1,4 +1,5 @@
 ﻿using FurnaceCore.Model;
+using FurnaceWPF.Models;
 using FurnaceWPF.Models.Controllers;
 using MaterialDesignThemes.Wpf;
 using System;
@@ -31,7 +32,7 @@ namespace FurnaceWPF.ViewModels
             _ => "Stop"
         };
 
-        public DriverWithArrowViewModel(PackIconKind forward, PackIconKind backward, PackIconKind stop, DriverContoller driverController, string name) : base(driverController, name)
+        public DriverWithArrowViewModel(PackIconKind forward, PackIconKind backward, PackIconKind stop, DriverContoller driverController, string name, Settings settings) : base(driverController, name, settings)
         {
             this._forwardArrowKind = forward;
             this._backwardArrowKind = backward;

@@ -27,21 +27,21 @@ namespace FurnaceWPF.Factories
         {
             var driverController = GetDriverController(0, DriversPortEnum.Zero);
 
-            return new DriverViewModel(driverController, "А");
+            return new DriverViewModel(driverController, "А", _settings);
         }
 
         public DriverWithArrowViewModel GetDriverB()
         {
             var driverController = GetDriverController(0, DriversPortEnum.One);
 
-            return new DriverWithArrowViewModel(PackIconKind.ArrowRightBold, PackIconKind.ArrowLeftBold, PackIconKind.ArrowRightBold, driverController, "B");
+            return new DriverWithArrowViewModel(PackIconKind.ArrowRightBold, PackIconKind.ArrowLeftBold, PackIconKind.ArrowRightBold, driverController, "B", _settings);
         }
 
         public DriverWithArrowViewModel GetDriverC()
         {
             var driverController = GetDriverController(0, DriversPortEnum.Two);
 
-            return new DriverWithArrowViewModel(PackIconKind.ArrowUpBold, PackIconKind.ArrowDownBold, PackIconKind.ArrowUpBold, driverController, "C");
+            return new DriverWithArrowViewModel(PackIconKind.ArrowUpBold, PackIconKind.ArrowDownBold, PackIconKind.ArrowUpBold, driverController, "C", _settings);
         }
 
         private DriverContoller GetDriverController(int channel, DriversPortEnum driversPort)

@@ -1,4 +1,5 @@
 ﻿using FurnaceCore.Model;
+using FurnaceWPF.Models;
 using FurnaceWPF.Models.Controllers;
 using Microsoft.Extensions.DependencyInjection;
 using pechka4._8;
@@ -27,6 +28,8 @@ namespace FurnaceWPF.ViewModels
         private string _inputSpeed;
 
         private DriverDirectionEnum _direction = DriverDirectionEnum.Stop;
+
+        private Settings _settings;
 
         #region Properties
         public string DriverName => _name;
@@ -106,7 +109,7 @@ namespace FurnaceWPF.ViewModels
         public TimeSpan AnimationDuration => TimeSpan.FromSeconds(AnimationSpeed);
 
         public bool CanConfirmSpeed =>
-            double.TryParse(InputSpeed, out var val) && val >= 0 && val <= 100 && Math.Abs(val - Speed) > 0.01;
+            double.TryParse(InputSpeed, out var val) && val >= 0 && val <= 100 && Math.Abs(val - Speed) > 0.01 && _settings.IsPortOpen;
         #endregion
 
         #region Commands
@@ -119,11 +122,11 @@ namespace FurnaceWPF.ViewModels
         #endregion
 
         public event Action? AnimationSettingsChangeed;
-        public DriverViewModel(DriverContoller driverController, string name)
+        public DriverViewModel(DriverContoller driverController, string name, Settings settings)
         {
             this._driverController = driverController;
             this._name = name;
-
+            this._settings = settings;
 
             driverController.PropertyChanged += DriverController_PropertyChanged;
         }
