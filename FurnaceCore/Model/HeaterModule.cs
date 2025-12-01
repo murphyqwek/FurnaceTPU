@@ -32,18 +32,18 @@ namespace FurnaceCore.Model
         };
 
         public HeaterModule(byte addressByte, byte channelByte, IOManager.IOManager ioManager) : base(addressByte, channelByte, ioManager)
-        {
-            InsertAddressesToCommand(ref this._turnOnHeaterCommand);
-            InsertAddressesToCommand(ref this._turnOffHeaterCommand);
+        { 
         }
 
         public void TurnOnHeater()
         {
+            InsertAddressesToCommand(ref this._turnOnHeaterCommand);
             _ioManager.SendDataToPort(this, GetCommandWithCRC(this._turnOnHeaterCommand));
         }
 
         public void TurnOffHeater()
         {
+            InsertAddressesToCommand(ref this._turnOffHeaterCommand);
             _ioManager.SendDataToPort(this, GetCommandWithCRC(this._turnOffHeaterCommand));
         }
     }

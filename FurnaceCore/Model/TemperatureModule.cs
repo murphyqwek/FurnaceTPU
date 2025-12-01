@@ -24,7 +24,6 @@ namespace FurnaceCore.Model
 
         public TemperatureModule(byte addressByte, byte channelByte, IOManager.IOManager ioManager) : base(addressByte, channelByte, ioManager)
         {
-            InsertAddressesToCommand(ref this._getTemperatureCommand);
         }
 
         public async Task<double> GetTemperatureAsync(int timeOut, CancellationToken cancellationToken)
@@ -54,6 +53,7 @@ namespace FurnaceCore.Model
 
         public void SendGetTemperatureCommand()
         {
+            InsertAddressesToCommand(ref this._getTemperatureCommand);
             _ioManager.SendDataToPort(this, GetCommandWithCRC(this._getTemperatureCommand));
         }
 
