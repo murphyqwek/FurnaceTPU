@@ -89,6 +89,8 @@ namespace pechka4._8.ViewModels
             this.InputTemperature = initialTemperature;
             this._settings = settings;
 
+
+            SetTemperature = new RemoteCommand(SetTemperatureHandler);
             _zoneController.ErrorEvent += PollingErrorEventHandler;
             _zoneController.PropertyChanged += (s, e) =>
             {
@@ -143,7 +145,7 @@ namespace pechka4._8.ViewModels
             MessageBox.Show(errorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
-        public void SetTemperatireHandler()
+        public void SetTemperatureHandler()
         {
             this._zoneController.StartPollingHeater(InputTemperature);
         }
