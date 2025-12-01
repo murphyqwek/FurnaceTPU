@@ -15,7 +15,11 @@ namespace FurnaceWPF.Models
 {
     class SwitchingPort : IPort
     {
-        public string Name { get => _currentPort.Name; set => _currentPort.Name = value; }
+        public string Name 
+        { 
+            get => _currentPort.Name; 
+            set => _currentPort.Name = value; 
+        }
         
         private IPort _currentPort;
         private Func<MockPort> _mockPortFactory;

@@ -73,4 +73,14 @@
              From="0" To="-25" Duration="0:0:1"/>
     </Storyboard>
 
+    <conv:ConfigurableBooleanConverter x:Key="TurnOnOffButtonStateConverterr">
+        <conv:ConfigurableBooleanConverter.TrueValue>
+            <SolidColorBrush Color="#21c445"/>
+        </conv:ConfigurableBooleanConverter.TrueValue>
+
+        <conv:ConfigurableBooleanConverter.FalseValue>
+            <SolidColorBrush Color="#e60e23"/>
+        </conv:ConfigurableBooleanConverter.FalseValue>
+    </conv:ConfigurableBooleanConverter>
+
 </ResourceDictionary>

@@ -5,8 +5,20 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:local="clr-namespace:FurnaceWPF.Views.Controls"
+             xmlns:converters="clr-namespace:FurnaceWPF.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <converters:ConfigurableBooleanConverter x:Key="TurnOnOffButtonStateConverterr">
+            <converters:ConfigurableBooleanConverter.TrueValue>
+                <SolidColorBrush Color="#21c445"/>
+            </converters:ConfigurableBooleanConverter.TrueValue>
+
+            <converters:ConfigurableBooleanConverter.FalseValue>
+                <SolidColorBrush Color="#e60e23"/>
+            </converters:ConfigurableBooleanConverter.FalseValue>
+        </converters:ConfigurableBooleanConverter>
+    </UserControl.Resources>
     <StackPanel Orientation="Horizontal" Margin="10">
 
         <TextBlock Text="COM-порт:" 
@@ -18,6 +30,8 @@
               materialDesign:HintAssist.Hint="Выберите порт"
               IsEditable="False"
               FontSize="18"
+                  
+              IsEnabled="{Binding IsPortChosingAvailable}"
               
               ItemsSource="{Binding AvailablePorts}" 
               
@@ -33,6 +47,11 @@
             Margin="10,0,0,0"
             ToolTip="Обновить список портов"
             Command="{Binding RefreshCommand}" Cursor="Hand"/>
-
+        
+        <ToggleButton Margin="20" IsChecked="{Binding IsPortOpen, Mode=TwoWay}"
+            Style="{StaticResource MaterialDesignIconButton}" Cursor="Hand">
+            <materialDesign:PackIcon Kind="Power" Width="48" Height="48"
+             Foreground="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}, Converter={StaticResource TurnOnOffButtonStateConverterr}}" Cursor=""/>
+        </ToggleButton>
     </StackPanel>
 </UserControl>

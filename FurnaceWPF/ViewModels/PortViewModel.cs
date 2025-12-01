@@ -3,11 +3,13 @@ using FurnaceWPF.Commands;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace FurnaceWPF.ViewModels
 {
@@ -42,12 +44,22 @@ namespace FurnaceWPF.ViewModels
                     OnPropertyChanged();
                     if (SelectedPort != NO_AVAILABLE_PORTS)
                     {
-                        _portModule.ClosePort();
                         _portModule.Name = SelectedPort;
-                        _portModule.OpenPort();
                     }
                 }
             }
+        }
+
+        public bool IsPortOpen
+        {
+            get => _portModule.IsOpen();
+
+            set => SetPortIsOpen(value);
+        }
+
+        public bool IsPortChosingAvailable
+        {
+            get => !_portModule.IsOpen();
         }
         #endregion
 
@@ -65,6 +77,29 @@ namespace FurnaceWPF.ViewModels
             AvailablePorts = SerialPort.GetPortNames().OrderBy(p => p);
 
             SelectedPort = AvailablePorts.Count() > 0 ? AvailablePorts.First() : NO_AVAILABLE_PORTS;
+        }
+
+        public void SetPortIsOpen(bool isOpen)
+        {
+            if (isOpen)
+            {
+                try
+                {
+                    _portModule.OpenPort();
+                }
+                catch (IOException ex)
+                {
+                    _portModule.ClosePort();
+                    MessageBox.Show(ex.Message, "Ошибка открытия порта", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                _portModule.ClosePort();
+            }
+
+            OnPropertyChanged(nameof(IsPortOpen));
+            OnPropertyChanged(nameof(IsPortChosingAvailable));
         }
     }
 }
