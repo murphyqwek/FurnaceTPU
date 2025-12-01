@@ -1,6 +1,7 @@
 ﻿using FurnaceCore.Filters;
 using FurnaceCore.IOManager;
 using FurnaceCore.Model;
+using FurnaceCore.utlis;
 using FurnaceTest.Mock;
 using System;
 using System.Collections.Generic;
@@ -33,17 +34,17 @@ namespace FurnaceTest
             temperatureModule.OnTemperatureGet += (value) =>
             {
                 eventTriggered = true;
-                eventValue = value;
+                eventValue = value.Value;
             };
 
             var task = temperatureModule.GetTemperatureAsync(10_000, CancellationToken.None);
 
             mockPort.ReceiveData($"01 04 02 {hexData} 00 00");
 
-            double? result = await task;
+            Result<double>? result = await task;
 
             Assert.True(eventTriggered);
-            Assert.Equal(result, temperature);
+            Assert.Equal(result.Value, temperature);
             Assert.Equal(eventValue, temperature);
         }
     }

@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using FurnaceCore.Exceptions;
+using System.Reflection.Metadata.Ecma335;
 namespace FurnaceCore.Model
 {
     public class TemperatureModule : AddressChannelModbusFurnaceModule, IFurnaceHandleDataModule
     {
-        public event Action<double> OnTemperatureGet;
-        private TaskCompletionSource<double>? _completionSource;
+        public event Action<Result<double>> OnTemperatureGet;
+        private TaskCompletionSource<Result<double>>? _completionSource;
 
         private byte[] _getTemperatureCommand = new byte[]
         {
@@ -26,15 +27,15 @@ namespace FurnaceCore.Model
         {
         }
 
-        public async Task<double> GetTemperatureAsync(int timeOut, CancellationToken cancellationToken)
+        public async Task<Result<double>> GetTemperatureAsync(int timeOut, CancellationToken cancellationToken)
         {
             if (_completionSource != null)
                 throw new InvalidOperationException("Last request in progress");
 
             SendGetTemperatureCommand();
 
-            _completionSource = new TaskCompletionSource<double>();
-            double temperature;
+            _completionSource = new TaskCompletionSource<Result<double>>();
+            Result<double> temperature;
 
             try
             {
@@ -56,19 +57,26 @@ namespace FurnaceCore.Model
             SendCommand(_getTemperatureCommand);
         }
 
-        private double parseData(string rawTemperatureData)
+        private Result<double> parseData(string rawTemperatureData)
         {
-            var temp = rawTemperatureData.Split(' ');
+            try
+            {
+                var temp = rawTemperatureData.Split(' ');
 
-            string temperatureBytes = temp[3] + temp[4];
-            double value = Convert.ToInt16("0x" + temperatureBytes, 16) / 10.0;
+                string temperatureBytes = temp[3] + temp[4];
+                double value = Convert.ToInt16("0x" + temperatureBytes, 16) / 10.0;
 
-            return Math.Round(value, 1);
+                return new Result<double>(Math.Round(value, 1), true);
+            }
+            catch (Exception)
+            {
+                return new Result<double>(0, false, "Не удалось обработать результат");
+            }
         }
 
         public void HandleData(string data)
         {
-            double temperature = parseData(data);
+            Result<double> temperature = parseData(data);
 
             if(_completionSource != null)
             {
