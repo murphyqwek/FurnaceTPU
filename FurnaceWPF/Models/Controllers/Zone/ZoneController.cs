@@ -222,7 +222,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
 
         public void SetChannelByte(byte newChannel)
         {
-            _temperatureModule.SetAddressByte
+            _temperatureModule.SetChannelByte(newChannel);
         }
 
         public void Dispose()

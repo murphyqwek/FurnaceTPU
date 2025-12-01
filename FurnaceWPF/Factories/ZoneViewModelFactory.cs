@@ -89,7 +89,7 @@ namespace FurnaceWPF.Factories
                         _ => throw new InvalidOperationException("Property name validation failed during update.")
                     };
 
-                    zoneViewModel.UpdateZoneAddress(newAddress);
+                    zoneViewModel.UpdateZoneChannel(newAddress);
                 }
             };
         }

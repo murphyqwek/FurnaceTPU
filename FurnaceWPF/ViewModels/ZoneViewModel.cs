@@ -117,9 +117,9 @@ namespace pechka4._8.ViewModels
             };
         }
 
-        public void UpdateZoneAddress(byte newAddress)
+        public void UpdateZoneChannel(byte newAddress)
         {
-            this._zoneController.(newAddress);
+            this._zoneController.SetChannelByte(newAddress);
         }
 
         private void UpdateTemperaturePolling(bool isActive)
