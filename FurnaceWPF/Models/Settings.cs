@@ -101,7 +101,7 @@ namespace FurnaceWPF.Models
         public ushort StepSizeDriver { get => 500; }
         public int DriverUpdateInterval { get => 100; } // Интервал указан в мс
 
-        public int ZonePollingInterval { get => 2000; } // Интервал опроса температуры в мс
+        public int ZonePollingInterval { get => 1000; } // Интервал опроса температуры в мс
 
         public int ZoneHeatCheckingInterval { get => 5000; } //Интервал для проверки температуры нагрева
 
