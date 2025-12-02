@@ -65,7 +65,7 @@ namespace FurnaceCore.Model
                 if (Convert.ToInt32(temp[3], 16) == 127 &&
                     Convert.ToInt32(temp[4], 16) == 255)
                 {
-                    return new Result<double>(0, false, "Обрыв");
+                    return new Result<double>(0, false, "Произошёл обрыв");
                 }
                 
                 string temperatureBytes = temp[3] + temp[4];

@@ -203,7 +203,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
         {
             StopPollingTemperature();
             _logger.LogError(message);
-            MessageBox.Show(message, "Ошибка", MessageBoxButton.OK);
+            MessageBox.Show(message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void GlobalErrorHandle(string message)
