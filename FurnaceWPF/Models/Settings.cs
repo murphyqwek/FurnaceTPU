@@ -101,9 +101,9 @@ namespace FurnaceWPF.Models
         public ushort StepSizeDriver { get => 500; }
         public int DriverUpdateInterval { get => 100; } // Интервал указан в мс
 
-        public int ZonePollingInterval { get => 200; } // Интервал опроса температуры в мс
+        public int ZonePollingInterval { get => 2000; } // Интервал опроса температуры в мс
 
-        public int ZoneHeatCheckingInterval { get => 100; } //Интервал для проверки температуры нагрева
+        public int ZoneHeatCheckingInterval { get => 5000; } //Интервал для проверки температуры нагрева
 
         public double ZoneTreshold { get => 10.0; } //Трешхолд для нагревателя (TargetValue - ZoneTreshold)
 
@@ -134,7 +134,7 @@ namespace FurnaceWPF.Models
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

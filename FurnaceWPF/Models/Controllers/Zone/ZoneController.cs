@@ -135,7 +135,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
         {
             try
             {
-                if (this.IsPollingTemperature)
+                if (!this.IsPollingTemperature)
                 {
                     _logger.LogInformation($"Опрос температуры канала {this._channel} остановлен, прекращаем нагрев");
                     Dispatcher.CurrentDispatcher.Invoke(StopPollingHeater);
@@ -167,21 +167,15 @@ namespace FurnaceWPF.Models.Controllers.Zone
             if(_targetTemperature - _settings.ZoneTreshold >= CurrentTemperature)
             {
                 _logger.LogInformation($"Текущая температура ниже установленной. Идёт нагрев");
-                if (!this._heatModuleStatus)
-                {
-                    _heaterModule.TurnOnHeater();
-                    this._heatModuleStatus = true;
-                }
+                _heaterModule.TurnOnHeater();
+                this._heatModuleStatus = true;
             }
 
             if (_targetTemperature + _settings.ZoneTreshold <= CurrentTemperature)
             {
                 _logger.LogInformation($"Текущая температура выше установленной. Идёт охлаждение");
-                if (this._heatModuleStatus)
-                {
-                    _heaterModule.TurnOffHeater();
-                    this._heatModuleStatus = false;
-                }
+                _heaterModule.TurnOffHeater();
+                this._heatModuleStatus = false;
             }
         }
 
