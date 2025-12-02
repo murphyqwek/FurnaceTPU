@@ -58,12 +58,12 @@ namespace FurnaceWPF.ViewModels
 
         public byte ZoneThreeAddress
         {
-            get => _settings.ZoneThreeChannell;
+            get => _settings.ZoneThreeChannel;
             set
             {
-                if (_settings.ZoneThreeChannell != value)
+                if (_settings.ZoneThreeChannel != value)
                 {
-                    _settings.ZoneThreeChannell = value;
+                    _settings.ZoneThreeChannel = value;
                     OnPropertyChanged();
                 }
             }

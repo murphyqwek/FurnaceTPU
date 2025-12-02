@@ -7,7 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Channels;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Threading;
 
 namespace FurnaceWPF.Models.Controllers.Cooling
@@ -16,12 +18,12 @@ namespace FurnaceWPF.Models.Controllers.Cooling
     {
         private double _currentTemperature;
         private bool _isWorking;
+        private byte _channel;
 
-        private TemperatureModule _temperatureModule;
+        private TemperatureController _temperatureController;
         private CoolingModule _coolingModule;
         private ILogger<CoolingConroller> _logger;
         private Settings _settings;
-        private CancellationTokenSource _pollingCts;
 
         #region Properties
         public double CurrentTemperature
@@ -52,100 +54,60 @@ namespace FurnaceWPF.Models.Controllers.Cooling
 
         public event Action<string>? ErrorEvent;
 
-        public CoolingConroller(TemperatureModule temperatureModule, CoolingModule coolingModule, ILogger<CoolingConroller> logger, Settings settings)
+        public CoolingConroller(TemperatureController temperatureController, CoolingModule coolingModule, ILogger<CoolingConroller> logger, Settings settings)
         {
-            this._temperatureModule = temperatureModule;
+            this._temperatureController = temperatureController;
             this._logger = logger;
             this._settings = settings;
             this._coolingModule = coolingModule;
+            this._channel = _settings.CoolingChannel;
+            this._temperatureController.GlobalErrorEvent += (e) => { StopPollingTemperature(); };
         }
 
         public void StartPollingTemperature()
         {
+            if (IsWorking) return;
+
             IsWorking = true;
 
-            _coolingModule.TurnOnCooling();
-            _logger.LogInformation($"Начат опрос температуры холодильника с интервалом {_settings.CoolingPollingTemperatureIntervall} мс. Таймаут чтения: {_settings.ZonePollingTimeout} мс.");
+            _logger.LogInformation($"Начат опрос температуры с интервалом {_settings.ZonePollingInterval} мс. Таймаут чтения: {_settings.ZonePollingTimeout} мс.");
 
-            _pollingCts = new CancellationTokenSource();
-
-            Task.Run(() => PollTemperatureLoop(_pollingCts.Token));
+            _temperatureController.AddCaller(this._channel, new TemperatureEvent { reciveError = ErrorHandle, reciveTemperatue = TemperatureHandle });
         }
 
         public void StopPollingTemperature()
         {
-            _coolingModule.TurnOffCooling();
-            _pollingCts?.Cancel();
-            _pollingCts = null;
-            _logger.LogInformation($"Опрос температуры холодильника преркащён");
+            if (!IsWorking) return;
+
             IsWorking = false;
-        }
+            OnPropertyChanged(nameof(IsWorking));
 
-        private async Task PollTemperatureLoop(CancellationToken token)
-        {
-            int errorCount = 0;
-            while (!token.IsCancellationRequested)
-            {
-                try
-                {
-                    Result<double> currentTemperature;
+            _temperatureController.RemoveCaller(_channel);
 
-                    try
-                    {
-                        currentTemperature = await _temperatureModule.GetTemperatureAsync(_settings.ZonePollingTimeout, token);
+            _logger.LogInformation($"Опрос температуры канала {this._channel} преркащён");
+            IsWorking = false;
 
-                        if (currentTemperature.Success)
-                        {
-                            _logger.LogInformation($"Текущая температура холодильника: {currentTemperature.Value}");
-                            Dispatcher.CurrentDispatcher.Invoke(() => CurrentTemperature = currentTemperature.Value);
-                            errorCount = 0;
-                        }
-                        else
-                        {
-                            errorCount++;
-                            _logger.LogWarning($"Произошла ошибка ({errorCount}) получния данных темепратуры холодильника: {currentTemperature.ErrorMessage}");
-
-                            if (errorCount == 5)
-                            {
-                                _logger.LogError($"Прошёл порог ошибок получения данных. Прекращаем опрос");
-                                Dispatcher.CurrentDispatcher.Invoke(StopPollingTemperature);
-                                Dispatcher.CurrentDispatcher.Invoke(() => ErrorEvent?.Invoke($"Модуль температуры получает данные с ошибками"));
-                                break;
-                            }
-
-                            _logger.LogWarning("Попытка получить данные ещё раз");
-                        }
-                    }
-                    catch (TimeoutException)
-                    {
-                        _logger.LogWarning($"Таймаут чтения температуры холодильника ({_settings.ZonePollingTimeout} мс) истек");
-                        Dispatcher.CurrentDispatcher.Invoke(StopPollingTemperature);
-                        Dispatcher.CurrentDispatcher.Invoke(() => ErrorEvent?.Invoke($"Таймаут чтения температуры холодильника ({_settings.ZonePollingTimeout} мс) истек"));
-
-                        break;
-                    }
-
-                    await Task.Delay(_settings.ZonePollingInterval, token);
-                }
-                catch (TaskCanceledException) when (token.IsCancellationRequested)
-                {
-                    _logger.LogDebug("Опрос температуры холодильника отменен");
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Критическая ошибка при опросе температуры холодильника. " + ex.Message);
-                    Dispatcher.CurrentDispatcher.Invoke(() => StopPollingTemperature());
-                    Dispatcher.CurrentDispatcher.Invoke(() => ErrorEvent?.Invoke("Критическая ошибка при опросе температуры холодильника (см. логги)"));
-                    break;
-                }
-            }
         }
 
 
-        public void SetAddressByte(byte newAddress)
+        public void SetChannel(byte newChannel)
         {
-            _temperatureModule.SetAddressByte(newAddress);
+            _temperatureController.ChangeChannel(this._channel, newChannel);
+            _logger.LogInformation($"Канал холодильника изменён с {this._channel} на {newChannel}");
+            this._channel = newChannel;
+        }
+
+        public void TemperatureHandle(double temperature)
+        {
+            CurrentTemperature = temperature;
+        }
+
+        public void ErrorHandle(string message)
+        {
+            _logger.LogError(message);
+            StopPollingTemperature();
+
+            MessageBox.Show(message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 }

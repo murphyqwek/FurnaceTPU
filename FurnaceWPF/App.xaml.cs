@@ -66,24 +66,7 @@ namespace pechka4._8
 
         private void ConfigureControllers(ServiceCollection services)
         {
-            services.AddTransient<CoolingConroller>(sp =>
-            {
-                var ioManager = sp.GetRequiredService<IOManager>();
-                var port = sp.GetRequiredService<IPort>();
-
-                TemperatureModule temperatureModule = new TemperatureModule(0x01, 0x0, ioManager);
-                AddressFilter temperatureFilter = new AddressFilter(temperatureModule.GetAddressByte, temperatureModule);
-
-                ioManager.RegisterFilter(temperatureFilter);
-                ioManager.RegisterModulePort(temperatureModule, port);
-
-                CoolingModule coolingModule = sp.GetRequiredService<CoolingModule>();
-                ILogger<CoolingConroller> logger = sp.GetRequiredService<ILogger<CoolingConroller>>();
-                Settings settings = sp.GetRequiredService<Settings>();
-                CoolingConroller coolingConroller = new CoolingConroller(temperatureModule, coolingModule, logger, settings);
-
-                return coolingConroller;
-            });
+            services.AddTransient<CoolingConroller>();
 
             services.AddSingleton<TemperatureController>();
         }

@@ -32,16 +32,12 @@ namespace FurnaceCore.Model
             if (_completionSource != null)
                 throw new InvalidOperationException("Last request in progress");
 
-
-
             _completionSource = new TaskCompletionSource<Result<double>>();
             Result<double> temperature;
 
-            SendGetTemperatureCommand();
-
-
             try
             {
+                SendGetTemperatureCommand();
                 temperature = await _completionSource.Task.WaitAsync(TimeSpan.FromMilliseconds(timeOut), cancellationToken);
             }
             catch (Exception)

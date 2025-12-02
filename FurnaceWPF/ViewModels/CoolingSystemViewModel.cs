@@ -1,4 +1,5 @@
-﻿using FurnaceWPF.Models.Controllers.Cooling;
+﻿using FurnaceWPF.Models;
+using FurnaceWPF.Models.Controllers.Cooling;
 using FurnaceWPF.ViewModels;
 using pechka4._8.Helpers;
 using System;
@@ -39,6 +40,11 @@ namespace pechka4._8.ViewModels
             }
         }
 
+        public bool IsEnabled
+        {
+            get => _settings.IsPortOpen; 
+        }
+
         public string Name { get => "Холодильник"; }
 
         public Brush CoolantBrush => InterpolateBrush(_controller.CurrentTemperature);
@@ -55,18 +61,40 @@ namespace pechka4._8.ViewModels
         }
 
         private CoolingConroller _controller;
+        private Settings _settings;
 
-        public CoolingSystemViewModel(CoolingConroller coolingConroller)
+        public CoolingSystemViewModel(CoolingConroller coolingConroller, Settings settings)
         {
             this._controller = coolingConroller;
+            this._settings = settings;
 
-            this.PropertyChanged += (s, e) =>
+            this._controller.PropertyChanged += (s, e) =>
             {
                 if (e.PropertyName == nameof(CoolingConroller.CurrentTemperature))
                 {
                     OnPropertyChanged(nameof(CoolantTemperature));
                     OnPropertyChanged(nameof(CoolantBrush));
                     OnPropertyChanged(nameof(CoolantTemperatureDouble));
+                }
+
+                if (e.PropertyName == nameof(CoolingConroller.IsWorking))
+                {
+                    OnPropertyChanged(nameof(IsPumpOn));
+                }
+            };
+
+
+
+            _settings.PropertyChanged += (s, e) =>
+            { 
+                if(e.PropertyName == nameof(Settings.IsPortOpen))
+                {
+                    OnPropertyChanged(nameof(IsEnabled));
+
+                    if(!_settings.IsPortOpen)
+                    {
+                        _controller.StopPollingTemperature();
+                    }
                 }
             };
         }

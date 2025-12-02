@@ -39,7 +39,8 @@
                 </StackPanel>
 
                 <ToggleButton Grid.Column="1" IsChecked="{Binding IsPumpOn, Mode=TwoWay}"
-                        Style="{StaticResource MaterialDesignIconButton}">
+                        Style="{StaticResource MaterialDesignIconButton}"
+                        IsEnabled="{Binding IsEnabled}">
                     <materialDesign:PackIcon Kind="Power" Width="48" Height="48"
                          Foreground="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}, Converter={StaticResource TurnOnOffButtonStateConverterr}}" Cursor=""/>
                 </ToggleButton>

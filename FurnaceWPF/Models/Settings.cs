@@ -11,9 +11,10 @@ namespace FurnaceWPF.Models
     public class Settings : INotifyPropertyChanged
     {
         private bool _isDebug = false;
-        private byte _zoneOneAddress = 0x01;
-        private byte _zoneTwoAddress = 0x02;
-        private byte _zoneThreeAddress = 0x03;
+        private byte _zoneOneChannel = 0x01;
+        private byte _zoneTwoChannel = 0x02;
+        private byte _zoneThreeChannel = 0x03;
+        private byte _coolingChannel = 0x04;
         private bool _isRunning;
         private bool _isPortOpen = false;
 
@@ -34,12 +35,12 @@ namespace FurnaceWPF.Models
 
         public byte ZoneOneChannel
         {
-            get => _zoneOneAddress;
+            get => _zoneOneChannel;
             set
             {
-                if (_zoneOneAddress != value)
+                if (_zoneOneChannel != value)
                 {
-                    _zoneOneAddress = value;
+                    _zoneOneChannel = value;
                     OnPropertyChanged();
                 }
             }
@@ -47,25 +48,38 @@ namespace FurnaceWPF.Models
 
         public byte ZoneTwoChannel
         {
-            get => _zoneTwoAddress;
+            get => _zoneTwoChannel;
             set
             {
-                if (_zoneTwoAddress != value)
+                if (_zoneTwoChannel != value)
                 {
-                    _zoneTwoAddress = value;
+                    _zoneTwoChannel = value;
                     OnPropertyChanged();
                 }
             }
         }
 
-        public byte ZoneThreeChannell
+        public byte ZoneThreeChannel
         {
-            get => _zoneThreeAddress;
+            get => _zoneThreeChannel;
             set
             {
-                if (_zoneThreeAddress != value)
+                if (_zoneThreeChannel != value)
                 {
-                    _zoneThreeAddress = value;
+                    _zoneThreeChannel = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public byte CoolingChannel
+        {
+            get => _coolingChannel;
+            set
+            {
+                if (_coolingChannel != value)
+                {
+                    _coolingChannel = value;
                     OnPropertyChanged();
                 }
             }

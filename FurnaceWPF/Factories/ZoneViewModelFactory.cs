@@ -54,7 +54,7 @@ namespace FurnaceWPF.Factories
 
         public ZoneViewModel GetThirdZone()
         {
-            return GetZoneAndSubscribeToAddressChagned("Зона 3", _settings.ZoneThreeChannell, 3);
+            return GetZoneAndSubscribeToAddressChagned("Зона 3", _settings.ZoneThreeChannel, 3);
         }
         
         private ZoneViewModel GetZoneAndSubscribeToAddressChagned(string name, byte channelByte, int zoneNumber)
@@ -71,7 +71,7 @@ namespace FurnaceWPF.Factories
             {
                 1 => nameof(Settings.ZoneOneChannel),
                 2 => nameof(Settings.ZoneTwoChannel),
-                3 => nameof(Settings.ZoneThreeChannell),
+                3 => nameof(Settings.ZoneThreeChannel),
                 _ => throw new Exception("Not all zones could be subcribed")
             };
 
@@ -83,7 +83,7 @@ namespace FurnaceWPF.Factories
                     {
                         1 => _settings.ZoneOneChannel,
                         2 => _settings.ZoneTwoChannel,
-                        3 => _settings.ZoneThreeChannell,
+                        3 => _settings.ZoneThreeChannel,
                         _ => throw new InvalidOperationException("Property name validation failed during update.")
                     };
 
