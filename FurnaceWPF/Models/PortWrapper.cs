@@ -17,9 +17,9 @@ namespace FurnaceWPF.Models
         {
             this._logger = logger;
 
-            this.LogInformationEvent += (mesage) => _logger.LogInformation(mesage);
-            this.LogWarningEvent+= (mesage) => _logger.LogWarning(mesage);
-            this.LogErrorEvent += (mesage) => _logger.LogError(mesage);
+            this.LogInformation += (mesage) => _logger.LogInformation(mesage);
+            this.LogWarning+= (mesage) => _logger.LogWarning(mesage);
+            this.LogError += (mesage) => _logger.LogError(mesage);
         }
     }
 }
