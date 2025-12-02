@@ -17,19 +17,9 @@ namespace FurnaceWPF.Models
         {
             this._logger = logger;
 
-            this._serialPort.DataReceived += _serialPort_DataReceived;
-        }
-
-        private void _serialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        {
-            int bytesToRead = _serialPort.BytesToRead;
-            byte[] buffer = new byte[bytesToRead];
-
-            // Читаем данные
-            int bytesRead = _serialPort.Read(buffer, 0, bytesToRead);
-
-            string receivedData = BitConverter.ToString(buffer).Replace("-", " ");
-            _logger.LogInformation(receivedData);
+            this.LogInformationEvent += (mesage) => _logger.LogInformation(mesage);
+            this.LogWarningEvent+= (mesage) => _logger.LogWarning(mesage);
+            this.LogErrorEvent += (mesage) => _logger.LogError(mesage);
         }
     }
 }
