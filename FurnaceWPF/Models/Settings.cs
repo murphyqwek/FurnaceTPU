@@ -169,6 +169,9 @@ namespace FurnaceWPF.Models
 
         public int CoolingPollingTemperatureIntervall { get => 200; }
 
+        public int RotationTimeout { get => 5 * 1000; }
+        public int RotationPollingInterval { get => 500; }
+
         public bool IsPortOpen 
         { 
             get => _isPortOpen;
