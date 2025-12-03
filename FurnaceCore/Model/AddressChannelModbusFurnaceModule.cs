@@ -1,6 +1,7 @@
 ﻿using FurnaceCore.Utils;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,8 +10,8 @@ namespace FurnaceCore.Model
 {
     public abstract class AddressChannelModbusFurnaceModule : BaseModbusFurnaceModule
     {
-        private byte _addressByte;
-        private byte _channelByte;
+        protected byte _addressByte;
+        protected byte _channelByte;
 
         public AddressChannelModbusFurnaceModule(byte addressByte, byte channelByte, IOManager.IOManager ioManager): base(ioManager)
         {
@@ -53,6 +54,12 @@ namespace FurnaceCore.Model
         protected void SendCommandWithoutInsertingAddressesToCommand(byte[] command)
         {
             _ioManager.SendDataToPort(this, GetCommandWithCRC(command));
+        }
+
+        protected void InsertAddressesToCommand(ref byte[] command, byte address, byte channel) 
+        {
+            command[0] = address;
+            command[3] = channel;
         }
     }
 }

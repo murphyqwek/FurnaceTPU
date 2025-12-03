@@ -44,7 +44,7 @@ namespace FurnaceCore.Model
         {
             byte[] command = CopyCommand(_turnOnHeaterCommand);
 
-            command[3] = channel;
+            InsertAddressesToCommand(ref command, this._addressByte, channel);
 
             SendCommandWithoutInsertingAddressesToCommand(command);
         }
@@ -58,7 +58,7 @@ namespace FurnaceCore.Model
         {
             byte[] command = CopyCommand(_turnOffHeaterCommand);
 
-            command[3] = channel;
+            InsertAddressesToCommand(ref command, this._addressByte, channel);
 
             SendCommandWithoutInsertingAddressesToCommand(command);
         }
