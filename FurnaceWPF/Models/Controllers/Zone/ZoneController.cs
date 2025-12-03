@@ -146,7 +146,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
                 if (CurrentTemperature < _targetTemperature + _settings.ZoneTreshold && CurrentTemperature > _targetTemperature - _settings.ZoneTreshold)
                 {
                     _logger.LogInformation("Текущая температура в допустимых пределах заданной");
-                    _heaterModule.TurnOffHeater();
+                    _heaterModule.TurnOffHeater(_heatModuleChannel);
                     this._heatModuleStatus = false;
                 }
                 else
@@ -168,14 +168,14 @@ namespace FurnaceWPF.Models.Controllers.Zone
             if(_targetTemperature - _settings.ZoneTreshold >= CurrentTemperature)
             {
                 _logger.LogInformation($"Текущая температура ниже установленной. Идёт нагрев");
-                _heaterModule.TurnOnHeater();
+                _heaterModule.TurnOnHeater(_heatModuleChannel);
                 this._heatModuleStatus = true;
             }
 
             if (_targetTemperature + _settings.ZoneTreshold <= CurrentTemperature)
             {
                 _logger.LogInformation($"Текущая температура выше установленной. Идёт охлаждение");
-                _heaterModule.TurnOffHeater();
+                _heaterModule.TurnOffHeater(_heatModuleChannel);
                 this._heatModuleStatus = false;
             }
         }

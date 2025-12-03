@@ -42,11 +42,11 @@ namespace FurnaceCore.Model
 
         public static byte[] CopyCommand(byte[] sourceCommand)
         {
-            if (source == null)
+            if (sourceCommand == null)
                 return null;
 
-            byte[] copy = new byte[source.Length];
-            Array.Copy(source, copy, source.Length);
+            byte[] copy = new byte[sourceCommand.Length];
+            Array.Copy(sourceCommand, copy, sourceCommand.Length);
             return copy;
         }
     }

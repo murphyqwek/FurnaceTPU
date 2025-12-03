@@ -34,9 +34,9 @@ namespace FurnaceWPF.Factories
             _temperatureController = temperatureController;
         }
 
-        public ZoneViewModel GetZone(string name, byte channelByte)
+        public ZoneViewModel GetZone(string name, byte channelTemperatureByte, byte channelHeaterByte)
         {
-            ZoneController zoneController = new ZoneController(channelByte, _heaterModule, _zoneLogger, _settings, _temperatureController);
+            ZoneController zoneController = new ZoneController(channelTemperatureByte, _heaterModule, _zoneLogger, _settings, _temperatureController, channelHeaterByte);
 
 
             return new ZoneViewModel(name, 0, zoneController, _settings);
@@ -44,22 +44,22 @@ namespace FurnaceWPF.Factories
 
         public ZoneViewModel GetFirstZone()
         {
-            return GetZoneAndSubscribeToAddressChagned("Зона 1", _settings.ZoneOneChannel, 1);
+            return GetZoneAndSubscribeToAddressChagned("Зона 1", _settings.ZoneOneChannel, 1, _settings.ZoneHeaterOneChannel);
         }
 
         public ZoneViewModel GetSecondZone()
         {
-            return GetZoneAndSubscribeToAddressChagned("Зона 2", _settings.ZoneTwoChannel, 2);
+            return GetZoneAndSubscribeToAddressChagned("Зона 2", _settings.ZoneTwoChannel, 2, _settings.ZoneHeaterTwoChannel);
         }
 
         public ZoneViewModel GetThirdZone()
         {
-            return GetZoneAndSubscribeToAddressChagned("Зона 3", _settings.ZoneThreeChannel, 3);
+            return GetZoneAndSubscribeToAddressChagned("Зона 3", _settings.ZoneThreeChannel, 3, _settings.ZoneHeaterThreeChannel);
         }
         
-        private ZoneViewModel GetZoneAndSubscribeToAddressChagned(string name, byte channelByte, int zoneNumber)
+        private ZoneViewModel GetZoneAndSubscribeToAddressChagned(string name, byte channelTemperatureByte, int zoneNumber, byte channelHeaterByte)
         {
-            var zone = GetZone(name, channelByte);
+            var zone = GetZone(name, channelTemperatureByte, channelHeaterByte);
             SubscribeToZoneAddressChanged(zoneNumber, zone);
 
             return zone;

@@ -15,7 +15,7 @@ namespace FurnaceWPF.Models
         private byte _zoneTwoChannel = 0x01;
         private byte _zoneThreeChannel = 0x02;
         private byte _zoneHeaterOneChannel = 0x00;
-        private byte _zoneTHeaterwoChannel = 0x01;
+        private byte _zoneHeaterTwoChannel = 0x01;
         private byte _zoneHeaterThreeChannel = 0x02;
         private byte _coolingChannel = 0x03;
         private bool _isRunning;
