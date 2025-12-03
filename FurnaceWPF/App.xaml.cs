@@ -171,6 +171,9 @@ namespace pechka4._8
                 var port = sp.GetRequiredService<IPort>();
                 var settings = sp.GetRequiredService<Settings>();
                 DriverModule driverModule = new DriverModule(ioManager, settings.DriverAddress);
+                AddressFilter addressFilter = new AddressFilter(driverModule.GetAddress, driverModule);
+
+                ioManager.RegisterFilter(addressFilter);
                 ioManager.RegisterModulePort(driverModule, port);
 
                 return driverModule;
