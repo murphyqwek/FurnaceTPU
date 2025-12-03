@@ -25,7 +25,7 @@ namespace FurnaceTest
         {
             IOManager ioManager = new IOManager();
             MockPort mockPort = new MockPort(ioManager);
-            DriverModule driverModule = new DriverModule(ioManager);
+            DriverModule driverModule = new DriverModule(ioManager, 0);
 
             ioManager.RegisterModulePort(driverModule, mockPort);
 
@@ -59,7 +59,7 @@ namespace FurnaceTest
         {
             IOManager ioManager = new IOManager();
             MockPort mockPort = new MockPort(ioManager);
-            DriverModule driverModule = new DriverModule(ioManager);
+            DriverModule driverModule = new DriverModule(ioManager, 0);
 
             ioManager.RegisterModulePort(driverModule, mockPort);
 
@@ -72,6 +72,62 @@ namespace FurnaceTest
 
             Assert.True(commandChannel == channelHex);
             Assert.True(commandFrequency == frequencyHex);
+        }
+
+
+        [Theory]
+        [InlineData(0, 6, "00 01 01 06")]
+        public async Task GetRotationDataTest(byte channel, byte inputFlags, string inputCommand)
+        {
+            IOManager ioManager = new IOManager();
+            MockPort mockPort = new MockPort(ioManager);
+            DriverModule driverModule = new DriverModule(ioManager, channel);
+            AddressFilter addressFilter = new AddressFilter(driverModule.GetAddress, driverModule);
+
+            ioManager.RegisterModulePort(driverModule, mockPort);
+            ioManager.RegisterFilter(addressFilter);
+
+            var task = driverModule.GetRotationDataAsync(10000, CancellationToken.None);
+
+
+            mockPort.ReceiveData(inputCommand);
+
+            var result = await task;
+
+            Assert.True(result.Success);
+
+            if(!result.Success)
+            {
+                return;
+            }
+
+            byte resultFlags = 0;
+
+            foreach(var port in result.Value.rotations.Keys)
+            {
+                var rotation = (byte)(result.Value.rotations.GetValueOrDefault(port) == RotationEnum.Rigth ? 1 : 0);
+
+                if(rotation == 0)
+                {
+                    continue;
+                }
+
+                switch(port)
+                {
+                    case DriversPortEnum.Three:
+                        resultFlags += 1;
+                        break;
+                    case DriversPortEnum.Two:
+                        resultFlags += 2;
+                        break;
+                    case DriversPortEnum.One:
+                        resultFlags += 4;
+                        break;
+                }
+            }
+
+
+            Assert.True(resultFlags == inputFlags);
         }
     }
 }

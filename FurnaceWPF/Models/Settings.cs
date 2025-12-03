@@ -17,6 +17,7 @@ namespace FurnaceWPF.Models
         private byte _zoneHeaterOneChannel = 0x00;
         private byte _zoneHeaterTwoChannel = 0x01;
         private byte _zoneHeaterThreeChannel = 0x02;
+        private byte _driverAddress = 0x01;
         private byte _coolingChannel = 0x03;
         private bool _isRunning;
         private bool _isPortOpen = false;
@@ -75,6 +76,18 @@ namespace FurnaceWPF.Models
             }
         }
 
+        public byte DriverAddress
+        {
+            get => _driverAddress;
+            set
+            {
+                if (_driverAddress != value)
+                {
+                    _driverAddress = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public byte ZoneHeaterOneChannel
         {

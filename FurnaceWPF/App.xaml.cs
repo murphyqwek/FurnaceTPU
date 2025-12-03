@@ -166,7 +166,8 @@ namespace pechka4._8
             {
                 var ioManager = sp.GetRequiredService<IOManager>();
                 var port = sp.GetRequiredService<IPort>();
-                DriverModule driverModule = new DriverModule(ioManager);
+                var settings = sp.GetRequiredService<Settings>();
+                DriverModule driverModule = new DriverModule(ioManager, settings.DriverAddress);
                 ioManager.RegisterModulePort(driverModule, port);
 
                 return driverModule;

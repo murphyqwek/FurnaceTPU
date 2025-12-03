@@ -1,4 +1,5 @@
 ﻿
+using FurnaceCore.utlis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,15 @@ namespace FurnaceCore.Model
         Four = 0x10,
     }
 
-    public class DriverModule : BaseModbusFurnaceModule
+    public enum RotationEnum
+    {
+        Left,
+        Rigth
+    }
+
+    public record class RotationData(IReadOnlyDictionary<DriversPortEnum, RotationEnum> rotations);
+
+    public class DriverModule : BaseModbusFurnaceModule, IFurnaceHandleDataModule
     {
         private byte[] _startDriverCommand = new byte[]
         {
@@ -44,6 +53,7 @@ namespace FurnaceCore.Model
             0x08, //5
             0x01, //6
             0x01, //7 адрес порта
+            0x00
         };
 
         private byte[] _setDriverFrequency = new byte[]
@@ -61,10 +71,24 @@ namespace FurnaceCore.Model
             0x00, //10
         };
 
-
-
-        public DriverModule(IOManager.IOManager ioManager) : base(ioManager)
+        private byte[] _getRotation = new byte[]
         {
+            01, //0 адрес
+            01, 
+            00, 
+            20, 
+            00, 
+            08,
+        };
+
+        private TaskCompletionSource<Result<RotationData>>? _completionSource;
+        private byte _address;
+
+        public event Action<Result<RotationData>> RotationUpdate;
+
+        public DriverModule(IOManager.IOManager ioManager, byte address) : base(ioManager)
+        {
+            this._address = address;
         }
 
         private byte DecodeDriverPort(DriversPortEnum port)
@@ -88,6 +112,11 @@ namespace FurnaceCore.Model
             SendCommand(command);
         }
 
+        public byte GetAddress()
+        {
+            return this._address;
+        }
+
         public void SetDriverFrequency(int channel, ushort frequency)
         {
             if(channel < 0 || channel > 7)
@@ -101,5 +130,88 @@ namespace FurnaceCore.Model
             SendCommand(command);
         }
 
+        public void SendGetRotationData()
+        {
+            var command = CopyCommand(_getRotation);
+
+            command[0] = _address;
+
+            SendCommand(command);
+        }
+
+        public async Task<Result<RotationData>> GetRotationDataAsync(int timeOut, CancellationToken cancellationToken)
+        {
+            if (_completionSource != null)
+                throw new InvalidOperationException("Last request in progress");
+
+            _completionSource = new TaskCompletionSource<Result<RotationData>>();
+            Result<RotationData> temperature;
+
+            try
+            {
+                SendGetRotationData();
+                temperature = await _completionSource.Task.WaitAsync(TimeSpan.FromMilliseconds(timeOut), cancellationToken);
+            }
+            catch (Exception)
+            {
+                _completionSource = null;
+                throw;
+            }
+
+            _completionSource = null;
+
+            return temperature;
+        }
+
+        private Result<RotationData> ParseRotationData(string data)
+        {
+            try
+            {
+                string[] hex = data.Split(' ');
+
+                if (hex.Length < 3)
+                {
+                    return new Result<RotationData>(null, false, "Неполные данные для шагового двигателя");
+                }
+
+                byte rotationData = Convert.ToByte(hex[3], 16);
+
+                Dictionary<DriversPortEnum, RotationEnum> rotationDataDict = new Dictionary<DriversPortEnum, RotationEnum>();
+
+                RotationEnum driver3Rotation = GetRotation(rotationData & 0b00000001);
+                RotationEnum driver2Rotation = GetRotation(rotationData & 0b00000010);
+                RotationEnum driver1Rotation = GetRotation(rotationData & 0b00000100);
+
+
+                rotationDataDict.Add(DriversPortEnum.Three, driver3Rotation);
+                rotationDataDict.Add(DriversPortEnum.Two, driver2Rotation);
+                rotationDataDict.Add(DriversPortEnum.One, driver1Rotation);
+
+                RotationData result = new RotationData(rotationDataDict);
+
+                return new Result<RotationData>(result, true);
+            }
+            catch (Exception ex)
+            {
+                return new Result<RotationData>(null, false, ex.Message);
+            }
+        }
+
+        public void HandleData(string data)
+        {
+            var rotationData = ParseRotationData(data);
+
+            if (_completionSource != null)
+            {
+                _completionSource.SetResult(rotationData);
+            }
+
+            RotationUpdate?.Invoke(rotationData);
+        }
+
+        private RotationEnum GetRotation(int rotationFlag)
+        {
+            return rotationFlag == 0 ? RotationEnum.Left : RotationEnum.Rigth;
+        }
     }
 }

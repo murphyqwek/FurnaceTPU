@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FurnaceCore.Exceptions;
-using System.Reflection.Metadata.Ecma335;
+
 namespace FurnaceCore.Model
 {
     public class TemperatureModule : AddressChannelModbusFurnaceModule, IFurnaceHandleDataModule
