@@ -115,12 +115,7 @@ namespace FurnaceWPF.ViewModels
         #endregion
 
         #region Commands
-        public ICommand ConfirmSpeedCommand => new RelayCommand(_ =>
-        {
-            if (double.TryParse(InputSpeed, out var val) && val >= 0 && val <= 100)
-                _driverController.SetNewTarget((ushort)(val * 80));
-
-        }, _ => CanConfirmSpeed);
+        public ICommand ConfirmSpeedCommand => new RelayCommand(_ => ConfirmSpeedHandler(), _ => CanConfirmSpeed);
         #endregion
 
         public event Action? AnimationSettingsChangeed;
@@ -140,6 +135,12 @@ namespace FurnaceWPF.ViewModels
             };
 
             rotationController.RotationErrorEvent += (m) => IsWorking = false;
+        }
+
+        private void ConfirmSpeedHandler()
+        {
+            if (double.TryParse(InputSpeed, out var val) && val >= 0 && val <= 100)
+                _driverController.SetNewTarget((ushort)(val * 80));
         }
 
         private void RotationUpdateHandler(RotationData rotationData)
