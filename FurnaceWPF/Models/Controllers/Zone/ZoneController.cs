@@ -163,21 +163,18 @@ namespace FurnaceWPF.Models.Controllers.Zone
                     {
                         HeatOrCold();
                     }
+
+                    await Task.Delay(_settings.ZoneHeatCheckingInterval, token);
+                }
+                catch (OperationCanceledException) when (token.IsCancellationRequested)
+                {
+                    break;
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex.ToString());
                     this._heatModuleStatus = false;
                     _logger.LogInformation("Нагрев остановлен");
-                }
-
-                try
-                {
-                    await Task.Delay(_settings.ZoneHeatCheckingInterval, token);
-                }
-                catch (OperationCanceledException) when (token.IsCancellationRequested)
-                {
-                    break;
                 }
             }
 
