@@ -11,10 +11,10 @@ namespace FurnaceWPF.Models
     public class Settings : INotifyPropertyChanged
     {
         private bool _isDebug = false;
-        private byte _zoneOneChannel = 0x01;
-        private byte _zoneTwoChannel = 0x02;
-        private byte _zoneThreeChannel = 0x03;
-        private byte _coolingChannel = 0x04;
+        private byte _zoneOneChannel = 0x00;
+        private byte _zoneTwoChannel = 0x01;
+        private byte _zoneThreeChannel = 0x02;
+        private byte _coolingChannel = 0x03;
         private bool _isRunning;
         private bool _isPortOpen = false;
 
