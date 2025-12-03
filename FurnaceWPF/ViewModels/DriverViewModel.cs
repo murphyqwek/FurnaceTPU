@@ -175,6 +175,7 @@ namespace FurnaceWPF.ViewModels
             }
             else
             {
+                DirectionEnum = DriverDirectionEnum.Stop;
                 _rotationController.RemoveSubscriberToRotationUpdate(RotationUpdateHandler);
                 _driverController.Stop();
             }
