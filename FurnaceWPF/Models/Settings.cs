@@ -155,21 +155,21 @@ namespace FurnaceWPF.Models
         }
 
         public ushort StepSizeDriver { get => 500; }
-        public int DriverUpdateInterval { get => 100; } // Интервал указан в мс
+        public int DriverRampingUpdateInterval { get => 100; } // Интервал указан в мс
 
         public int ZonePollingInterval { get => 1000; } // Интервал опроса температуры в мс
 
-        public int ZoneHeatCheckingInterval { get => 5000; } //Интервал для проверки температуры нагрева
+        public int ZoneHeatCheckingInterval { get => 1000; } //Интервал для проверки температуры нагрева
 
         public double ZoneTreshold { get => 10.0; } //Трешхолд для нагревателя (TargetValue - ZoneTreshold)
 
-        public int ZonePollingTimeout { get => 5 * 1000; } //Таймаут для опроса температуры
+        public int ZonePollingTimeout { get => 15 * 1000; } //Таймаут для опроса температуры
 
-        public int CoolingPollingTimeout { get => 5 * 1000; }
+        public int CoolingPollingTimeout { get => 15 * 1000; }
 
-        public int CoolingPollingTemperatureIntervall { get => 200; }
+        public int CoolingPollingTemperatureIntervall { get => 1000; }
 
-        public int RotationTimeout { get => 5 * 1000; }
+        public int RotationTimeout { get => 15 * 1000; }
         public int RotationPollingInterval { get => 500; }
 
         public bool IsPortOpen 

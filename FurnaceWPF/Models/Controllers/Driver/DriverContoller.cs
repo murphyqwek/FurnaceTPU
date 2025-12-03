@@ -40,7 +40,7 @@ namespace FurnaceWPF.Models.Controllers
             this._targetFrequence = newTarget;
 
             this._driver.StartDriver(_driversPort);
-            _rampingTimer = new Timer(RampingTick, null, _settings.DriverUpdateInterval, _settings.DriverUpdateInterval);
+            _rampingTimer = new Timer(RampingTick, null, _settings.DriverRampingUpdateInterval, _settings.DriverRampingUpdateInterval);
         }
 
         private void RampingTick(object? state)
