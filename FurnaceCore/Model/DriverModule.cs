@@ -43,8 +43,7 @@ namespace FurnaceCore.Model
             0x00, //4
             0x08, //5
             0x01, //6
-            0x00, //7 адрес порта
-            0x00, //8
+            0x01, //7 адрес порта
         };
 
         private byte[] _setDriverFrequency = new byte[]
