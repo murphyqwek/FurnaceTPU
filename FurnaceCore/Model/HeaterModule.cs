@@ -40,9 +40,27 @@ namespace FurnaceCore.Model
             SendCommand(_turnOnHeaterCommand);
         }
 
+        public void TurnOnHeater(byte channel)
+        {
+            byte[] command = CopyCommand(_turnOnHeaterCommand);
+
+            command[3] = channel;
+
+            SendCommandWithoutInsertingAddressesToCommand(command);
+        }
+
         public void TurnOffHeater()
         {
             SendCommand(_turnOffHeaterCommand);
+        }
+
+        public void TurnOffHeater(byte channel)
+        {
+            byte[] command = CopyCommand(_turnOffHeaterCommand);
+
+            command[3] = channel;
+
+            SendCommandWithoutInsertingAddressesToCommand(command);
         }
     }
 }

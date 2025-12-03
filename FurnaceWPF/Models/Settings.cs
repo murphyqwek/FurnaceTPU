@@ -14,6 +14,9 @@ namespace FurnaceWPF.Models
         private byte _zoneOneChannel = 0x00;
         private byte _zoneTwoChannel = 0x01;
         private byte _zoneThreeChannel = 0x02;
+        private byte _zoneHeaterOneChannel = 0x00;
+        private byte _zoneTHeaterwoChannel = 0x01;
+        private byte _zoneHeaterThreeChannel = 0x02;
         private byte _coolingChannel = 0x03;
         private bool _isRunning;
         private bool _isPortOpen = false;
@@ -67,6 +70,46 @@ namespace FurnaceWPF.Models
                 if (_zoneThreeChannel != value)
                 {
                     _zoneThreeChannel = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+
+        public byte ZoneHeaterOneChannel
+        {
+            get => _zoneHeaterOneChannel;
+            set
+            {
+                if (_zoneHeaterOneChannel != value)
+                {
+                    _zoneHeaterOneChannel = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public byte ZoneHeaterTwoChannel
+        {
+            get => _zoneHeaterTwoChannel;
+            set
+            {
+                if (_zoneHeaterTwoChannel != value)
+                {
+                    _zoneHeaterTwoChannel = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public byte ZoneHeaterThreeChannel
+        {
+            get => _zoneHeaterThreeChannel;
+            set
+            {
+                if (_zoneHeaterThreeChannel != value)
+                {
+                    _zoneHeaterThreeChannel = value;
                     OnPropertyChanged();
                 }
             }

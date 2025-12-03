@@ -61,6 +61,8 @@ namespace FurnaceCore.Model
             0x00, //10
         };
 
+
+
         public DriverModule(IOManager.IOManager ioManager) : base(ioManager)
         {
         }

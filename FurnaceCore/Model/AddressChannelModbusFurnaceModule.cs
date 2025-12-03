@@ -49,5 +49,10 @@ namespace FurnaceCore.Model
             InsertAddressesToCommand(ref command);
             _ioManager.SendDataToPort(this, GetCommandWithCRC(command));
         }
+
+        protected void SendCommandWithoutInsertingAddressesToCommand(byte[] command)
+        {
+            _ioManager.SendDataToPort(this, GetCommandWithCRC(command));
+        }
     }
 }

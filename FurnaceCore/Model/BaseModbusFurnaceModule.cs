@@ -39,5 +39,15 @@ namespace FurnaceCore.Model
         {
             _ioManager.SendDataToPort(this, GetCommandWithCRC(command));
         }
+
+        public static byte[] CopyCommand(byte[] sourceCommand)
+        {
+            if (source == null)
+                return null;
+
+            byte[] copy = new byte[source.Length];
+            Array.Copy(source, copy, source.Length);
+            return copy;
+        }
     }
 }
