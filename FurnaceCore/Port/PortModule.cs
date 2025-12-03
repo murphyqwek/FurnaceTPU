@@ -178,6 +178,7 @@ namespace FurnaceCore.Port
                 _serialPort.Write(data, 0, data.Length);
                 string hex = BitConverter.ToString(data).Replace("-", " ");
                 LogInformation?.Invoke($"Отправлено {data.Length} байт: {hex}");
+                System.Threading.Thread.Sleep(2);
             }
             catch (Exception ex)
             {
