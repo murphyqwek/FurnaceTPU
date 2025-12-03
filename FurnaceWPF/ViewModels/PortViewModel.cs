@@ -65,6 +65,7 @@ namespace FurnaceWPF.ViewModels
         }
         #endregion
 
+        public event Action PortClosing;
         public RemoteCommand RefreshCommand { get; }
 
         public PortViewModel(IPort portModule, Settings settings)
@@ -98,6 +99,7 @@ namespace FurnaceWPF.ViewModels
             }
             else
             {
+                PortClosing?.Invoke();
                 _portModule.ClosePort();
             }
 

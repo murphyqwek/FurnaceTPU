@@ -160,7 +160,7 @@ Kind="{Binding DriveB.ArrowKind}" Width="16" Height="26" Canvas.Left="486" Canva
                 </Button>
                 <!--#endregion-->
                 <!--#region COM Port menu-->
-                <controls:PortControl HorizontalAlignment="Left" Canvas.Left="1979" VerticalAlignment="Center" Width="578" Canvas.Top="101" />
+                <controls:PortControl DataContext="{Binding PortControlViewMovel}" HorizontalAlignment="Left" Canvas.Left="1979" VerticalAlignment="Center" Width="578" Canvas.Top="101" />
                 <!--#endregion-->
 
                 <!--#region cooling area-->

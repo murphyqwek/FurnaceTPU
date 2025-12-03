@@ -26,7 +26,6 @@ namespace FurnaceWPF.Views.Controls
     {
         public PortControl()
         {
-            this.DataContext = App.Services.GetRequiredService<PortViewModel>();
             InitializeComponent();
         }
     }

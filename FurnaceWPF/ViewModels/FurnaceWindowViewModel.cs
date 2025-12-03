@@ -29,6 +29,8 @@ namespace FurnaceWPF.ViewModels
         public ZoneViewModel Zone2 { get; }
         public ZoneViewModel Zone3 { get; }
 
+        public PortViewModel PortControlViewMovel { get; }
+
         public CoolingSystemViewModel CoolingSystem { get; }
 
         public bool IsSettingsAvalable
@@ -44,7 +46,7 @@ namespace FurnaceWPF.ViewModels
 
         public RemoteCommand SettingsCommand { get; }
 
-        public FurnaceWindowViewModel(DriverViewModelFactory driverFactory, ZoneViewModelFactory zoneFactory, Settings settings, IServiceProvider service, Func<SettingsWindow> settingsWindow, CoolingSystemViewModel coolingSystem)
+        public FurnaceWindowViewModel(DriverViewModelFactory driverFactory, ZoneViewModelFactory zoneFactory, Settings settings, IServiceProvider service, Func<SettingsWindow> settingsWindow, CoolingSystemViewModel coolingSystem, PortViewModel portViewModel)
         {
             DriveA = driverFactory.GetDriverA();
             DriveB = driverFactory.GetDriverB();
@@ -53,6 +55,8 @@ namespace FurnaceWPF.ViewModels
             Zone1 = zoneFactory.GetFirstZone();
             Zone2 = zoneFactory.GetSecondZone();
             Zone3 = zoneFactory.GetThirdZone();
+
+            PortControlViewMovel = portViewModel;
 
             CoolingSystem = coolingSystem;
 
@@ -67,19 +71,30 @@ namespace FurnaceWPF.ViewModels
 
             App.Services.GetRequiredService<TemperatureController>().GlobalErrorEvent += (m) => MessageBox.Show(m, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             App.Services.GetRequiredService<RotationController>().RotationErrorEvent += (m) => MessageBox.Show(m, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+
             _settings.PropertyChanged += (s, e) =>
             {
                 if (e.PropertyName == nameof(Settings.IsPortOpen))
                 {
-                    DriveA.IsWorking = _settings.IsPortOpen;
-                    DriveB.IsWorking = _settings.IsPortOpen;
-                    DriveC.IsWorking = _settings.IsPortOpen;
-
-                    Zone1.IsWorking = _settings.IsPortOpen;
-                    Zone2.IsWorking = _settings.IsPortOpen;
-                    Zone3.IsWorking = _settings.IsPortOpen;
+                    if (_settings.IsPortOpen == true)
+                    {
+                        SetIsWorkingToControls(true);
+                    }
                 }
             };
+
+            PortControlViewMovel.PortClosing += () => SetIsWorkingToControls(false);
+        }
+
+        private void SetIsWorkingToControls(bool isWorking)
+        {
+            DriveA.IsWorking = isWorking;
+            DriveB.IsWorking = isWorking;
+            DriveC.IsWorking = isWorking;
+
+            Zone1.IsWorking = isWorking;
+            Zone2.IsWorking = isWorking;
+            Zone3.IsWorking = isWorking;
         }
 
         private void OnIsDebugChanged()
