@@ -32,6 +32,8 @@ namespace FurnaceWPF.Models.Controllers.Zone
         private Settings _settings;
         private double _targetTemperature;
         private byte _heatModuleChannel;
+        private CancellationTokenSource _pollingCts;
+        private Task _pollingTask;
 
         private TemperatureController _temperatureController;
 
@@ -121,46 +123,65 @@ namespace FurnaceWPF.Models.Controllers.Zone
             this._heatModuleStatus = false;
             _logger.LogInformation($"Начат нагрев с интервалом {_settings.ZoneHeatCheckingInterval} мс до {_targetTemperature}");
             _heaterModule.TurnOnHeater();
-            _heaterPollingTimer = new Timer(PollHeater, null, 0, _settings.ZoneHeatCheckingInterval);
+
+            _pollingCts = new CancellationTokenSource();
+            _pollingTask = Task.Run(async () => await PollHeater(_pollingCts.Token));
+
         }
 
         public void StopPollingHeater()
         {
             this.IsHeating = false;
+            _pollingCts?.Cancel();
+
+            _pollingTask?.Wait();
+
             _heaterModule.TurnOffHeater();
-            _heaterPollingTimer?.Change(Timeout.Infinite, Timeout.Infinite);
             _logger.LogInformation("Нагрев остановлен");
         }
 
-        private void PollHeater(object? o)
+        private async Task PollHeater(CancellationToken token)
         {
-            try
+            while (!token.IsCancellationRequested)
             {
-                if (!this.IsPollingTemperature)
+                try
                 {
-                    _logger.LogInformation($"Опрос температуры канала {this._channel} остановлен, прекращаем нагрев");
-                    Dispatcher.CurrentDispatcher.Invoke(StopPollingHeater);
-                    return;
+                    if (!this.IsPollingTemperature)
+                    {
+                        _logger.LogInformation($"Опрос температуры канала {this._channel} остановлен, прекращаем нагрев");
+                        Dispatcher.CurrentDispatcher.Invoke(StopPollingHeater);
+                        return;
+                    }
+
+                    if (CurrentTemperature < _targetTemperature + _settings.ZoneTreshold && CurrentTemperature > _targetTemperature - _settings.ZoneTreshold)
+                    {
+                        _logger.LogInformation("Текущая температура в допустимых пределах заданной");
+                        _heaterModule.TurnOffHeater(_heatModuleChannel);
+                        this._heatModuleStatus = false;
+                    }
+                    else
+                    {
+                        HeatOrCold();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.ToString());
+                    this._heatModuleStatus = false;
+                    _logger.LogInformation("Нагрев остановлен");
                 }
 
-                if (CurrentTemperature < _targetTemperature + _settings.ZoneTreshold && CurrentTemperature > _targetTemperature - _settings.ZoneTreshold)
+                try
                 {
-                    _logger.LogInformation("Текущая температура в допустимых пределах заданной");
-                    _heaterModule.TurnOffHeater(_heatModuleChannel);
-                    this._heatModuleStatus = false;
+                    await Task.Delay(_settings.ZoneHeatCheckingInterval, token);
                 }
-                else
+                catch (OperationCanceledException) when (token.IsCancellationRequested)
                 {
-                    HeatOrCold();
+                    break;
                 }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.ToString());
-                this._heatModuleStatus = false;
-                _heaterPollingTimer?.Change(Timeout.Infinite, Timeout.Infinite);
-                _logger.LogInformation("Нагрев остановлен");
-            }
+
+            _logger.LogInformation("Алгоритм нагрева остановлен");
         }
 
         private void HeatOrCold()
