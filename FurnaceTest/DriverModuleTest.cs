@@ -105,7 +105,7 @@ namespace FurnaceTest
 
             foreach(var port in result.Value.rotations.Keys)
             {
-                var rotation = (byte)(result.Value.rotations.GetValueOrDefault(port) == RotationEnum.Rigth ? 1 : 0);
+                var rotation = (byte)(result.Value.rotations.GetValueOrDefault(port) == RotationEnum.Right ? 1 : 0);
 
                 if(rotation == 0)
                 {

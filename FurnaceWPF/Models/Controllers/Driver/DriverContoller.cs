@@ -86,5 +86,10 @@ namespace FurnaceWPF.Models.Controllers
             _rampingTimer?.Dispose();
             _rampingTimer = null;
         }
+
+        public DriversPortEnum GetDriversPort()
+        {
+            return _driversPort;
+        }
     }
 }

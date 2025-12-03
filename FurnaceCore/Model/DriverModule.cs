@@ -23,7 +23,7 @@ namespace FurnaceCore.Model
     public enum RotationEnum
     {
         Left,
-        Rigth
+        Right
     }
 
     public record class RotationData(IReadOnlyDictionary<DriversPortEnum, RotationEnum> rotations);
@@ -211,7 +211,7 @@ namespace FurnaceCore.Model
 
         private RotationEnum GetRotation(int rotationFlag)
         {
-            return rotationFlag == 0 ? RotationEnum.Left : RotationEnum.Rigth;
+            return rotationFlag == 0 ? RotationEnum.Left : RotationEnum.Right;
         }
     }
 }

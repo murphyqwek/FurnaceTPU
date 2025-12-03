@@ -42,13 +42,13 @@
             </StackPanel>
 
             <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
-                <ToggleButton IsChecked="{Binding IsLeft, Mode=TwoWay}"
+                <ToggleButton IsChecked="{Binding IsLeft, Mode=OneWay}"
                               Width="48" Height="48" Margin="0,0,10,0"
                               Style="{StaticResource MaterialDesignIconButton}">
                     <materialDesign:PackIcon Kind="ArrowLeftBold" Width="48" Height="48"
                                              Foreground="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}, Converter={StaticResource BoolToBrushConverter}}"/>
                 </ToggleButton>
-                <ToggleButton IsChecked="{Binding IsRight, Mode=TwoWay}"
+                <ToggleButton IsChecked="{Binding IsRight, Mode=OneWay}"
                               Width="48" Height="48"
                               Style="{StaticResource MaterialDesignIconButton}">
                     <materialDesign:PackIcon Kind="ArrowRightBold" Width="48" Height="48"

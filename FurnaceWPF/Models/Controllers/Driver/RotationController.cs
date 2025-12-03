@@ -21,7 +21,7 @@ namespace FurnaceWPF.Models.Controllers.Driver
 
         public event Action<string> RotationErrorEvent;
 
-        public event Action<RotationData> RotationDataUpdate;
+        private event Action<RotationData> RotationDataUpdate;
 
         public bool IsPollingRotation
         {
@@ -54,6 +54,23 @@ namespace FurnaceWPF.Models.Controllers.Driver
             _pollingCts = new CancellationTokenSource();
 
             Task.Run(() => PollRotationLoop(_pollingCts.Token));
+        }
+
+        public void AddSubscriberToRotationUpdate(Action<RotationData> callback)
+        {
+            RotationDataUpdate += callback;
+
+            StartPollingRotation();
+        }
+
+        public void RemoveSubscriberToRotationUpdate(Action<RotationData> callback)
+        {
+            RotationDataUpdate -= callback;
+
+            if(RotationDataUpdate == null)
+            {
+                StopPollingRotation();
+            }
         }
 
         public void StopPollingRotation()
