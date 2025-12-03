@@ -105,6 +105,7 @@ namespace FurnaceWPF.Models.Controllers.Driver
                 {
                     _logger.LogWarning($"Таймаут чтения данных шагового двигателя ({_settings.ZonePollingTimeout} мс) истек");
                     Dispatcher.CurrentDispatcher.Invoke(() => RotationErrorEvent?.Invoke($"Таймаут чтения данных шагового двигателя ({_settings.ZonePollingTimeout} мс) истек"));
+                    break;
                 }
                 catch (TaskCanceledException) when (token.IsCancellationRequested)
                 {

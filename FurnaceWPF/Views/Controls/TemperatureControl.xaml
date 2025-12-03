@@ -40,7 +40,7 @@
                     <TextBlock Text="{Binding Name}" FontSize="20" FontWeight="SemiBold" Margin="8,0,0,0"/>
                 </StackPanel>
 
-                <ToggleButton Grid.Column="1" IsChecked="{Binding IsActive, Mode=TwoWay}"
+                <ToggleButton Grid.Column="1" IsChecked="{Binding IsWorking, Mode=TwoWay}"
                             Style="{StaticResource MaterialDesignIconButton}"
                             IsEnabled="{Binding IsEnabled}">
                     <materialDesign:PackIcon Kind="Power" Width="48" Height="48"
@@ -72,7 +72,7 @@
                     Width="110" Height="35"
                     HorizontalAlignment="Center"
                     Command="{Binding SetTemperature}"
-                    IsEnabled="{Binding IsActive}"/>
+                    IsEnabled="{Binding IsWorking}"/>
         </Grid>
     </materialDesign:Card>
 </UserControl>

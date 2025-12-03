@@ -20,6 +20,7 @@ using System.Windows;
 using FurnaceWPF.Views;
 using FurnaceWPF.Models.Controllers.Cooling;
 using FurnaceWPF.Models.Controllers.Zone;
+using FurnaceWPF.Models.Controllers.Driver;
 
 namespace pechka4._8
 {
@@ -69,6 +70,8 @@ namespace pechka4._8
             services.AddTransient<CoolingConroller>();
 
             services.AddSingleton<TemperatureController>();
+
+            services.AddSingleton<RotationController>();
         }
 
         private void ConfigureFactories(ServiceCollection services)

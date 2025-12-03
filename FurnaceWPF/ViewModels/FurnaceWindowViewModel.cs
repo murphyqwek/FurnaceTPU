@@ -2,6 +2,7 @@
 using FurnaceWPF.Commands;
 using FurnaceWPF.Factories;
 using FurnaceWPF.Models;
+using FurnaceWPF.Models.Controllers.Driver;
 using FurnaceWPF.Models.Controllers.Zone;
 using FurnaceWPF.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -65,6 +66,20 @@ namespace FurnaceWPF.ViewModels
             SettingsCommand = new RemoteCommand(OnSettingsButtonClicked);
 
             App.Services.GetRequiredService<TemperatureController>().GlobalErrorEvent += (m) => MessageBox.Show(m, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            App.Services.GetRequiredService<RotationController>().RotationErrorEvent += (m) => MessageBox.Show(m, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            _settings.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(Settings.IsPortOpen))
+                {
+                    DriveA.IsWorking = _settings.IsPortOpen;
+                    DriveB.IsWorking = _settings.IsPortOpen;
+                    DriveC.IsWorking = _settings.IsPortOpen;
+
+                    Zone1.IsWorking = _settings.IsPortOpen;
+                    Zone2.IsWorking = _settings.IsPortOpen;
+                    Zone3.IsWorking = _settings.IsPortOpen;
+                }
+            };
         }
 
         private void OnIsDebugChanged()

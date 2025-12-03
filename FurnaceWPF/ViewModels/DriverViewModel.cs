@@ -98,6 +98,11 @@ namespace FurnaceWPF.ViewModels
             }
         }
 
+        public bool IsEnabled
+        {
+            get => _settings.IsPortOpen;
+        }
+
         // Направление вращения: 1 = по часовой, -1 = против, 0 = стоп
         public int Direction => ((int)DirectionEnum);
 
@@ -127,6 +132,14 @@ namespace FurnaceWPF.ViewModels
             this._rotationController = rotationController;
 
             _driverController.PropertyChanged += DriverController_PropertyChanged;
+            _settings.PropertyChanged += (s, e) => {
+                if(e.PropertyName == nameof(Settings.IsPortOpen))
+                {
+                    OnPropertyChanged(nameof(IsEnabled));
+                }
+            };
+
+            rotationController.RotationErrorEvent += (m) => IsWorking = false;
         }
 
         private void RotationUpdateHandler(RotationData rotationData)

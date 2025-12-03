@@ -11,23 +11,45 @@
 
     <UserControl.Resources>
         <conv:BoolToBrushConverter x:Key="BoolToBrushConverter" TrueBrush="MediumSeaGreen" FalseBrush="Gray"/>
+        <conv:ConfigurableBooleanConverter x:Key="TurnOnOffButtonStateConverterr">
+            <conv:ConfigurableBooleanConverter.TrueValue>
+                <SolidColorBrush Color="#21c445"/>
+            </conv:ConfigurableBooleanConverter.TrueValue>
+
+            <conv:ConfigurableBooleanConverter.FalseValue>
+                <SolidColorBrush Color="#e60e23"/>
+            </conv:ConfigurableBooleanConverter.FalseValue>
+        </conv:ConfigurableBooleanConverter>
     </UserControl.Resources>
 
     <materialDesign:Card Padding="15">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" Text="{Binding DriverName, StringFormat=Привод {0}}" 
-                       FontSize="18" FontWeight="Bold" Margin="0,0,0,8"/>
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <TextBlock Text="{Binding DriverName, StringFormat=Привод {0}}" 
+                            FontSize="18" FontWeight="Bold" 
+                            Margin="0,0,0,8"
+                            VerticalAlignment="Center"/>
+                <ToggleButton Margin="20" IsChecked="{Binding IsWorking, Mode=TwoWay}"
+                            Style="{StaticResource MaterialDesignIconButton}" Cursor="Hand"
+                              IsEnabled="{Binding IsEnabled}"
+                              HorizontalAlignment="Right"
+                              VerticalAlignment="Center">
+                    <materialDesign:PackIcon Kind="Power" Width="30" Height="30"
+                                Foreground="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}, Converter={StaticResource TurnOnOffButtonStateConverterr}}" Cursor="" VerticalAlignment="Center"/>
+                </ToggleButton>
+            </StackPanel>
+
 
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,6" VerticalAlignment="Center">
-                <TextBlock Text="Скорость:" FontSize="18" Margin="0,0,4,0"/>
-                <TextBlock Text="{Binding Speed, StringFormat=F1}" FontSize="18" FontWeight="Bold" Foreground="DarkSlateBlue"/>
+                <TextBlock Text="Скорость:" FontSize="18" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding Speed, StringFormat=F1}" FontSize="18" FontWeight="Bold" Foreground="DarkSlateBlue" VerticalAlignment="Center"/>
             </StackPanel>
 
             <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,10" VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -42,18 +64,10 @@
             </StackPanel>
 
             <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
-                <ToggleButton IsChecked="{Binding IsLeft, Mode=OneWay}"
-                              Width="48" Height="48" Margin="0,0,10,0"
-                              Style="{StaticResource MaterialDesignIconButton}">
-                    <materialDesign:PackIcon Kind="ArrowLeftBold" Width="48" Height="48"
-                                             Foreground="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}, Converter={StaticResource BoolToBrushConverter}}"/>
-                </ToggleButton>
-                <ToggleButton IsChecked="{Binding IsRight, Mode=OneWay}"
-                              Width="48" Height="48"
-                              Style="{StaticResource MaterialDesignIconButton}">
-                    <materialDesign:PackIcon Kind="ArrowRightBold" Width="48" Height="48"
-                                             Foreground="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}, Converter={StaticResource BoolToBrushConverter}}"/>
-                </ToggleButton>
+                <materialDesign:PackIcon Kind="ArrowLeftBold" Width="48" Height="48"
+                         Foreground="{Binding IsLeft, Converter={StaticResource BoolToBrushConverter}}"/>
+                <materialDesign:PackIcon Kind="ArrowRightBold" Width="48" Height="48"
+                         Foreground="{Binding IsRight, Converter={StaticResource BoolToBrushConverter}}"/>
             </StackPanel>
         </Grid>
     </materialDesign:Card>

@@ -28,10 +28,14 @@ namespace pechka4._8.ViewModels
 
         #region Properties
 
-        public bool IsActive 
+        public bool IsWorking 
         { 
             get => _zoneController.IsPollingTemperature;
-            set => UpdateTemperaturePolling(value);
+            set
+            {
+                UpdateTemperaturePolling(value);
+                OnPropertyChanged();
+            }
         }
 
         public bool IsEnabled
@@ -103,7 +107,7 @@ namespace pechka4._8.ViewModels
 
                 if (e.PropertyName == nameof(ZoneController.IsPollingTemperature))
                 {
-                    OnPropertyChanged(nameof(IsActive));
+                    OnPropertyChanged(nameof(IsWorking));
                 }
             };
 
@@ -111,7 +115,7 @@ namespace pechka4._8.ViewModels
             {
                 if (e.PropertyName == nameof(Settings.IsPortOpen))
                 {
-                    OnPropertyChanged(nameof(IsActive));
+                    OnPropertyChanged(nameof(IsWorking));
                     OnPropertyChanged(nameof(IsEnabled));
                 }
             };
@@ -122,21 +126,22 @@ namespace pechka4._8.ViewModels
             this._zoneController.SetChannelByte(newChannel);
         }
 
-        private void UpdateTemperaturePolling(bool isActive)
+        private void UpdateTemperaturePolling(bool isWorking)
         {
+            if(!isWorking)
+            {
+                _zoneController.StopPollingHeater();
+                _zoneController.StopPollingTemperature();
+            }
+
             if(!_settings.IsPortOpen)
             {
                 return;
             }
 
-            if (isActive)
+            if (isWorking)
             {
                 _zoneController.StartPollingTemperature();
-            }
-            else
-            {
-                _zoneController.StopPollingHeater();
-                _zoneController.StopPollingTemperature();
             }
         }
 

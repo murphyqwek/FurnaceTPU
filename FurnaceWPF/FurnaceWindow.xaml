@@ -37,9 +37,9 @@
                 <!--#endregion-->
 
                 <!--#region Drive Controls-->
-                <controls:DriverControl DataContext="{Binding DriveA}" Canvas.Top="56" Height="196" Width="252" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="3"/>
-                <controls:DriverControl DataContext="{Binding DriveB}" Canvas.Top="607" Height="196" Width="252" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="38"/>
-                <controls:DriverControl DataContext="{Binding DriveC}" Canvas.Top="738" Height="196" Width="252" Canvas.Left="788" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <controls:DriverControl DataContext="{Binding DriveA}" Canvas.Top="56" Height="236" Width="252" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.Left="3"/>
+                <controls:DriverControl DataContext="{Binding DriveB}" Canvas.Top="607" Height="236" Width="252" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.Left="38"/>
+                <controls:DriverControl DataContext="{Binding DriveC}" Canvas.Top="738" Height="236" Width="252" Canvas.Left="788" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 <!--#endregion-->
 
                 <!--#region DriveA animation-->
