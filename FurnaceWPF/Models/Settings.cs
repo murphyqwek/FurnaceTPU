@@ -159,6 +159,8 @@ namespace FurnaceWPF.Models
 
         public int ZonePollingInterval { get => 1000; } // Интервал опроса температуры в мс
 
+        public double ZonePollingCoeff { get => 0.8; } //Интервал для проверки температуры нагрева
+
         public int ZoneHeatCheckingInterval { get => 1000; } //Интервал для проверки температуры нагрева
 
         public double ZoneTreshold { get => 10.0; } //Трешхолд для нагревателя (TargetValue - ZoneTreshold)

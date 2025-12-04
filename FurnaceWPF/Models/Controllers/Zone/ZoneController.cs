@@ -161,7 +161,21 @@ namespace FurnaceWPF.Models.Controllers.Zone
                     }
                     else
                     {
-                        HeatOrCold();
+                        if (_targetTemperature - _settings.ZoneTreshold >= CurrentTemperature)
+                        {
+                            _logger.LogInformation($"Текущая температура ниже установленной. Идёт нагрев");
+                            _heaterModule.TurnOnHeater(_heatModuleChannel);
+                            await Task.Delay((int)(_settings.ZonePollingInterval*_settings.ZonePollingCoeff), token);
+                            _heaterModule.TurnOffHeater(_heatModuleChannel);
+                            this._heatModuleStatus = true;
+                        }
+
+                        if (_targetTemperature + _settings.ZoneTreshold <= CurrentTemperature)
+                        {
+                            _logger.LogInformation($"Текущая температура выше установленной. Идёт охлаждение");
+                            _heaterModule.TurnOffHeater(_heatModuleChannel);
+                            this._heatModuleStatus = false;
+                        }
                     }
 
                     await Task.Delay(_settings.ZoneHeatCheckingInterval, token);
@@ -181,22 +195,10 @@ namespace FurnaceWPF.Models.Controllers.Zone
             _logger.LogInformation("Алгоритм нагрева остановлен");
         }
 
-        private void HeatOrCold()
-        {
-            if(_targetTemperature - _settings.ZoneTreshold >= CurrentTemperature)
-            {
-                _logger.LogInformation($"Текущая температура ниже установленной. Идёт нагрев");
-                _heaterModule.TurnOnHeater(_heatModuleChannel);
-                this._heatModuleStatus = true;
-            }
-
-            if (_targetTemperature + _settings.ZoneTreshold <= CurrentTemperature)
-            {
-                _logger.LogInformation($"Текущая температура выше установленной. Идёт охлаждение");
-                _heaterModule.TurnOffHeater(_heatModuleChannel);
-                this._heatModuleStatus = false;
-            }
-        }
+        //private void HeatOrCold()
+        //{
+           
+        //}
 
         public void SetChannelByte(byte newChannel)
         {
