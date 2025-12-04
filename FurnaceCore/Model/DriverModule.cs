@@ -60,12 +60,12 @@ namespace FurnaceCore.Model
 
         private byte[] _getRotation = new byte[]
         {
-            01, //0 адрес
-            01, 
-            00, 
-            20, 
-            00, 
-            08,
+            0x01, //0 адрес
+            0x01, //1
+            0x00, //2
+            0x20, //3
+            0x00, //4
+            0x08, //5
         };
 
         private TaskCompletionSource<Result<RotationData>>? _completionSource;
@@ -212,10 +212,7 @@ namespace FurnaceCore.Model
         {
             var rotationData = ParseRotationData(data);
 
-            if (_completionSource != null)
-            {
-                _completionSource.SetResult(rotationData);
-            }
+            _completionSource?.SetResult(rotationData);
 
             RotationUpdate?.Invoke(rotationData);
         }

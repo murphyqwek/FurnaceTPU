@@ -25,7 +25,7 @@ namespace FurnaceCore.Port
         private bool _isWaitingForResponse = false;
         private CancellationTokenSource _responseTimeoutCts;
 
-        private const double FrameTimeoutMs = 10;        // для 115200 — идеально
+        private const double FrameTimeoutMs = 5;        // для 115200 — идеально
         private const int DefaultResponseTimeoutMs = 300; // таймаут для команд с ответом
 
         public string Name { get => _serialPort.PortName; set => _serialPort.PortName = value; }
@@ -125,6 +125,8 @@ namespace FurnaceCore.Port
             var frame = buffer.ToArray();
             string hex = BitConverter.ToString(frame).Replace("-", " ");
 
+            LogInformation?.Invoke("Текущий кадр: " + hex);
+
             if (frame.Length >= 4 && IsValidCrc(frame))
             {
                 LogInformation?.Invoke($"Валидный ответ: {hex}");
@@ -164,11 +166,6 @@ namespace FurnaceCore.Port
 
             if (calculatedCrc[0] == frameCrc[0] && calculatedCrc[1] == frameCrc[1])
             {
-                // Валидное сообщение — отправляем дальше
-                string hex = BitConverter.ToString(frame).Replace("-", " ");
-                LogInformation?.Invoke($"Валидное Modbus RTU сообщение: {hex}");
-
-                _ioManager.HandleData(hex);
                 return true;
             }
             string calculatedCRCHex = BitConverter.ToString(calculatedCrc).Replace("-", " ");
@@ -185,13 +182,16 @@ namespace FurnaceCore.Port
                 lock (_frameTimerLock)
                     _frameTimer.Stop();
 
+                List<byte> frame = new List<byte>();
                 while (_serialPort.BytesToRead > 0)
                 {
                     int b = _serialPort.ReadByte();
                     if (b < 0) break;
                     _receiveQueue.Enqueue((byte)b);
-
+                    frame.Add((byte)b);
                 }
+                string hex = BitConverter.ToString(frame.ToArray()).Replace("-", " ");
+                LogInformation?.Invoke("Получил байты: " + hex);
 
                 RestartFrameTimer();
             }
