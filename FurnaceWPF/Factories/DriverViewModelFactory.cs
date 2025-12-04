@@ -5,6 +5,7 @@ using FurnaceWPF.Models.Controllers.Driver;
 using FurnaceWPF.ViewModels;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,12 +19,13 @@ namespace FurnaceWPF.Factories
         private readonly DriverModule _driverModule;
         private readonly Settings _settings;
         private readonly RotationController _rotationController;
-
-        public DriverViewModelFactory(DriverModule driverModule, Settings settings, RotationController rotationController)
+        private readonly ILogger<DriverContoller> _logger;
+        public DriverViewModelFactory(DriverModule driverModule, Settings settings, RotationController rotationController, ILogger<DriverContoller> logger)
         {
             this._driverModule = driverModule;
             this._settings = settings;
             this._rotationController = rotationController;
+            this._logger = logger;
         }
 
         public DriverViewModel GetDriverA()
@@ -49,7 +51,7 @@ namespace FurnaceWPF.Factories
 
         private DriverContoller GetDriverController(int channel, DriversPortEnum driversPort)
         {
-            DriverContoller driverContoller = new DriverContoller(_driverModule, channel, driversPort, _settings);
+            DriverContoller driverContoller = new DriverContoller(_driverModule, channel, driversPort, _settings, _logger);
 
             return driverContoller;
         }

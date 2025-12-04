@@ -1,4 +1,5 @@
 ﻿using FurnaceCore.Model;
+using Microsoft.Extensions.Logging;
 using pechka4._8;
 using System;
 using System.Collections.Generic;
@@ -20,18 +21,19 @@ namespace FurnaceWPF.Models.Controllers
         private int _channel;
         private DriversPortEnum _driversPort;
         private Settings _settings;
-
+        private ILogger<DriverContoller> _logger;
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public ushort CurrentFrequency { get; private set; } = 0;
+        public ushort CurrentFrequency { get; private set; } = 10_000;
         public bool IsDriverRunning { get; private set; }
 
-        public DriverContoller(DriverModule driver, int channel, DriversPortEnum driversPort, Settings settings)
+        public DriverContoller(DriverModule driver, int channel, DriversPortEnum driversPort, Settings settings, ILogger<DriverContoller> logger)
         {
             this._driver = driver;
             this._channel = channel;
             this._driversPort = driversPort;
             this._settings = settings;
+            this._logger = logger;
         }
 
         public void SetNewTarget(ushort newTarget)
@@ -39,6 +41,8 @@ namespace FurnaceWPF.Models.Controllers
             Stop();
             this._targetFrequence = newTarget;
 
+
+            _logger.LogInformation($"Запускаем шаговый двигатель на порту {_driversPort}");
             this._driver.StartDriver(_driversPort);
             _rampingTimer = new Timer(RampingTick, null, _settings.DriverRampingUpdateInterval, _settings.DriverRampingUpdateInterval);
         }
@@ -74,8 +78,20 @@ namespace FurnaceWPF.Models.Controllers
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        public void Start()
+        {
+            _logger.LogInformation($"Запускаем шаговый двигатель на порту {_driversPort}");
+            this._driver.StartDriver(_driversPort);
+
+            _logger.LogInformation($"Останавливаем шаговый двигатель на порту {_driversPort}");
+            this._driver.SetDriverFrequency(_channel, CurrentFrequency);
+            this.CurrentFrequency = 0;
+            OnPropertyChanged(nameof(CurrentFrequency));
+        }
+
         public void Stop()
         {
+            _logger.LogInformation($"Останавливаем шаговый двигатель на порту {_driversPort}");
             this._driver.StopDriver(this._driversPort);
             IsDriverRunning = false;
             _rampingTimer?.Change(Timeout.Infinite, Timeout.Infinite);
