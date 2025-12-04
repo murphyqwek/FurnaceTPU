@@ -173,8 +173,8 @@ namespace FurnaceWPF.ViewModels
         {
             if(IsWorking)
             {
-                _rotationController.AddSubscriberToRotationUpdate(RotationUpdateHandler);
                 _driverController.Start();
+                _rotationController.AddSubscriberToRotationUpdate(RotationUpdateHandler);
             }
             else
             {
