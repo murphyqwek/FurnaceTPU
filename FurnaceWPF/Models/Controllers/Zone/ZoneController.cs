@@ -1,5 +1,6 @@
 ﻿using FurnaceCore.Model;
 using FurnaceCore.utlis;
+using FurnaceWPF.Helpers;
 using FurnaceWPF.ViewModels;
 using FurnaceWPF.Views.Controls;
 using Microsoft.Extensions.Logging;
@@ -224,7 +225,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
         {
             StopPollingTemperature();
             _logger.LogError(message);
-            MessageBox.Show(message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            NoBlockingMessageBox.ShowError(message);
         }
 
         private void GlobalErrorHandle(string message)

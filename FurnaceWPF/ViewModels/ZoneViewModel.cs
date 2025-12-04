@@ -1,6 +1,7 @@
 ﻿using FurnaceCore.Model;
 using FurnaceCore.Port;
 using FurnaceWPF.Commands;
+using FurnaceWPF.Helpers;
 using FurnaceWPF.Models;
 using FurnaceWPF.Models.Controllers.Zone;
 using FurnaceWPF.ViewModels;
@@ -147,7 +148,7 @@ namespace pechka4._8.ViewModels
 
         private void PollingErrorEventHandler(string errorMessage)
         {
-            MessageBox.Show(errorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            NoBlockingMessageBox.ShowError(errorMessage);
         }
 
         public void SetTemperatureHandler()

@@ -1,6 +1,7 @@
 ﻿using FurnaceCore.Port;
 using FurnaceWPF.Commands;
 using FurnaceWPF.Factories;
+using FurnaceWPF.Helpers;
 using FurnaceWPF.Models;
 using FurnaceWPF.Models.Controllers.Driver;
 using FurnaceWPF.Models.Controllers.Zone;
@@ -69,8 +70,8 @@ namespace FurnaceWPF.ViewModels
 
             SettingsCommand = new RemoteCommand(OnSettingsButtonClicked);
 
-            App.Services.GetRequiredService<TemperatureController>().GlobalErrorEvent += (m) => MessageBox.Show(m, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            App.Services.GetRequiredService<RotationController>().RotationErrorEvent += (m) => MessageBox.Show(m, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            App.Services.GetRequiredService<TemperatureController>().GlobalErrorEvent += (m) => NoBlockingMessageBox.ShowError(m);
+            App.Services.GetRequiredService<RotationController>().RotationErrorEvent += (m) => NoBlockingMessageBox.ShowError(m);
 
             _settings.PropertyChanged += (s, e) =>
             {
