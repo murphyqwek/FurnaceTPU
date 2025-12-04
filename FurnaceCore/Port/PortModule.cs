@@ -24,7 +24,7 @@ namespace FurnaceCore.Port
         private volatile bool _frameInProgress = false;
         private readonly object _frameTimerLock = new object();
 
-        private const double FrameTimeoutMs = 2.2; // под 9600–19200 бод — безопасно
+        private const double FrameTimeoutMs = 2.5; // под 9600–19200 бод — безопасно
 
         public string Name { get => _serialPort.PortName; set => _serialPort.PortName = value; }
         public bool IsOpen => _serialPort?.IsOpen == true;
@@ -178,7 +178,9 @@ namespace FurnaceCore.Port
                 _serialPort.Write(data, 0, data.Length);
                 string hex = BitConverter.ToString(data).Replace("-", " ");
                 LogInformation?.Invoke($"Отправлено {data.Length} байт: {hex}");
-                System.Threading.Thread.Sleep(2);
+                LogInformation?.Invoke("Задержка 5 милисекунд перед отправкой новых данных");
+                System.Threading.Thread.Sleep(5);
+                LogInformation?.Invoke("Задержка закончилась");
             }
             catch (Exception ex)
             {
