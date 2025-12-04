@@ -165,7 +165,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
                         {
                             _logger.LogInformation($"Текущая температура ниже установленной. Идёт нагрев");
                             _heaterModule.TurnOnHeater(_heatModuleChannel);
-                            await Task.Delay((int)(_settings.ZonePollingInterval*_settings.ZonePollingCoeff), token);
+                            await Task.Delay((int)(1000*_settings.ZonePollingCoeff), token);
                             _heaterModule.TurnOffHeater(_heatModuleChannel);
                             this._heatModuleStatus = true;
                         }
