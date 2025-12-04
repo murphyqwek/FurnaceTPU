@@ -13,14 +13,14 @@ namespace FurnaceTest
     public class DriverModuleTest
     {
         [Theory]
-        [InlineData(DriversPortEnum.Zero, "80")]
-        [InlineData(DriversPortEnum.One, "40")]
-        [InlineData(DriversPortEnum.Two, "20")]
-        [InlineData(DriversPortEnum.Three, "10")]
-        [InlineData(DriversPortEnum.Four, "08")]
-        [InlineData(DriversPortEnum.Zero | DriversPortEnum.One, "C0")]
-        [InlineData(DriversPortEnum.Two | DriversPortEnum.Three, "30")]
-        [InlineData(DriversPortEnum.One | DriversPortEnum.Four, "48")]
+        [InlineData(DriversPortEnum.Zero, "01")]
+        [InlineData(DriversPortEnum.One, "02")]
+        [InlineData(DriversPortEnum.Two, "04")]
+        [InlineData(DriversPortEnum.Three, "08")]
+        [InlineData(DriversPortEnum.Four, "10")]
+        [InlineData(DriversPortEnum.Zero | DriversPortEnum.One, "03")]
+        [InlineData(DriversPortEnum.Two | DriversPortEnum.Three, "0C")]
+        [InlineData(DriversPortEnum.One | DriversPortEnum.Four, "12")]
         public void DriverTurningOnOffTest(DriversPortEnum driverPort, string expectedChannel)
         {
             IOManager ioManager = new IOManager();
@@ -47,10 +47,10 @@ namespace FurnaceTest
         }
 
         [Theory]
-        [InlineData(DriversPortEnum.Zero, DriversPortEnum.One, "C0", "80")]
-        [InlineData(DriversPortEnum.Four, DriversPortEnum.One, "48", "08")]
-        [InlineData(DriversPortEnum.Two, DriversPortEnum.Three, "30", "20")]
-        [InlineData(DriversPortEnum.Four, DriversPortEnum.Zero, "88", "08")]
+        [InlineData(DriversPortEnum.Zero, DriversPortEnum.One, "03", "01")]
+        [InlineData(DriversPortEnum.Four, DriversPortEnum.One, "12", "10")]
+        [InlineData(DriversPortEnum.Two, DriversPortEnum.Three, "0C", "04")]
+        [InlineData(DriversPortEnum.Four, DriversPortEnum.Zero, "11", "10")]
         public void DriverTurningOnOffSeveralTest(DriversPortEnum driverPortToStart, DriversPortEnum driverPortToStop, string expectedChannelStart, string expectedChannelStop)
         {
             IOManager ioManager = new IOManager();
@@ -145,14 +145,14 @@ namespace FurnaceTest
 
                 switch(port)
                 {
-                    case DriversPortEnum.Three:
-                        resultFlags += 1;
-                        break;
                     case DriversPortEnum.Two:
-                        resultFlags += 2;
+                        resultFlags += 4;
                         break;
                     case DriversPortEnum.One:
-                        resultFlags += 4;
+                        resultFlags += 2;
+                        break;
+                    case DriversPortEnum.Zero:
+                        resultFlags += 1;
                         break;
                 }
             }

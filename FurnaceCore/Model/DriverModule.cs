@@ -14,11 +14,11 @@ namespace FurnaceCore.Model
     [Flags]
     public enum DriversPortEnum : byte
     {
-        Zero = 0x80,
-        One = 0x40,
-        Two = 0x20,
-        Three = 0x10,
-        Four = 0x08,
+        Zero = 0x01,
+        One = 0x02,
+        Two = 0x04,
+        Three = 0x08,
+        Four = 0x10,
     }
 
     public enum RotationEnum
@@ -189,14 +189,14 @@ namespace FurnaceCore.Model
 
                 Dictionary<DriversPortEnum, RotationEnum> rotationDataDict = new Dictionary<DriversPortEnum, RotationEnum>();
 
-                RotationEnum driver3Rotation = GetRotation(rotationData & 0b00000001);
-                RotationEnum driver2Rotation = GetRotation(rotationData & 0b00000010);
-                RotationEnum driver1Rotation = GetRotation(rotationData & 0b00000100);
+                RotationEnum driver0Rotation = GetRotation(rotationData & 0b00000001);
+                RotationEnum driver1Rotation = GetRotation(rotationData & 0b00000010);
+                RotationEnum driver2Rotation = GetRotation(rotationData & 0b00000100);
 
 
-                rotationDataDict.Add(DriversPortEnum.Three, driver3Rotation);
                 rotationDataDict.Add(DriversPortEnum.Two, driver2Rotation);
                 rotationDataDict.Add(DriversPortEnum.One, driver1Rotation);
+                rotationDataDict.Add(DriversPortEnum.Zero, driver0Rotation);
 
                 RotationData result = new RotationData(rotationDataDict);
 
