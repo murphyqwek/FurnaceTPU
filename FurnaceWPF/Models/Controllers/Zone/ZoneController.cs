@@ -123,7 +123,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
             _targetTemperature = targetTemperature;
             this._heatModuleStatus = false;
             _logger.LogInformation($"Начат нагрев с интервалом {_settings.ZoneHeatCheckingInterval} мс до {_targetTemperature}");
-            _heaterModule.TurnOnHeater();
+            //_heaterModule.TurnOnHeater();
 
             _pollingCts = new CancellationTokenSource();
             _pollingTask = Task.Run(async () => await PollHeater(_pollingCts.Token));
@@ -157,7 +157,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
                     if (CurrentTemperature < _targetTemperature + _settings.ZoneTreshold && CurrentTemperature > _targetTemperature - _settings.ZoneTreshold)
                     {
                         _logger.LogInformation($"Текущая температура зоны (канал: {_channel}) в допустимых пределах заданной");
-                        _heaterModule.TurnOffHeater(_heatModuleChannel);
+                        _heaterModule.TurnOffHeater();
                         this._heatModuleStatus = false;
                     }
                     else
@@ -165,21 +165,21 @@ namespace FurnaceWPF.Models.Controllers.Zone
                         if (_targetTemperature - _settings.ZoneTreshold >= CurrentTemperature)
                         {
                             _logger.LogInformation($"Текущая температура зоны (канал: {_channel}) ниже установленной. Идёт нагрев");
-                            _heaterModule.TurnOnHeater(_heatModuleChannel);
-                            await Task.Delay((int)(1000*_settings.ZonePollingCoeff), token);
-                            _heaterModule.TurnOffHeater(_heatModuleChannel);
+                            _heaterModule.TurnOnHeater();
+                            await Task.Delay((int)(_settings.ZoneHeatCheckingInterval * _settings.ZonePollingCoeff), token);
+                            _heaterModule.TurnOffHeater();
                             this._heatModuleStatus = true;
                         }
 
                         if (_targetTemperature + _settings.ZoneTreshold <= CurrentTemperature)
                         {
                             _logger.LogInformation($"Текущая температура зоны (канал: {_channel}) выше установленной. Идёт охлаждение");
-                            _heaterModule.TurnOffHeater(_heatModuleChannel);
+                            _heaterModule.TurnOffHeater();
                             this._heatModuleStatus = false;
                         }
                     }
 
-                    await Task.Delay(_settings.ZoneHeatCheckingInterval, token);
+                    //await Task.Delay(_settings.ZoneHeatCheckingInterval, token);
                 }
                 catch (OperationCanceledException) when (token.IsCancellationRequested)
                 {
