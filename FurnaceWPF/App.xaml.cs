@@ -87,6 +87,10 @@ namespace pechka4._8
             {
                 return () => sp.GetRequiredService<PortModule>();
             });
+
+            services.AddSingleton<Func<HeaterModule>>(sp => {
+                return () => sp.GetRequiredService<HeaterModule>();
+            });
         }
 
         private void ConfigureWindow(ServiceCollection services)
@@ -143,7 +147,7 @@ namespace pechka4._8
                 return temperatureModule;
             });
 
-            services.AddSingleton<HeaterModule>(sp =>
+            services.AddTransient<HeaterModule>(sp =>
             {
                 var ioManager = sp.GetRequiredService<IOManager>();
                 var port = sp.GetRequiredService<IPort>();

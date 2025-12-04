@@ -20,23 +20,27 @@ namespace FurnaceWPF.Factories
         private readonly IPort _port;
         private readonly Settings _settings;
         private readonly IOManager _ioManager;
-        private readonly HeaterModule _heaterModule;
+        private readonly Func<HeaterModule> _heaterModuleFactor;
         private readonly ILogger<ZoneController> _zoneLogger;
         private readonly TemperatureController _temperatureController;
         
-        public ZoneViewModelFactory(IPort port, IOManager ioManager, HeaterModule heaterModule, Settings settings, ILogger<ZoneController> zoneLogger, TemperatureController temperatureController)
+        public ZoneViewModelFactory(IPort port, IOManager ioManager, Func<HeaterModule> heaterModuleFactor, Settings settings, ILogger<ZoneController> zoneLogger, TemperatureController temperatureController)
         {
             _port = port;
             _ioManager = ioManager;
             _settings = settings;
-            _heaterModule = heaterModule;
+            _heaterModuleFactor = heaterModuleFactor;
             _zoneLogger = zoneLogger;
             _temperatureController = temperatureController;
         }
 
-        public ZoneViewModel GetZone(string name, byte channelTemperatureByte, byte channelHeaterByte)
+        public ZoneViewModel GetZone(string name, byte channelTemperatureByte, byte addressHeaterByte)
         {
-            ZoneController zoneController = new ZoneController(channelTemperatureByte, _heaterModule, _zoneLogger, _settings, _temperatureController, channelHeaterByte);
+            var heaterModule = _heaterModuleFactor();
+
+            heaterModule.SetAddressByte(addressHeaterByte);
+
+            ZoneController zoneController = new ZoneController(channelTemperatureByte, heaterModule, _zoneLogger, _settings, _temperatureController);
 
 
             return new ZoneViewModel(name, 0, zoneController, _settings);
