@@ -17,6 +17,11 @@ namespace FurnaceWPF.Models
         private byte _zoneHeaterOneChannel = 0x00;
         private byte _zoneHeaterTwoChannel = 0x01;
         private byte _zoneHeaterThreeChannel = 0x02;
+
+        private byte _driverAChannel = 0x00;
+        private byte _driverBChannel = 0x02;
+        private byte _driverCChannel = 0x04;
+
         private byte _driverAddress = 0x01;
         private byte _coolingChannel = 0x03;
         private bool _isRunning;
@@ -89,6 +94,45 @@ namespace FurnaceWPF.Models
             }
         }
 
+        public byte DriverAChannel
+        {
+            get => _driverAChannel;
+            set
+            {
+                if (_driverAChannel != value)
+                {
+                    _driverAChannel = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public byte DriverBChannel
+        {
+            get => _driverBChannel;
+            set
+            {
+                if (_driverBChannel != value)
+                {
+                    _driverBChannel = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public byte DriverCChannel
+        {
+            get => _driverCChannel;
+            set
+            {
+                if (_driverCChannel != value)
+                {
+                    _driverCChannel = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public byte ZoneHeaterOneChannel
         {
             get => _zoneHeaterOneChannel;
@@ -155,7 +199,7 @@ namespace FurnaceWPF.Models
         }
 
         public ushort StepSizeDriver { get => 500; }
-        public int DriverRampingUpdateInterval { get => 100; } // Интервал указан в мс
+        public int DriverRampingUpdateInterval { get => 200; } // Интервал указан в мс
 
         public int ZonePollingInterval { get => 1000; } // Интервал опроса температуры в мс
 
@@ -165,13 +209,13 @@ namespace FurnaceWPF.Models
 
         public double ZoneTreshold { get => 10.0; } //Трешхолд для нагревателя (TargetValue - ZoneTreshold)
 
-        public int ZonePollingTimeout { get => 15 * 1000; } //Таймаут для опроса температуры
+        public int ZonePollingTimeout { get => 1 * 1000; } //Таймаут для опроса температуры
 
-        public int CoolingPollingTimeout { get => 15 * 1000; }
+        public int CoolingPollingTimeout { get => 1 * 1000; }
 
         public int CoolingPollingTemperatureIntervall { get => 3300; }
 
-        public int RotationTimeout { get => 15 * 1000; }
+        public int RotationTimeout { get => 1 * 1000; }
         public int RotationPollingInterval { get => 500; }
 
         public bool IsPortOpen 

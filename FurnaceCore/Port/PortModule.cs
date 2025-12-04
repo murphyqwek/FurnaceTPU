@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
 using System.Timers;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FurnaceCore.Port
 {
@@ -20,12 +21,11 @@ namespace FurnaceCore.Port
 
         // Очередь ТОЛЬКО для команд с ожиданием ответа
         private readonly ConcurrentQueue<byte[]> _awaitResponseQueue = new();
-        private readonly SemaphoreSlim _responseSemaphore = new(1, 1);
+        private readonly object _responseLock = new object();
+        private bool _isWaitingForResponse = false;
+        private CancellationTokenSource _responseTimeoutCts;
 
-        private bool _waitingForResponse = false;
-        private System.Timers.Timer _responseTimeoutTimer;
-
-        private const double FrameTimeoutMs = 2.5;        // для 115200 — идеально
+        private const double FrameTimeoutMs = 10;        // для 115200 — идеально
         private const int DefaultResponseTimeoutMs = 300; // таймаут для команд с ответом
 
         public string Name { get => _serialPort.PortName; set => _serialPort.PortName = value; }
@@ -45,10 +45,6 @@ namespace FurnaceCore.Port
             _frameTimer = new System.Timers.Timer(FrameTimeoutMs);
             _frameTimer.AutoReset = false;
             _frameTimer.Elapsed += OnFrameTimeout;
-
-            _responseTimeoutTimer = new System.Timers.Timer(DefaultResponseTimeoutMs);
-            _responseTimeoutTimer.AutoReset = false;
-            _responseTimeoutTimer.Elapsed += OnResponseTimeout;
         }
 
         /// <summary>
@@ -84,25 +80,37 @@ namespace FurnaceCore.Port
 
         private void TrySendNextAwaitedCommand()
         {
-            if (_waitingForResponse) return;
-            if (!_responseSemaphore.Wait(0)) return;
-
-            if (!_awaitResponseQueue.TryDequeue(out var data))
+            byte[] data;
+            lock (_responseLock)
             {
-                _responseSemaphore.Release();
-                return;
-            }
+                if (_isWaitingForResponse) return;
 
-            _waitingForResponse = true;
-            StartResponseTimeout();
+                if (!_awaitResponseQueue.TryDequeue(out data))
+                    return;
+
+                _isWaitingForResponse = true;
+
+                // Запускаем таймаут
+                _responseTimeoutCts?.Dispose();
+                _responseTimeoutCts = new CancellationTokenSource();
+                _responseTimeoutCts.CancelAfter(DefaultResponseTimeoutMs);
+                _responseTimeoutCts.Token.Register(() =>
+                {
+                    lock (_responseLock)
+                    {
+                        if (!_isWaitingForResponse) return;
+                        LogWarning?.Invoke($"Таймаут {DefaultResponseTimeoutMs} мс — ответа нет. Продолжаем...");
+                        _isWaitingForResponse = false;
+                        TrySendNextAwaitedCommand();
+                    }
+                });
+            }
 
             _serialPort.Write(data, 0, data.Length);
             string hex = BitConverter.ToString(data).Replace("-", " ");
-            LogInformation?.Invoke($"Отправлено с ожиданием ответа: {hex}");
-
+            LogInformation?.Invoke($"[С ОТВЕТОМ] Отправлено: {hex}");
             Thread.Sleep(3);
         }
-
         private void OnFrameTimeout(object sender, ElapsedEventArgs e)
         {
             lock (_frameTimerLock)
@@ -122,13 +130,16 @@ namespace FurnaceCore.Port
                 LogInformation?.Invoke($"Валидный ответ: {hex}");
                 _ioManager.HandleData(hex);
 
-                // Ответ пришёл — разблокируем очередь
-                if (_waitingForResponse)
+                // ВАЖНО: завершаем ожидание только если мы его ждали
+                lock (_responseLock)
                 {
-                    StopResponseTimeout();
-                    _waitingForResponse = false;
-                    _responseSemaphore.Release();
-                    TrySendNextAwaitedCommand();
+                    if (_isWaitingForResponse)
+                    {
+                        _isWaitingForResponse = false;
+                        _responseTimeoutCts?.Dispose();
+                        _responseTimeoutCts = null;
+                        TrySendNextAwaitedCommand(); // ← следующая команда с ответом
+                    }
                 }
             }
             else
@@ -136,24 +147,10 @@ namespace FurnaceCore.Port
                 LogWarning?.Invoke($"Битый кадр: {hex}");
             }
         }
-
         private void OnResponseTimeout(object sender, ElapsedEventArgs e)
         {
             LogWarning?.Invoke($"Таймаут {DefaultResponseTimeoutMs} мс — ответа нет. Продолжаем...");
-            _waitingForResponse = false;
-            _responseSemaphore.Release();
             TrySendNextAwaitedCommand();
-        }
-
-        private void StartResponseTimeout()
-        {
-            _responseTimeoutTimer.Stop();
-            _responseTimeoutTimer.Start();
-        }
-
-        private void StopResponseTimeout()
-        {
-            _responseTimeoutTimer.Stop();
         }
 
         private bool IsValidCrc(byte[] frame)
@@ -185,13 +182,18 @@ namespace FurnaceCore.Port
         {
             try
             {
+                lock (_frameTimerLock)
+                    _frameTimer.Stop();
+
                 while (_serialPort.BytesToRead > 0)
                 {
                     int b = _serialPort.ReadByte();
                     if (b < 0) break;
                     _receiveQueue.Enqueue((byte)b);
-                    RestartFrameTimer();
+
                 }
+
+                RestartFrameTimer();
             }
             catch (Exception ex)
             {
@@ -204,6 +206,7 @@ namespace FurnaceCore.Port
             lock (_frameTimerLock)
             {
                 _frameTimer.Stop();
+                _frameTimer.Interval = FrameTimeoutMs;
                 _frameTimer.Start();
             }
         }
@@ -230,8 +233,6 @@ namespace FurnaceCore.Port
         {
             _frameTimer?.Stop();
             _frameTimer?.Dispose();
-            _responseTimeoutTimer?.Stop();
-            _responseTimeoutTimer?.Dispose();
 
             if (_serialPort != null)
             {

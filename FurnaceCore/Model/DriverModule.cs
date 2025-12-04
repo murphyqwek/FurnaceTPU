@@ -1,4 +1,5 @@
 ﻿
+using FurnaceCore.Port;
 using FurnaceCore.utlis;
 using System;
 using System.Collections.Generic;
@@ -13,11 +14,11 @@ namespace FurnaceCore.Model
     [Flags]
     public enum DriversPortEnum : byte
     {
-        Zero = 0x01,
-        One = 0x02,
-        Two = 0x04,
-        Three = 0x08,
-        Four = 0x10,
+        Zero = 0x80,
+        One = 0x40,
+        Two = 0x20,
+        Three = 0x10,
+        Four = 0x08,
     }
 
     public enum RotationEnum
@@ -40,20 +41,6 @@ namespace FurnaceCore.Model
             0x08, //5
             0x01, //6
             0x00, //7 адрес порта
-            0x01, //8
-        };
-
-        private byte[] _stopDriverCommand = new byte[]
-        {
-            0x02, //0
-            0x0F, //1
-            0x00, //2
-            0x00, //3
-            0x00, //4
-            0x08, //5
-            0x01, //6
-            0x01, //7 адрес порта
-            0x00
         };
 
         private byte[] _setDriverFrequency = new byte[]
@@ -83,6 +70,8 @@ namespace FurnaceCore.Model
 
         private TaskCompletionSource<Result<RotationData>>? _completionSource;
         private byte _address;
+        private DriversPortEnum _ports;
+        private readonly object _portLock = new object();
 
         public event Action<Result<RotationData>> RotationUpdate;
 
@@ -96,20 +85,37 @@ namespace FurnaceCore.Model
             return (byte)port;
         }
 
-        public void StartDriver(DriversPortEnum port)
+        private void SetDriversFlags()
         {
-            byte portByte = DecodeDriverPort(port);
+            DriversPortEnum _currentPorts;
+            lock (_portLock)
+            {
+                _currentPorts = _ports;
+            }
+            byte portByte = DecodeDriverPort(_currentPorts);
             var command = (byte[])_startDriverCommand.Clone();
             command[7] = portByte;
             SendCommand(command);
         }
 
+        public void StartDriver(DriversPortEnum port)
+        {
+            lock(_portLock)
+            {
+                _ports |= port;
+            }
+
+            SetDriversFlags();
+        }
+
         public void StopDriver(DriversPortEnum port)
         {
-            byte portByte = DecodeDriverPort(port);
-            var command = (byte[])_stopDriverCommand.Clone();
-            command[7] = portByte;
-            SendCommand(command);
+            lock(_portLock)
+            {
+                _ports &= ~port;
+            }
+
+            SetDriversFlags();
         }
 
         public byte GetAddress()
@@ -152,10 +158,15 @@ namespace FurnaceCore.Model
                 SendGetRotationData();
                 temperature = await _completionSource.Task.WaitAsync(TimeSpan.FromMilliseconds(timeOut), cancellationToken);
             }
-            catch (Exception)
+            catch (Exception ex) when (!(ex is OperationCanceledException && cancellationToken.IsCancellationRequested))
             {
-                _completionSource = null;
+                var tcs = Interlocked.Exchange(ref _completionSource, null);
+                tcs?.SetException(ex);
                 throw;
+            }
+            finally
+            {
+                Interlocked.CompareExchange(ref _completionSource, null, _completionSource);
             }
 
             _completionSource = null;

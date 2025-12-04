@@ -13,14 +13,14 @@ namespace FurnaceTest
     public class DriverModuleTest
     {
         [Theory]
-        [InlineData(DriversPortEnum.Zero, "01")]
-        [InlineData(DriversPortEnum.One, "02")]
-        [InlineData(DriversPortEnum.Two, "04")]
-        [InlineData(DriversPortEnum.Three, "08")]
-        [InlineData(DriversPortEnum.Four, "10")]
-        [InlineData(DriversPortEnum.Zero | DriversPortEnum.One, "03")]
-        [InlineData(DriversPortEnum.Two | DriversPortEnum.Three, "0C")]
-        [InlineData(DriversPortEnum.One | DriversPortEnum.Four, "12")]
+        [InlineData(DriversPortEnum.Zero, "80")]
+        [InlineData(DriversPortEnum.One, "40")]
+        [InlineData(DriversPortEnum.Two, "20")]
+        [InlineData(DriversPortEnum.Three, "10")]
+        [InlineData(DriversPortEnum.Four, "08")]
+        [InlineData(DriversPortEnum.Zero | DriversPortEnum.One, "C0")]
+        [InlineData(DriversPortEnum.Two | DriversPortEnum.Three, "30")]
+        [InlineData(DriversPortEnum.One | DriversPortEnum.Four, "48")]
         public void DriverTurningOnOffTest(DriversPortEnum driverPort, string expectedChannel)
         {
             IOManager ioManager = new IOManager();
@@ -33,17 +33,48 @@ namespace FurnaceTest
 
             string[] temp = mockPort.SentData.Last().Split(' ');
 
-            string startCommand = temp[7] + temp[8];
+            string startCommand = temp[7];
 
-            Assert.True(startCommand == expectedChannel + "01");
+            Assert.True(startCommand == expectedChannel);
 
             driverModule.StopDriver(driverPort);
 
             temp = mockPort.SentData.Last().Split(' ');
 
-            string stopCommand = temp[7] + temp[8];
+            string stopCommand = temp[7];
 
-            Assert.True(stopCommand == expectedChannel + "00");
+            Assert.True(stopCommand == "00");
+        }
+
+        [Theory]
+        [InlineData(DriversPortEnum.Zero, DriversPortEnum.One, "C0", "80")]
+        [InlineData(DriversPortEnum.Four, DriversPortEnum.One, "48", "08")]
+        [InlineData(DriversPortEnum.Two, DriversPortEnum.Three, "30", "20")]
+        [InlineData(DriversPortEnum.Four, DriversPortEnum.Zero, "88", "08")]
+        public void DriverTurningOnOffSeveralTest(DriversPortEnum driverPortToStart, DriversPortEnum driverPortToStop, string expectedChannelStart, string expectedChannelStop)
+        {
+            IOManager ioManager = new IOManager();
+            MockPort mockPort = new MockPort(ioManager);
+            DriverModule driverModule = new DriverModule(ioManager, 0);
+
+            ioManager.RegisterModulePort(driverModule, mockPort);
+
+            driverModule.StartDriver(driverPortToStart);
+            driverModule.StartDriver(driverPortToStop);
+
+            string[] temp = mockPort.SentData.Last().Split(' ');
+
+            string startCommand = temp[7];
+
+            Assert.True(startCommand == expectedChannelStart);
+
+            driverModule.StopDriver(driverPortToStop);
+
+            temp = mockPort.SentData.Last().Split(' ');
+
+            string stopCommand = temp[7];
+
+            Assert.True(stopCommand == expectedChannelStop);
         }
 
         [Theory]

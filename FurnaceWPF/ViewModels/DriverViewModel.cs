@@ -12,6 +12,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace FurnaceWPF.ViewModels
 {
@@ -134,7 +135,7 @@ namespace FurnaceWPF.ViewModels
                 }
             };
 
-            rotationController.RotationErrorEvent += (m) => IsWorking = false;
+            rotationController.RotationErrorEvent += (m) => App.Current.Dispatcher.BeginInvoke(() => IsWorking = false);
         }
 
         private void ConfirmSpeedHandler()
@@ -152,11 +153,11 @@ namespace FurnaceWPF.ViewModels
 
             if(rotationDirection == RotationEnum.Right)
             {
-                DirectionEnum = DriverDirectionEnum.Forward;
+                App.Current.Dispatcher.Invoke(() => DirectionEnum = DriverDirectionEnum.Forward);
             }
             else
             {
-                DirectionEnum = DriverDirectionEnum.Backward;
+                App.Current.Dispatcher.Invoke(() => DirectionEnum = DriverDirectionEnum.Backward);
             }
         }
 
