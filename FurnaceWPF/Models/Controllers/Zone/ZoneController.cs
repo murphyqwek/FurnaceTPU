@@ -78,7 +78,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
 
         public event Action<string>? ErrorEvent;
 
-        public ZoneController(byte channel, HeaterModule heaterModule, ILogger<ZoneController> logger, Settings settings, TemperatureController temperatureController, byte heaterModuleChannel) 
+        public ZoneController(byte channel, HeaterModule heaterModule, ILogger<ZoneController> logger, Settings settings, TemperatureController temperatureController) 
         { 
             this._channel = channel;
             this._heaterModule = heaterModule;
