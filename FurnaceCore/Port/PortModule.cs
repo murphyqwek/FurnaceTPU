@@ -24,7 +24,7 @@ namespace FurnaceCore.Port
         private volatile bool _frameInProgress = false;
         private readonly object _frameTimerLock = new object();
 
-        private const double FrameTimeoutMs = 2.0; // под 9600–19200 бод — безопасно
+        private const double FrameTimeoutMs = 2.2; // под 9600–19200 бод — безопасно
 
         public string Name { get => _serialPort.PortName; set => _serialPort.PortName = value; }
         public bool IsOpen => _serialPort?.IsOpen == true;
