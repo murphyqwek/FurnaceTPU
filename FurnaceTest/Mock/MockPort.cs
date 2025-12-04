@@ -35,5 +35,10 @@ namespace FurnaceTest.Mock
         {
 
         }
+
+        public void SendDataWithResponse(byte[] data)
+        {
+            SendData(data);
+        }
     }
 }

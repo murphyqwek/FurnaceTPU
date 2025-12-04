@@ -49,5 +49,10 @@ namespace FurnaceCore.Model
             Array.Copy(sourceCommand, copy, sourceCommand.Length);
             return copy;
         }
+
+        protected void SendCommandWithResponse(byte[] command)
+        {
+            _ioManager.SendDataToPortWithResponse(this, GetCommandWithCRC(command));
+        }
     }
 }

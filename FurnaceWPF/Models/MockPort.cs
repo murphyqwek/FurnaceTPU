@@ -42,12 +42,16 @@ namespace FurnaceWPF.Models
         {
             SentData.Add(BitConverter.ToString(data).Replace("-", " "));
             _logger.LogInformation($"MockPort Sent Data: {SentData.Last()}");
-            ReceiveData("03 ");
         }
 
         public void Dispose()
         {
             _logger.LogInformation("Логгер is disposed");
+        }
+
+        public void SendDataWithResponse(byte[] data)
+        {
+            SendData(data);
         }
     }
 }

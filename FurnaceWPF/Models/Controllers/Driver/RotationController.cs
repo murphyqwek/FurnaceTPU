@@ -99,7 +99,7 @@ namespace FurnaceWPF.Models.Controllers.Driver
 
                     RotationDataUpdate?.Invoke(result.Value);
 
-                    await Task.Delay(_settings.RotationTimeout, token);
+                    await Task.Delay(_settings.RotationPollingInterval, token);
                 }
                 catch (TimeoutException)
                 {

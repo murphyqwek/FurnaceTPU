@@ -53,7 +53,7 @@ namespace FurnaceCore.Model
 
         public void SendGetTemperatureCommand()
         {
-            SendCommand(_getTemperatureCommand);
+            SendCommandWithResponse(_getTemperatureCommand);
         }
 
         private Result<double> parseData(string rawTemperatureData)

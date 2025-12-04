@@ -112,5 +112,10 @@ namespace FurnaceWPF.Models
         {
             this._currentPort.Dispose();
         }
+
+        public void SendDataWithResponse(byte[] data)
+        {
+            this._currentPort.SendDataWithResponse(data);
+        }
     }
 }

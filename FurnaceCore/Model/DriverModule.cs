@@ -136,7 +136,7 @@ namespace FurnaceCore.Model
 
             command[0] = _address;
 
-            SendCommand(command);
+            SendCommandWithResponse(command);
         }
 
         public async Task<Result<RotationData>> GetRotationDataAsync(int timeOut, CancellationToken cancellationToken)

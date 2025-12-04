@@ -15,6 +15,8 @@ namespace FurnaceCore.Port
         public void SendData(string data);
         public void SendData(byte[] data);
 
+        public void SendDataWithResponse(byte[] data);
+
         public void Dispose();
     }
 }
