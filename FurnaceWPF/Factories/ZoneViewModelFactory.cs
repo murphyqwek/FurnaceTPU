@@ -38,7 +38,7 @@ namespace FurnaceWPF.Factories
         {
             var heaterModule = _heaterModuleFactor();
 
-            heaterModule.SetAddressByte(addressHeaterByte);
+            heaterModule.SetChannelByte(addressHeaterByte);
 
             ZoneController zoneController = new ZoneController(channelTemperatureByte, heaterModule, _zoneLogger, _settings, _temperatureController);
 
