@@ -219,7 +219,7 @@ namespace FurnaceWPF.Models
         public DriversPortEnum DriverCPort
         {
             get => _driverCPort;
-            set => SetField(ref _driverAPort, value);
+            set => SetField(ref _driverCPort, value);
         }
 
         #endregion

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace FurnaceWPF.Validators
 {
@@ -42,6 +43,57 @@ namespace FurnaceWPF.Validators
             }
 
             return ValidationResult.ValidResult;
+        }
+    }
+
+    public class UShortRangeValidationRule : ValidationRule
+    {
+        public ushort Min { get; set; }
+        public ushort Max { get; set; }
+
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+            if (ushort.TryParse(value?.ToString(), out ushort val))
+            {
+                if (val >= Min && val <= Max) return ValidationResult.ValidResult;
+            }
+            return new ValidationResult(false, $"Значение должно быть от {Min} до {Max}.");
+        }
+    }
+
+    public class IntRangeValidationRule : ValidationRule
+    {
+        public int Min { get; set; }
+        public int Max { get; set; }
+
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+            if (int.TryParse(value?.ToString(), out int val))
+            {
+                if (val >= Min && val <= Max) return ValidationResult.ValidResult;
+            }
+            return new ValidationResult(false, $"Значение должно быть от {Min} до {Max}.");
+        }
+    }
+
+    public class DoubleRangeValidationRule : ValidationRule
+    {
+        public double Min { get; set; }
+        public double Max { get; set; }
+
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+            string? text = value?.ToString().Trim();
+
+            text = text?.Replace(',', '.');
+
+            if (double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out double val))
+            {
+                if (val >= Min && val <= Max)
+                    return ValidationResult.ValidResult;
+            }
+
+            return new ValidationResult(false, $"Значение должно быть от {Min} до {Max}.");
         }
     }
 }

@@ -1,104 +1,248 @@
-﻿using FurnaceWPF.Commands;
+﻿using FurnaceCore.Model;
 using FurnaceWPF.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace FurnaceWPF.ViewModels
 {
-    public class SettingsViewModel : BaseObservable
+    public class SettingsViewModel : INotifyPropertyChanged
     {
-        private readonly Settings _settings;
-        private bool _hasUnsavedChanges = false;
+        private readonly Settings _originalSettings; // Оригинал
+        private Settings _currentSettings; // Копия для редактирования
 
-        #region Properties
-        public bool IsAvailable => !_settings.IsRunning;
-
-        public bool IsDebug
+        public Settings CurrentSettings
         {
-            get => _settings.IsDebug;
-
+            get => _currentSettings;
             set
             {
-                if (_settings.IsDebug != value)
-                {
-                    _settings.IsDebug = value;
-                    OnPropertyChanged();
-                }
+                _currentSettings = value;
+                OnPropertyChanged(nameof(CurrentSettings));
             }
         }
 
-        public byte ZoneOneAddress
-        {
-            get => _settings.ZoneOneChannel;
-            set
-            {
-                if (_settings.ZoneOneChannel != value)
-                {
-                    _settings.ZoneOneChannel = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public byte ZoneTwoAddress
-        {
-            get => _settings.ZoneTwoChannel;
-            set
-            {
-                if (_settings.ZoneTwoChannel != value)
-                {
-                    _settings.ZoneTwoChannel = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public byte ZoneThreeAddress
-        {
-            get => _settings.ZoneThreeChannel;
-            set
-            {
-                if (_settings.ZoneThreeChannel != value)
-                {
-                    _settings.ZoneThreeChannel = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
+        private bool _hasUnsavedChanges;
         public bool HasUnsavedChanges
         {
             get => _hasUnsavedChanges;
             set
             {
-                if (_hasUnsavedChanges != value)
-                {
-                    _hasUnsavedChanges = value;
-                    OnPropertyChanged(nameof(HasUnsavedChanges));
-                }
+                _hasUnsavedChanges = value;
+                OnPropertyChanged(nameof(HasUnsavedChanges));
             }
         }
-        #endregion
 
-        public SettingsViewModel(Settings settings)
+        public ICommand ApplyChangesCommand { get; }
+
+        public SettingsViewModel(Settings originalSettings)
         {
-            this._settings = settings;
+            _originalSettings = originalSettings;
+            CurrentSettings = CloneSettings(originalSettings); // Копируем
 
-            _settings.PropertyChanged += (s, e) =>
+            // Отслеживаем изменения в копии
+            CurrentSettings.PropertyChanged += OnSettingsPropertyChanged;
+
+            ApplyChangesCommand = new RelayCommand(ApplyChanges, CanApplyChanges);
+        }
+
+        private void OnSettingsPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            HasUnsavedChanges = true; // Простой флаг; можно сделать сравнение
+            ((RelayCommand)ApplyChangesCommand).RaiseCanExecuteChanged();
+        }
+
+        private bool CanApplyChanges(object param)
+        {
+            if (!HasUnsavedChanges) return false;
+            if (param is not DependencyObject element) return true; // если не передали — считаем, что ошибок нет
+
+            return !HasValidationErrors(element);
+        }
+
+        private void ApplyChanges(object param)
+        {
+            var control = param as UserControl;
+            if (control == null) return;
+
+            // 1. Принудительно обновляем все binding'и (чтобы валидация сработала)
+            foreach (var bindingExpression in BindingOperations.GetSourceUpdatingBindings(control))
             {
-                OnPropertyChanged(e.PropertyName);
+                bindingExpression.UpdateSource();
+            }
+
+            // 2. Проверяем обычные ошибки валидации (диапазоны, пустые поля и т.д.)
+            if (HasValidationErrors(control))
+            {
+                MessageBox.Show("Исправьте ошибки в полях (красные рамки).",
+                                "Ошибка валидации", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // 3. Проверка: каналы зон должны быть уникальными
+            var zoneChannels = new HashSet<byte>
+            {
+                CurrentSettings.ZoneOneChannel,
+                CurrentSettings.ZoneTwoChannel,
+                CurrentSettings.ZoneThreeChannel
             };
 
-            _settings.PropertyChanged += (s, e) =>
+            if (zoneChannels.Count != 3)
             {
-                if (e.PropertyName == nameof(Settings.IsRunning))
-                {
-                    OnPropertyChanged(nameof(IsAvailable));
-                }
+                MessageBox.Show(
+                    "Каналы температурных зон должны быть разными!\n" +
+                    $"Зона 1: {CurrentSettings.ZoneOneChannel}\n" +
+                    $"Зона 2: {CurrentSettings.ZoneTwoChannel}\n" +
+                    $"Зона 3: {CurrentSettings.ZoneThreeChannel}",
+                    "Конфликт каналов зон", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // 4. Проверка: порты драйверов должны быть уникальными
+            var driverPorts = new HashSet<DriversPortEnum>
+            {
+                CurrentSettings.DriverAPort,
+                CurrentSettings.DriverBPort,
+                CurrentSettings.DriverCPort
+            };
+
+            if (driverPorts.Count != 3)
+            {
+                MessageBox.Show(
+                    "Порты драйверов A, B и C должны быть разными!\n" +
+                    $"Драйвер A: {CurrentSettings.DriverAPort}\n" +
+                    $"Драйвер B: {CurrentSettings.DriverBPort}\n" +
+                    $"Драйвер C: {CurrentSettings.DriverCPort}",
+                    "Конфликт портов драйверов", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // 5. Всё ок — применяем
+            CopyProperties(CurrentSettings, _originalSettings);
+            HasUnsavedChanges = false;
+
+            MessageBox.Show("Все настройки успешно применены!",
+                            "Готово", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private Settings CloneSettings(Settings source)
+        {
+            // Простой клон; используй deep clone если нужно
+            return new Settings
+            {
+                IsDebug = source.IsDebug,
+
+                ZoneOneChannel = source.ZoneOneChannel,
+                ZoneTwoChannel = source.ZoneTwoChannel,
+                ZoneThreeChannel = source.ZoneThreeChannel,
+
+                ZoneHeaterOneChannel = source.ZoneHeaterOneChannel,
+                ZoneHeaterTwoChannel = source.ZoneHeaterTwoChannel,
+                ZoneHeaterThreeChannel = source.ZoneHeaterThreeChannel,
+
+                DriverAChannel = source.DriverAChannel,
+                DriverBChannel = source.DriverBChannel,
+                DriverCChannel = source.DriverCChannel,
+
+                DriverAddress = source.DriverAddress,
+
+                CoolingChannel = source.CoolingChannel,
+
+                IsRunning = source.IsRunning,
+                IsPortOpen = source.IsPortOpen,
+
+                StepSizeDriver = source.StepSizeDriver,
+                DriverRampingUpdateInterval = source.DriverRampingUpdateInterval,
+
+                ZonePollingInterval = source.ZonePollingInterval,
+                ZonePollingCoeff = source.ZonePollingCoeff,
+                ZoneTreshold = source.ZoneTreshold,
+                ZonePollingTimeout = source.ZonePollingTimeout,
+
+                CoolingPollingTimeout = source.CoolingPollingTimeout,
+                CoolingPollingTemperatureIntervall = source.CoolingPollingTemperatureIntervall,
+
+                RotationTimeout = source.RotationTimeout,
+                RotationPollingInterval = source.RotationPollingInterval
+
+
+
             };
         }
+
+
+        private bool HasValidationErrors(DependencyObject node)
+        {
+            if (Validation.GetHasError(node)) return true;
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(node); i++)
+            {
+                var child = VisualTreeHelper.GetChild(node, i);
+                if (HasValidationErrors(child)) return true;
+            }
+            return false;
+        }
+
+        private void CopyProperties(Settings source, Settings target)
+        {
+            target.IsDebug = source.IsDebug;
+
+            target.ZoneOneChannel = source.ZoneOneChannel;
+            target.ZoneTwoChannel = source.ZoneTwoChannel;
+            target.ZoneThreeChannel = source.ZoneThreeChannel;
+
+            target.ZoneHeaterOneChannel = source.ZoneHeaterOneChannel;
+            target.ZoneHeaterTwoChannel = source.ZoneHeaterTwoChannel;
+            target.ZoneHeaterThreeChannel = source.ZoneHeaterThreeChannel;
+
+            target.DriverAChannel = source.DriverAChannel;
+            target.DriverBChannel = source.DriverBChannel;
+            target.DriverCChannel = source.DriverCChannel;
+
+            target.DriverAddress = source.DriverAddress;
+
+            target.CoolingChannel = source.CoolingChannel;
+
+            target.IsRunning = source.IsRunning;
+            target.IsPortOpen = source.IsPortOpen;
+
+            target.StepSizeDriver = source.StepSizeDriver;
+            target.DriverRampingUpdateInterval = source.DriverRampingUpdateInterval;
+
+            target.ZonePollingInterval = source.ZonePollingInterval;
+            target.ZonePollingCoeff = source.ZonePollingCoeff;
+            target.ZoneTreshold = source.ZoneTreshold;
+            target.ZonePollingTimeout = source.ZonePollingTimeout;
+
+            target.CoolingPollingTimeout = source.CoolingPollingTimeout;
+            target.CoolingPollingTemperatureIntervall = source.CoolingPollingTemperatureIntervall;
+
+            target.RotationTimeout = source.RotationTimeout;
+            target.RotationPollingInterval = source.RotationPollingInterval;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    // Простая реализация ICommand
+    public class RelayCommand : ICommand
+    {
+        private readonly Action<object> _execute;
+        private readonly Func<object, bool> _canExecute;
+
+        public RelayCommand(Action<object> execute, Func<object, bool> canExecute = null)
+        {
+            _execute = execute;
+            _canExecute = canExecute;
+        }
+
+        public event EventHandler CanExecuteChanged;
+        public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+
+        public bool CanExecute(object parameter) => _canExecute == null || _canExecute(parameter);
+        public void Execute(object parameter) => _execute(parameter);
     }
 }

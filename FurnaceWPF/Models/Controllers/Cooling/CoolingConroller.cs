@@ -19,7 +19,7 @@ namespace FurnaceWPF.Models.Controllers.Cooling
     {
         private double _currentTemperature;
         private bool _isWorking;
-        private byte _channel;
+        private Func<byte> _channel;
 
         private TemperatureController _temperatureController;
         private CoolingModule _coolingModule;
@@ -61,7 +61,7 @@ namespace FurnaceWPF.Models.Controllers.Cooling
             this._logger = logger;
             this._settings = settings;
             this._coolingModule = coolingModule;
-            this._channel = _settings.CoolingChannel;
+            this._channel =  () => _settings.CoolingChannel;
             this._temperatureController.GlobalErrorEvent += (e) => { StopPollingTemperature(); };
         }
 
@@ -73,7 +73,7 @@ namespace FurnaceWPF.Models.Controllers.Cooling
 
             _logger.LogInformation($"Начат опрос температуры с интервалом {_settings.ZonePollingInterval} мс. Таймаут чтения: {_settings.ZonePollingTimeout} мс.");
 
-            _temperatureController.AddCaller(this._channel, new TemperatureEvent { reciveError = ErrorHandle, reciveTemperatue = TemperatureHandle });
+            _temperatureController.AddCaller(this._channel(), new TemperatureEvent { reciveError = ErrorHandle, reciveTemperatue = TemperatureHandle });
         }
 
         public void StopPollingTemperature()
@@ -83,9 +83,9 @@ namespace FurnaceWPF.Models.Controllers.Cooling
             IsWorking = false;
             OnPropertyChanged(nameof(IsWorking));
 
-            _temperatureController.RemoveCaller(_channel);
+            _temperatureController.RemoveCaller(_channel());
 
-            _logger.LogInformation($"Опрос температуры канала {this._channel} преркащён");
+            _logger.LogInformation($"Опрос температуры канала {this._channel()} преркащён");
             IsWorking = false;
 
         }
@@ -93,9 +93,9 @@ namespace FurnaceWPF.Models.Controllers.Cooling
 
         public void SetChannel(byte newChannel)
         {
-            _temperatureController.ChangeChannel(this._channel, newChannel);
-            _logger.LogInformation($"Канал холодильника изменён с {this._channel} на {newChannel}");
-            this._channel = newChannel;
+            _temperatureController.ChangeChannel(this._channel(), newChannel);
+            _logger.LogInformation($"Канал холодильника изменён с {this._channel()} на {newChannel}");
+            this._channel = () => newChannel;
         }
 
         public void TemperatureHandle(double temperature)

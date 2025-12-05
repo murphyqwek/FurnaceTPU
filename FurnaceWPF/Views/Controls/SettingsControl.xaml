@@ -1,43 +1,52 @@
 ﻿<UserControl x:Class="FurnaceWPF.Views.Controls.SettingsControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:FurnaceWPF.Views.Controls"
              xmlns:validator="clr-namespace:FurnaceWPF.Validators"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    
+             xmlns:core="clr-namespace:FurnaceCore.Model;assembly=FurnaceCore"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d">
+
     <UserControl.Resources>
-        <Style x:Key="ValidatingTextBoxStyle" TargetType="{x:Type TextBox}">
+        <!-- Конвертер для enum в ItemsSource -->
+        <validator:EnumToItemsSource x:Key="EnumToItemsSource" Type="{x:Type core:DriversPortEnum}" />
+
+        <!-- Стандартный BooleanToVisibilityConverter -->
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
+        <!-- Стиль для TextBox с валидацией -->
+        <Style x:Key="ValidatingTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Margin" Value="0,2,0,8"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="BorderBrush" Value="Gray"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Style.Triggers>
                 <Trigger Property="Validation.HasError" Value="True">
-                    <Setter Property="ToolTip" 
-                            Value="{Binding RelativeSource={x:Static RelativeSource.Self}, 
-                                            Path=(Validation.Errors)[0].ErrorContent}"/>
                     <Setter Property="BorderBrush" Value="Red"/>
                     <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="FlatButtonStyle" TargetType="Button">
+        <!-- Стиль для кнопки "Применить" -->
+        <Style x:Key="ApplyButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="#388E3C"/>
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontSize" Value="24"/>
-            <Setter Property="Margin" Value="0,20,0,0"/>
-
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="Margin" Value="0,30,0,10"/>
+            <Setter Property="MinHeight" Value="50"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="IsEnabled" Value="{Binding HasUnsavedChanges}"/>
             <Style.Triggers>
-                <DataTrigger Binding="{Binding HasUnsavedChanges}" Value="True">
-                    <Setter Property="Background" Value="#1976D2"/>
-                </DataTrigger>
-
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Opacity" Value="0.9"/>
                 </Trigger>
-
                 <Trigger Property="IsEnabled" Value="False">
                     <Setter Property="Background" Value="#BDBDBD"/>
                     <Setter Property="Foreground" Value="#616161"/>
@@ -46,60 +55,339 @@
         </Style>
     </UserControl.Resources>
 
-    <StackPanel Margin="10">
-        <CheckBox Content="Режим отладки (Debug Mode)" 
-                  IsChecked="{Binding IsDebug}"
-                  Margin="0,0,0,15"
-                  FontSize="20"
-                  IsEnabled="{Binding IsAvailable}"/>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+        <Grid>
+            <StackPanel HorizontalAlignment="Center">
+                <!-- Температурные зоны -->
+                <Border Background="#F5F5F5" CornerRadius="8" Padding="15" Margin="0,0,0,20">
+                    <StackPanel>
+                        <TextBlock Text="Температурные зоны (каналы 0-255)" FontWeight="Bold" FontSize="20" Margin="0,0,0,10"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
 
-        <TextBlock Text="Настройки зон (0-255):" FontWeight="Bold" FontSize="20" Margin="0,0,0,5"/>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Зона 1:" FontSize="18" VerticalAlignment="Center" Margin="0,0,15,10"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,10">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentSettings.ZoneOneChannel" UpdateSourceTrigger="LostFocus" ValidatesOnDataErrors="True" TargetNullValue="0">
+                                        <Binding.ValidationRules>
+                                            <validator:ByteRangeValidationRule Min="0" Max="255"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
 
-        <TextBlock Text="Канал Зоны 1:" FontSize="20" Margin="0,5,0,0"/>
-        <TextBox Name="Zone1TextBox" Style="{StaticResource ValidatingTextBoxStyle}" IsEnabled="{Binding IsAvailable}" FontSize="20" Margin="0,2,0,5">
-            <TextBox.Text>
-                <Binding Path="ZoneOneAddress" 
-                         UpdateSourceTrigger="Explicit"
-                         ValidatesOnDataErrors="True"
-                         TargetNullValue="0">
-                    <Binding.ValidationRules>
-                        <validator:ByteRangeValidationRule Min="0" Max="255"/>
-                    </Binding.ValidationRules>
-                </Binding>
-            </TextBox.Text>
-        </TextBox>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Зона 2:" FontSize="18" VerticalAlignment="Center" Margin="0,0,15,10"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,10">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentSettings.ZoneTwoChannel" UpdateSourceTrigger="LostFocus" ValidatesOnDataErrors="True" TargetNullValue="0">
+                                        <Binding.ValidationRules>
+                                            <validator:ByteRangeValidationRule Min="0" Max="255"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
 
-        <TextBlock Text="Канал Зоны 2:" FontSize="20" Margin="0,5,0,0"/>
-        <TextBox Name="Zone2TextBox" Style="{StaticResource ValidatingTextBoxStyle}" IsEnabled="{Binding IsAvailable}" FontSize="20" Margin="0,2,0,5">
-            <TextBox.Text>
-                <Binding Path="ZoneTwoAddress" 
-                         UpdateSourceTrigger="Explicit"
-                         ValidatesOnDataErrors="True"
-                         TargetNullValue="0">
-                    <Binding.ValidationRules>
-                        <validator:ByteRangeValidationRule Min="0" Max="255"/>
-                    </Binding.ValidationRules>
-                </Binding>
-            </TextBox.Text>
-        </TextBox>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Зона 3:" FontSize="18" VerticalAlignment="Center" Margin="0,0,15,10"/>
+                            <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,10">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentSettings.ZoneThreeChannel" UpdateSourceTrigger="LostFocus" ValidatesOnDataErrors="True" TargetNullValue="0">
+                                        <Binding.ValidationRules>
+                                            <validator:ByteRangeValidationRule Min="0" Max="255"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                        </Grid>
+                    </StackPanel>
+                </Border>
 
-        <TextBlock Text="Канал Зоны 3:" FontSize="20" Margin="0,5,0,0"/>
-        <TextBox Name="Zone3TextBox" Style="{StaticResource ValidatingTextBoxStyle}" IsEnabled="{Binding IsAvailable}" FontSize="20" Margin="0,2,0,5" Cursor="">
-            <TextBox.Text>
-                <Binding Path="ZoneThreeAddress" 
-                         UpdateSourceTrigger="Explicit"
-                         ValidatesOnDataErrors="True"
-                         TargetNullValue="0">
-                    <Binding.ValidationRules>
-                        <validator:ByteRangeValidationRule Min="0" Max="255"/>
-                    </Binding.ValidationRules>
-                </Binding>
-            </TextBox.Text>
-        </TextBox>
+                <!-- Нагреватели и охлаждение -->
+                <Border Background="#FFF3E0" CornerRadius="8" Padding="15" Margin="0,0,0,20">
+                    <StackPanel>
+                        <TextBlock Text="Нагреватели и охлаждение (0-255)" FontWeight="Bold" FontSize="20" Margin="0,0,0,10"/>
+                        <UniformGrid Columns="2">
+                            <StackPanel Margin="10">
+                                <TextBlock Text="Нагреватель Зоны 1:" FontSize="18"/>
+                                <TextBox Style="{StaticResource ValidatingTextBoxStyle}">
+                                    <TextBox.Text>
+                                        <Binding Path="CurrentSettings.ZoneHeaterOneChannel" UpdateSourceTrigger="LostFocus" ValidatesOnDataErrors="True" TargetNullValue="0">
+                                            <Binding.ValidationRules>
+                                                <validator:ByteRangeValidationRule Min="0" Max="255"/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </StackPanel>
 
-        <Button Content="Применить" 
-                FontSize="24" 
-                Margin="0 20 0 0" IsEnabled="{Binding IsAvailable}"
-                Click="Apply_Click" MinHeight="42" Cursor="Hand"/>
-    </StackPanel>
+                            <StackPanel Margin="10">
+                                <TextBlock Text="Нагреватель Зоны 2:" FontSize="18"/>
+                                <TextBox Style="{StaticResource ValidatingTextBoxStyle}">
+                                    <TextBox.Text>
+                                        <Binding Path="CurrentSettings.ZoneHeaterTwoChannel" UpdateSourceTrigger="LostFocus" ValidatesOnDataErrors="True" TargetNullValue="0">
+                                            <Binding.ValidationRules>
+                                                <validator:ByteRangeValidationRule Min="0" Max="255"/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </StackPanel>
+
+                            <StackPanel Margin="10">
+                                <TextBlock Text="Нагреватель Зоны 3:" FontSize="18"/>
+                                <TextBox Style="{StaticResource ValidatingTextBoxStyle}">
+                                    <TextBox.Text>
+                                        <Binding Path="CurrentSettings.ZoneHeaterThreeChannel" UpdateSourceTrigger="LostFocus" ValidatesOnDataErrors="True" TargetNullValue="0">
+                                            <Binding.ValidationRules>
+                                                <validator:ByteRangeValidationRule Min="0" Max="255"/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </StackPanel>
+
+                            <StackPanel Margin="10">
+                                <TextBlock Text="Канал охлаждения:" FontSize="18"/>
+                                <TextBox Style="{StaticResource ValidatingTextBoxStyle}">
+                                    <TextBox.Text>
+                                        <Binding Path="CurrentSettings.CoolingChannel" UpdateSourceTrigger="LostFocus" ValidatesOnDataErrors="True" TargetNullValue="0">
+                                            <Binding.ValidationRules>
+                                                <validator:ByteRangeValidationRule Min="0" Max="255"/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </StackPanel>
+                        </UniformGrid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Драйверы -->
+                <Border Background="#E8F5E9" CornerRadius="8" Padding="15" Margin="0,0,0,20">
+                    <StackPanel>
+                        <TextBlock Text="Драйверы и шаговые двигатели" FontWeight="Bold" FontSize="20" Margin="0,0,0,10"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Драйвер A (порт):" FontSize="18" Margin="0,0,15,10" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1" SelectedItem="{Binding CurrentSettings.DriverAPort}" ItemsSource="{StaticResource EnumToItemsSource}" FontSize="16" Margin="0,0,0,10"/>
+
+                            <TextBlock Grid.Row="0" Grid.Column="2" Text="Канал A (0-255):" FontSize="18" Margin="30,0,15,10" VerticalAlignment="Center"/>
+                            <TextBox Grid.Row="0" Grid.Column="3" Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,10">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentSettings.DriverAChannel" UpdateSourceTrigger="LostFocus" ValidatesOnDataErrors="True" TargetNullValue="0">
+                                        <Binding.ValidationRules>
+                                            <validator:ByteRangeValidationRule Min="0" Max="255"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Драйвер B (порт):" FontSize="18" Margin="0,0,15,10" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="1" Grid.Column="1" SelectedItem="{Binding CurrentSettings.DriverBPort}" ItemsSource="{StaticResource EnumToItemsSource}" FontSize="16" Margin="0,0,0,10"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="2" Text="Канал B (0-255):" FontSize="18" Margin="30,0,15,10" VerticalAlignment="Center"/>
+                            <TextBox Grid.Row="1" Grid.Column="3" Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,10">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentSettings.DriverBChannel" UpdateSourceTrigger="LostFocus" ValidatesOnDataErrors="True" TargetNullValue="0">
+                                        <Binding.ValidationRules>
+                                            <validator:ByteRangeValidationRule Min="0" Max="255"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Драйвер C (порт):" FontSize="18" Margin="0,0,15,10" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="2" Grid.Column="1" SelectedItem="{Binding CurrentSettings.DriverCPort}" ItemsSource="{StaticResource EnumToItemsSource}" FontSize="16" Margin="0,0,0,10"/>
+
+                            <TextBlock Grid.Row="2" Grid.Column="2" Text="Канал C (0-255):" FontSize="18" Margin="30,0,15,10" VerticalAlignment="Center"/>
+                            <TextBox Grid.Row="2" Grid.Column="3" Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,10">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentSettings.DriverCChannel" UpdateSourceTrigger="LostFocus" ValidatesOnDataErrors="True" TargetNullValue="0">
+                                        <Binding.ValidationRules>
+                                            <validator:ByteRangeValidationRule Min="0" Max="255"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+
+                            <TextBlock Grid.Row="3" Grid.Column="2" Text="Размер шага (1-65535):" FontSize="18" Margin="30,0,15,10" VerticalAlignment="Center"/>
+                            <TextBox Grid.Row="3" Grid.Column="3" Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,10">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentSettings.StepSizeDriver" UpdateSourceTrigger="LostFocus" ValidatesOnDataErrors="True" TargetNullValue="500">
+                                        <Binding.ValidationRules>
+                                            <validator:UShortRangeValidationRule Min="1" Max="65535"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Интервал ramping (мс >0):" FontSize="18" Margin="0,0,15,10" VerticalAlignment="Center"/>
+                            <TextBox Grid.Row="3" Grid.Column="1" Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,10">
+                                <TextBox.Text>
+                                    <Binding Path="CurrentSettings.DriverRampingUpdateInterval" UpdateSourceTrigger="LostFocus" ValidatesOnDataErrors="True" TargetNullValue="200">
+                                        <Binding.ValidationRules>
+                                            <validator:IntRangeValidationRule Min="1" Max="{x:Static sys:Int32.MaxValue}"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Тайминги и коэффициенты -->
+                <Border Background="#E3F2FD" CornerRadius="8" Padding="15" Margin="0,0,0,20">
+                    <StackPanel>
+                        <TextBlock Text="Тайминги и параметры" FontWeight="Bold" FontSize="20" Margin="0,0,0,15"/>
+                        <UniformGrid Columns="3">
+                            <StackPanel Margin="8">
+                                <TextBlock Text="Интервал опроса зон (мс >0):" FontSize="18"/>
+                                <TextBox Style="{StaticResource ValidatingTextBoxStyle}">
+                                    <TextBox.Text>
+                                        <Binding Path="CurrentSettings.ZonePollingInterval" UpdateSourceTrigger="LostFocus" ValidatesOnDataErrors="True" TargetNullValue="1000">
+                                            <Binding.ValidationRules>
+                                                <validator:IntRangeValidationRule Min="1" Max="{x:Static sys:Int32.MaxValue}"/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </StackPanel>
+
+                            <StackPanel Margin="8">
+                                <TextBlock Text="Коэффициент сглаживания (0.0-1.0):" FontSize="18"/>
+                                <TextBox Style="{StaticResource ValidatingTextBoxStyle}">
+                                    <TextBox.Text>
+                                        <Binding Path="CurrentSettings.ZonePollingCoeff" UpdateSourceTrigger="LostFocus" ValidatesOnDataErrors="True" TargetNullValue="0.8">
+                                            <Binding.ValidationRules>
+                                                <validator:DoubleRangeValidationRule Min="0.0" Max="1.0"/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </StackPanel>
+
+                            <StackPanel Margin="8">
+                                <TextBlock Text="Порог зон (°C >0):" FontSize="18"/>
+                                <TextBox Style="{StaticResource ValidatingTextBoxStyle}">
+                                    <TextBox.Text>
+                                        <Binding Path="CurrentSettings.ZoneTreshold" UpdateSourceTrigger="LostFocus" ValidatesOnDataErrors="True" TargetNullValue="10.0">
+                                            <Binding.ValidationRules>
+                                                <validator:DoubleRangeValidationRule Min="0.1" Max="1000.0"/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </StackPanel>
+
+                            <StackPanel Margin="8">
+                                <TextBlock Text="Интервал проверки нагрева (мс >0):" FontSize="18"/>
+                                <TextBox Style="{StaticResource ValidatingTextBoxStyle}">
+                                    <TextBox.Text>
+                                        <Binding Path="CurrentSettings.ZoneHeatCheckingInterval" UpdateSourceTrigger="LostFocus" ValidatesOnDataErrors="True" TargetNullValue="3300">
+                                            <Binding.ValidationRules>
+                                                <validator:IntRangeValidationRule Min="1" Max="{x:Static sys:Int32.MaxValue}"/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </StackPanel>
+
+                            <StackPanel Margin="8">
+                                <TextBlock Text="Таймаут опроса зон (мс >0):" FontSize="18"/>
+                                <TextBox Style="{StaticResource ValidatingTextBoxStyle}">
+                                    <TextBox.Text>
+                                        <Binding Path="CurrentSettings.ZonePollingTimeout" UpdateSourceTrigger="LostFocus" ValidatesOnDataErrors="True" TargetNullValue="15000">
+                                            <Binding.ValidationRules>
+                                                <validator:IntRangeValidationRule Min="1" Max="{x:Static sys:Int32.MaxValue}"/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </StackPanel>
+
+                            <StackPanel Margin="8">
+                                <TextBlock Text="Таймаут охлаждения (мс >0):" FontSize="18"/>
+                                <TextBox Style="{StaticResource ValidatingTextBoxStyle}">
+                                    <TextBox.Text>
+                                        <Binding Path="CurrentSettings.CoolingPollingTimeout" UpdateSourceTrigger="LostFocus" ValidatesOnDataErrors="True" TargetNullValue="15000">
+                                            <Binding.ValidationRules>
+                                                <validator:IntRangeValidationRule Min="1" Max="{x:Static sys:Int32.MaxValue}"/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </StackPanel>
+
+                            <StackPanel Margin="8">
+                                <TextBlock Text="Интервал темп. охлаждения (мс >0):" FontSize="18"/>
+                                <TextBox Style="{StaticResource ValidatingTextBoxStyle}">
+                                    <TextBox.Text>
+                                        <Binding Path="CurrentSettings.CoolingPollingTemperatureIntervall" UpdateSourceTrigger="LostFocus" ValidatesOnDataErrors="True" TargetNullValue="3300">
+                                            <Binding.ValidationRules>
+                                                <validator:IntRangeValidationRule Min="1" Max="{x:Static sys:Int32.MaxValue}"/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </StackPanel>
+
+                            <StackPanel Margin="8">
+                                <TextBlock Text="Таймаут вращения (мс >0):" FontSize="18"/>
+                                <TextBox Style="{StaticResource ValidatingTextBoxStyle}">
+                                    <TextBox.Text>
+                                        <Binding Path="CurrentSettings.RotationTimeout" UpdateSourceTrigger="LostFocus" ValidatesOnDataErrors="True" TargetNullValue="15000">
+                                            <Binding.ValidationRules>
+                                                <validator:IntRangeValidationRule Min="1" Max="{x:Static sys:Int32.MaxValue}"/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </StackPanel>
+
+                            <StackPanel Margin="8">
+                                <TextBlock Text="Интервал опроса вращения (мс >0):" FontSize="18"/>
+                                <TextBox Style="{StaticResource ValidatingTextBoxStyle}">
+                                    <TextBox.Text>
+                                        <Binding Path="CurrentSettings.RotationPollingInterval" UpdateSourceTrigger="LostFocus" ValidatesOnDataErrors="True" TargetNullValue="500">
+                                            <Binding.ValidationRules>
+                                                <validator:IntRangeValidationRule Min="1" Max="{x:Static sys:Int32.MaxValue}"/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </StackPanel>
+                        </UniformGrid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Кнопка и индикатор -->
+                <Button Content="Применить изменения" 
+                        Command="{Binding ApplyChangesCommand}" 
+                        Style="{StaticResource ApplyButtonStyle}" 
+                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        HorizontalAlignment="Center" Cursor="Hand"/>
+                <TextBlock Text="* Есть несохранённые изменения" Foreground="Red" FontSize="14" HorizontalAlignment="Center" Visibility="{Binding HasUnsavedChanges, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
 </UserControl>

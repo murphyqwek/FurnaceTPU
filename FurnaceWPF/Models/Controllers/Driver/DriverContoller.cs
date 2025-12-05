@@ -86,7 +86,7 @@ namespace FurnaceWPF.Models.Controllers
 
             _logger.LogInformation($"Останавливаем шаговый двигатель на порту {_driversPort}");
             this.CurrentFrequency = 4;
-            this._driver.SetDriverFrequency(_channel, CurrentFrequency);
+            this._driver.SetDriverFrequency(_channel(), CurrentFrequency);
             OnPropertyChanged(nameof(CurrentFrequency));
         }
 
