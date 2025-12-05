@@ -24,7 +24,7 @@ namespace FurnaceWPF.Models.Controllers
         private ILogger<DriverContoller> _logger;
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public ushort CurrentFrequency { get; private set; } = 10_00;
+        public ushort CurrentFrequency { get; private set; } = 10_000;
         public bool IsDriverRunning { get; private set; }
 
         public DriverContoller(DriverModule driver, Func<int> channel, Func<DriversPortEnum> driversPort, Settings settings, ILogger<DriverContoller> logger)

@@ -1,4 +1,5 @@
 ﻿using FurnaceCore.Model;
+using FurnaceWPF.Helpers;
 using FurnaceWPF.Models;
 using System;
 using System.ComponentModel;
@@ -14,6 +15,7 @@ namespace FurnaceWPF.ViewModels
     {
         private readonly Settings _originalSettings; // Оригинал
         private Settings _currentSettings; // Копия для редактирования
+        private SettingsLoader _loader;
 
         public Settings CurrentSettings
         {
@@ -38,9 +40,11 @@ namespace FurnaceWPF.ViewModels
 
         public ICommand ApplyChangesCommand { get; }
 
-        public SettingsViewModel(Settings originalSettings)
+        public SettingsViewModel(Settings originalSettings, SettingsLoader settingsLoader)
         {
             _originalSettings = originalSettings;
+            _loader = settingsLoader;
+
             CurrentSettings = CloneSettings(originalSettings); // Копируем
 
             // Отслеживаем изменения в копии
@@ -124,8 +128,18 @@ namespace FurnaceWPF.ViewModels
             CopyProperties(CurrentSettings, _originalSettings);
             HasUnsavedChanges = false;
 
-            MessageBox.Show("Все настройки успешно применены!",
-                            "Готово", MessageBoxButton.OK, MessageBoxImage.Information);
+            var savingResult = _loader.Save(_originalSettings);
+
+            if (savingResult.Success)
+            {
+                MessageBox.Show("Все настройки успешно применены и сохранены!",
+                                "Готово", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show("Все настройки успешно применены, но при сохранении произошла ошибка: " + savingResult.ErrorMessage, 
+                                "Внимание", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private Settings CloneSettings(Settings source)
@@ -146,6 +160,10 @@ namespace FurnaceWPF.ViewModels
                 DriverAChannel = source.DriverAChannel,
                 DriverBChannel = source.DriverBChannel,
                 DriverCChannel = source.DriverCChannel,
+
+                DriverAPort = source.DriverAPort,
+                DriverBPort = source.DriverBPort,
+                DriverCPort = source.DriverCPort,
 
                 DriverAddress = source.DriverAddress,
 
@@ -200,6 +218,10 @@ namespace FurnaceWPF.ViewModels
             target.DriverAChannel = source.DriverAChannel;
             target.DriverBChannel = source.DriverBChannel;
             target.DriverCChannel = source.DriverCChannel;
+
+            target.DriverAPort = source.DriverAPort;
+            target.DriverBPort = source.DriverBPort;
+            target.DriverCPort = source.DriverCPort;
 
             target.DriverAddress = source.DriverAddress;
 

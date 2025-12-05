@@ -21,6 +21,7 @@ using FurnaceWPF.Views;
 using FurnaceWPF.Models.Controllers.Cooling;
 using FurnaceWPF.Models.Controllers.Zone;
 using FurnaceWPF.Models.Controllers.Driver;
+using FurnaceWPF.Helpers;
 
 namespace pechka4._8
 {
@@ -56,13 +57,24 @@ namespace pechka4._8
                 builder.SetMinimumLevel(LogLevel.Debug);
             });
 
-            services.AddSingleton<Settings>();
+            ConfigureSettings(services);
 
             ConfigureControllers(services);
             ConfigureFactories(services);
             ConfigureViewModels(services);
             ConfigureFurnaceModules(services);
             ConfigureWindow(services);
+        }
+
+        private void ConfigureSettings(ServiceCollection services)
+        {
+            services.AddSingleton<SettingsLoader>();
+
+            services.AddSingleton<Settings>(provider =>
+            {
+                var loader = provider.GetRequiredService<SettingsLoader>();
+                return loader.Load();
+            });
         }
 
         private void ConfigureControllers(ServiceCollection services)
