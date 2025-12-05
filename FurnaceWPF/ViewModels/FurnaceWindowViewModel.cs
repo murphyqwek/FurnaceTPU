@@ -98,6 +98,7 @@ namespace FurnaceWPF.ViewModels
             Zone1.IsWorking = isWorking;
             Zone2.IsWorking = isWorking;
             Zone3.IsWorking = isWorking;
+            //CoolingSystem.IsPumpOn = isWorking;
         }
 
         private void OnIsDebugChanged()
