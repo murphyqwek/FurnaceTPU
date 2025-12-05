@@ -76,6 +76,18 @@ namespace FurnaceCore.Port
 
             lock (_responseLock)
             {
+                if (!_serialPort.IsOpen)
+                {
+                    LogWarning?.Invoke("Порт закрыт — очищаем очередь команд с ответом и сбрасываем состояние.");
+                    _awaitResponseQueue.Clear();
+                    _currentCommand = null;
+                    _currentRetryCount = 0;
+                    _isWaitingForResponse = false;
+                    _responseTimeoutCts?.Dispose();
+                    _responseTimeoutCts = null;
+                    return;
+                }
+
                 while (true)
                 {
                     if (_isWaitingForResponse) return;  // ← всё так же, выходим если ждём
