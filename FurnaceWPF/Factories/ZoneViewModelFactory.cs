@@ -34,66 +34,49 @@ namespace FurnaceWPF.Factories
             _temperatureController = temperatureController;
         }
 
-        public ZoneViewModel GetZone(string name, byte channelTemperatureByte, byte addressHeaterByte)
+        public ZoneViewModel GetZone(string name, Func<byte> channelTemperatureByte, Func<byte> addressHeaterByte)
         {
             var heaterModule = _heaterModuleFactor();
 
-            heaterModule.SetChannelByte(addressHeaterByte);
+            heaterModule.SetChannelByte(addressHeaterByte());
 
             ZoneController zoneController = new ZoneController(channelTemperatureByte, heaterModule, _zoneLogger, _settings, _temperatureController);
 
+            _settings.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(Settings.ZoneHeaterOneChannel) ||
+                    e.PropertyName == nameof(Settings.ZoneHeaterTwoChannel) ||
+                    e.PropertyName == nameof(Settings.ZoneHeaterThreeChannel))
+                {
+                    heaterModule.SetChannelByte(addressHeaterByte());
+                }
+
+            };
 
             return new ZoneViewModel(name, 0, zoneController, _settings);
         }
 
         public ZoneViewModel GetFirstZone()
         {
-            return GetZoneAndSubscribeToAddressChagned("Зона 1", _settings.ZoneOneChannel, 1, _settings.ZoneHeaterOneChannel);
+            return GetZoneAndSubscribeToAddressChagned("Зона 1", () => _settings.ZoneOneChannel, 1, () => _settings.ZoneHeaterOneChannel);
         }
 
         public ZoneViewModel GetSecondZone()
         {
-            return GetZoneAndSubscribeToAddressChagned("Зона 2", _settings.ZoneTwoChannel, 2, _settings.ZoneHeaterTwoChannel);
+            return GetZoneAndSubscribeToAddressChagned("Зона 2", () => _settings.ZoneTwoChannel, 2, () => _settings.ZoneHeaterTwoChannel);
         }
 
         public ZoneViewModel GetThirdZone()
         {
-            return GetZoneAndSubscribeToAddressChagned("Зона 3", _settings.ZoneThreeChannel, 3, _settings.ZoneHeaterThreeChannel);
+            return GetZoneAndSubscribeToAddressChagned("Зона 3",() => _settings.ZoneThreeChannel, 3, () => _settings.ZoneHeaterThreeChannel);
         }
         
-        private ZoneViewModel GetZoneAndSubscribeToAddressChagned(string name, byte channelTemperatureByte, int zoneNumber, byte channelHeaterByte)
+        private ZoneViewModel GetZoneAndSubscribeToAddressChagned(string name, Func<byte> channelTemperatureByte, int zoneNumber, Func<byte> channelHeaterByte)
         {
             var zone = GetZone(name, channelTemperatureByte, channelHeaterByte);
-            SubscribeToZoneAddressChanged(zoneNumber, zone);
 
             return zone;
         }
-
-        private void SubscribeToZoneAddressChanged(int zoneNumber, ZoneViewModel zoneViewModel)
-        {
-            string propertyName = zoneNumber switch
-            {
-                1 => nameof(Settings.ZoneOneChannel),
-                2 => nameof(Settings.ZoneTwoChannel),
-                3 => nameof(Settings.ZoneThreeChannel),
-                _ => throw new Exception("Not all zones could be subcribed")
-            };
-
-            _settings.PropertyChanged += (s, e) =>
-            {
-                if (e.PropertyName == propertyName)
-                {
-                    byte newChanneel = zoneNumber switch
-                    {
-                        1 => _settings.ZoneOneChannel,
-                        2 => _settings.ZoneTwoChannel,
-                        3 => _settings.ZoneThreeChannel,
-                        _ => throw new InvalidOperationException("Property name validation failed during update.")
-                    };
-
-                    zoneViewModel.UpdateZoneChannel(newChanneel);
-                }
-            };
-        }
+       
     }
 }

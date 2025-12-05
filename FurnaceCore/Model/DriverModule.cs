@@ -23,8 +23,8 @@ namespace FurnaceCore.Model
 
     public enum RotationEnum
     {
-        Left,
-        Right
+        Right,
+        Left
     }
 
     public record class RotationData(IReadOnlyDictionary<DriversPortEnum, RotationEnum> rotations);
@@ -52,7 +52,7 @@ namespace FurnaceCore.Model
             0x00, //4
             0x02, //5
             0x04, //6
-            0x27, //7 - первый байт частоты
+            0x00, //7 - первый байт частоты
             0x10, //8 - второй байт частоы
             0x00, //9
             0x00, //10
@@ -128,7 +128,7 @@ namespace FurnaceCore.Model
             if(channel < 0 || channel > 7)
                 throw new ArgumentOutOfRangeException(nameof(channel), "Channel must be between 0 and 7.");
 
-            byte channelByte = (byte)(channel * 2);
+            byte channelByte = (byte)(channel );
             var command = (byte[])_setDriverFrequency.Clone();
             command[3] = (byte)(0xE0 + channelByte);
             command[7] = (byte)(frequency >> 8);

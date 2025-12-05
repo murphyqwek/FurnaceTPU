@@ -122,11 +122,6 @@ namespace pechka4._8.ViewModels
             };
         }
 
-        public void UpdateZoneChannel(byte newChannel)
-        {
-            this._zoneController.SetChannelByte(newChannel);
-        }
-
         private void UpdateTemperaturePolling(bool isWorking)
         {
             if(!isWorking)

@@ -30,30 +30,31 @@ namespace FurnaceWPF.Factories
 
         public DriverViewModel GetDriverA()
         {
-            var driverController = GetDriverController(_settings.DriverAChannel, DriversPortEnum.Zero);
+            var driverController = GetDriverController(() =>_settings.DriverAChannel, () => _settings.DriverAPort);
 
             return new DriverViewModel(driverController, "А", _settings, _rotationController);
         }
 
         public DriverWithArrowViewModel GetDriverB()
         {
-            var driverController = GetDriverController(_settings.DriverBChannel, DriversPortEnum.One);
+            var driverController = GetDriverController(() => _settings.DriverBChannel, () => _settings.DriverBPort);
 
             return new DriverWithArrowViewModel(PackIconKind.ArrowRightBold, PackIconKind.ArrowLeftBold, PackIconKind.ArrowRightBold, driverController, "B", _settings, _rotationController);
         }
 
         public DriverWithArrowViewModel GetDriverC()
         {
-            var driverController = GetDriverController(_settings.DriverCChannel, DriversPortEnum.Two);
+            var driverController = GetDriverController(() => _settings.DriverCChannel, () => _settings.DriverCPort);
 
             return new DriverWithArrowViewModel(PackIconKind.ArrowUpBold, PackIconKind.ArrowDownBold, PackIconKind.ArrowUpBold, driverController, "C", _settings, _rotationController);
         }
 
-        private DriverContoller GetDriverController(int channel, DriversPortEnum driversPort)
+        private DriverContoller GetDriverController(Func<int> channel, Func<DriversPortEnum> driversPort)
         {
             DriverContoller driverContoller = new DriverContoller(_driverModule, channel, driversPort, _settings, _logger);
 
             return driverContoller;
         }
+
     }
 }
