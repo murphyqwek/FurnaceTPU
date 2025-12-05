@@ -36,7 +36,7 @@ namespace FurnaceWPF.ViewModels
 
         public bool IsSettingsAvalable
         {
-            get => !_settings.IsRunning;
+            get => !_settings.IsPortOpen;
         }
         #endregion
 
@@ -81,6 +81,8 @@ namespace FurnaceWPF.ViewModels
                     {
                         SetIsWorkingToControls(true);
                     }
+
+                    OnPropertyChanged(nameof(IsSettingsAvalable));
                 }
             };
 

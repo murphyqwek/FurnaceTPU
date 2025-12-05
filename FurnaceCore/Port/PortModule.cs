@@ -110,11 +110,17 @@ namespace FurnaceCore.Port
                     }
                 });
             }
-
-            _serialPort.Write(data, 0, data.Length);
-            string hex = BitConverter.ToString(data).Replace("-", " ");
-            LogInformation?.Invoke($"[С ОТВЕТОМ] Отправлено: {hex}");
-            Thread.Sleep(3);
+            try
+            {
+                _serialPort.Write(data, 0, data.Length);
+                string hex = BitConverter.ToString(data).Replace("-", " ");
+                LogInformation?.Invoke($"[С ОТВЕТОМ] Отправлено: {hex}");
+                Thread.Sleep(3);
+            }
+            catch (Exception ex)
+            {
+                LogWarning?.Invoke("Попытка отправить в закрытый порт данные");
+            }
         }
 
         /*private void OnFrameTimeout(object sender, ElapsedEventArgs e)
