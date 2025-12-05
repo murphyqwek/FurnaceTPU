@@ -208,8 +208,20 @@ namespace FurnaceCore.Model
             }
         }
 
+        public bool isEchoData(string data)
+        {
+            string[] hex = data.Split(' ');
+
+            return !(hex[0] == "01");
+        }
+
         public void HandleData(string data)
         {
+            if (isEchoData(data))
+            {
+                return;
+            }
+
             var rotationData = ParseRotationData(data);
 
             _completionSource?.SetResult(rotationData);
@@ -219,7 +231,7 @@ namespace FurnaceCore.Model
 
         private RotationEnum GetRotation(int rotationFlag)
         {
-            return rotationFlag == 1 ? RotationEnum.Left : RotationEnum.Right;
+            return rotationFlag == 0 ? RotationEnum.Right : RotationEnum.Left;
         }
     }
 }
