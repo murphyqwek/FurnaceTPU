@@ -90,14 +90,6 @@ namespace FurnaceWPF.Models.Controllers.Cooling
 
         }
 
-
-        public void SetChannel(byte newChannel)
-        {
-            _temperatureController.ChangeChannel(this._channel(), newChannel);
-            _logger.LogInformation($"Канал холодильника изменён с {this._channel()} на {newChannel}");
-            this._channel = () => newChannel;
-        }
-
         public void TemperatureHandle(double temperature)
         {
             CurrentTemperature = temperature;

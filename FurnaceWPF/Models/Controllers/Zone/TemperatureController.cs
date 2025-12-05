@@ -3,10 +3,12 @@ using FurnaceCore.utlis;
 using FurnaceWPF.ViewModels;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.RightsManagement;
 using System.Text;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
@@ -23,9 +25,10 @@ namespace FurnaceWPF.Models.Controllers.Zone
         private TemperatureModule _temperatureModule;
         private Settings _settings;
         private Dictionary<byte, TemperatureEvent> _callers;
-        private Dictionary<byte, CancellationTokenSource> _channelCtsDict; // Новый словарь
+        private ConcurrentDictionary<byte, CancellationTokenSource> _channelCtsDict; // Новый словарь
         private ILogger<TemperatureController> _logger;
         private CancellationTokenSource _pollingCts;
+        private readonly object _callersLock = new object();
 
         public bool IsPollingTemperature { get; private set; }
         public event Action<string> GlobalErrorEvent;
@@ -36,7 +39,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
             this._settings = settings;
             this._logger = logger;
             this._callers = new Dictionary<byte, TemperatureEvent>();
-            this._channelCtsDict = new Dictionary<byte, CancellationTokenSource>();
+            this._channelCtsDict = new ConcurrentDictionary<byte, CancellationTokenSource>();
         }
 
         private async Task PollTemperatureLoop(CancellationToken token)
@@ -45,8 +48,11 @@ namespace FurnaceWPF.Models.Controllers.Zone
             {
                 try
                 {
-                    byte[] channels = new byte[_callers.Keys.Count];
-                    _callers.Keys.CopyTo(channels, 0);
+                    byte[] channels;
+                    lock (_callersLock)
+                    {
+                        channels = _callers.Keys.ToArray();
+                    }
 
                     foreach (byte channel in channels)
                     {
@@ -72,14 +78,23 @@ namespace FurnaceWPF.Models.Controllers.Zone
 
         private async Task PollingTemeperature(byte channel, CancellationToken token)
         {
-            if (!_callers.ContainsKey(channel) || token.IsCancellationRequested)
+            bool isChannelDeleted = false;
+            lock (_callersLock)
+            {
+                isChannelDeleted = !_callers.ContainsKey(channel) || token.IsCancellationRequested;
+            }
+
+            if (isChannelDeleted)
             {
                 _logger.LogDebug($"Опрос канала {channel} пропущен - канал удален или отменен");
                 return;
             }
 
             this._temperatureModule.SetChannelByte(channel);
-            var temperatureActions = this._callers.GetValueOrDefault(channel);
+
+            TemperatureEvent temperatureActions;
+            lock (_callersLock)
+                temperatureActions = this._callers.GetValueOrDefault(channel);
 
             var reciveTemperature = temperatureActions.reciveTemperatue;
             var reciveError = temperatureActions.reciveError;
@@ -128,17 +143,14 @@ namespace FurnaceWPF.Models.Controllers.Zone
 
         private CancellationToken GetChannelToken(byte channel)
         {
-            if (!_channelCtsDict.TryGetValue(channel, out var cts))
-            {
-                cts = new CancellationTokenSource();
-                _channelCtsDict[channel] = cts;
-            }
+            var cts = _channelCtsDict.GetOrAdd(channel, _ => new CancellationTokenSource());
             return cts.Token;
         }
 
         public void AddCaller(byte channel, TemperatureEvent caller)
         {
-            this._callers.Add(channel, caller);
+            lock(_callersLock)
+                this._callers.Add(channel, caller);
 
             if (!_channelCtsDict.ContainsKey(channel))
             {
@@ -153,28 +165,19 @@ namespace FurnaceWPF.Models.Controllers.Zone
 
         public void RemoveCaller(byte channel)
         {
-            if (_channelCtsDict.TryGetValue(channel, out var cts))
+            if (_channelCtsDict.TryRemove(channel, out var cts))
             {
                 cts.Cancel();
                 cts.Dispose();
-                _channelCtsDict.Remove(channel);
                 _logger.LogDebug($"CTS для канала {channel} отменен и удален");
             }
-            this._callers.Remove(channel);
+
+            lock (_callersLock)
+                this._callers.Remove(channel);
 
             if (this._callers.Count == 0)
             {
                 StopPollingTemperature();
-            }
-        }
-
-        public void ChangeChannel(byte oldChannel, byte newChannel)
-        {
-            if (_callers.TryGetValue(oldChannel, out var caller))
-            {
-                RemoveCaller(oldChannel);
-
-                AddCaller(newChannel, caller);
             }
         }
 
