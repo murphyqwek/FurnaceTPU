@@ -179,7 +179,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
                         }
                     }
 
-                    //await Task.Delay(_settings.ZoneHeatCheckingInterval, token);
+                    await Task.Delay((int)(_settings.ZoneHeatCheckingInterval *(1 - _settings.ZonePollingCoeff)), token);
                 }
                 catch (OperationCanceledException) when (token.IsCancellationRequested)
                 {

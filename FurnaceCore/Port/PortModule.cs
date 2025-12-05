@@ -25,7 +25,7 @@ namespace FurnaceCore.Port
         private bool _isWaitingForResponse = false;
         private CancellationTokenSource _responseTimeoutCts;
 
-        private const double FrameTimeoutMs = 5;        // для 115200 — идеально
+        private const double FrameTimeoutMs = 25;        // для 115200 — идеально
         private const int DefaultResponseTimeoutMs = 300; // таймаут для команд с ответом
 
         public string Name { get => _serialPort.PortName; set => _serialPort.PortName = value; }
@@ -52,14 +52,19 @@ namespace FurnaceCore.Port
         /// </summary>
         public void SendData(byte[] data)
         {
+
             if (data == null) throw new ArgumentNullException(nameof(data));
+
+            _awaitResponseQueue.Enqueue(data);
+            TrySendNextAwaitedCommand();
+            /*if (data == null) throw new ArgumentNullException(nameof(data));
             if (!_serialPort.IsOpen) return;
 
             _serialPort.Write(data, 0, data.Length);
             string hex = BitConverter.ToString(data).Replace("-", " ");
             LogInformation?.Invoke($"Отправлено без ответа: {hex}");
 
-            Thread.Sleep(3); // ← только тишина, без блокировки
+            Thread.Sleep(3); // ← только тишина, без блокировки*/
         }
 
         /// <summary>
@@ -111,7 +116,8 @@ namespace FurnaceCore.Port
             LogInformation?.Invoke($"[С ОТВЕТОМ] Отправлено: {hex}");
             Thread.Sleep(3);
         }
-        private void OnFrameTimeout(object sender, ElapsedEventArgs e)
+
+        /*private void OnFrameTimeout(object sender, ElapsedEventArgs e)
         {
             lock (_frameTimerLock)
                 _frameTimer.Stop();
@@ -148,7 +154,43 @@ namespace FurnaceCore.Port
             {
                 LogWarning?.Invoke($"Битый кадр: {hex}");
             }
+        }*/
+        private void OnFrameTimeout(object sender, ElapsedEventArgs e)
+        {
+            lock (_frameTimerLock)
+                _frameTimer.Stop();
+
+            var buffer = new List<byte>();
+            while (_receiveQueue.TryDequeue(out byte b))
+                buffer.Add(b);
+
+            if (buffer.Count == 0) return;
+
+            var bytes = buffer.ToArray();
+            string hexAll = BitConverter.ToString(bytes).Replace("-", " ");
+            LogInformation?.Invoke("Текущий буфер: " + hexAll);
+
+            // Пытаемся вытащить один или несколько валидных кадров
+            bool hasAnyValidFrame = ExtractAndHandleFrames(bytes);
+
+            // Если у нас была команда с ожиданием ответа — считаем её выполненной
+            // как только получили хотя бы один валидный кадр
+            if (hasAnyValidFrame)
+            {
+                lock (_responseLock)
+                {
+                    if (_isWaitingForResponse)
+                    {
+                        _isWaitingForResponse = false;
+                        _responseTimeoutCts?.Dispose();
+                        _responseTimeoutCts = null;
+                        TrySendNextAwaitedCommand();
+                    }
+                }
+            }
         }
+
+
         private void OnResponseTimeout(object sender, ElapsedEventArgs e)
         {
             LogWarning?.Invoke($"Таймаут {DefaultResponseTimeoutMs} мс — ответа нет. Продолжаем...");
@@ -173,6 +215,75 @@ namespace FurnaceCore.Port
 
             LogWarning?.Invoke($"Неверный CRC. Ожидалось {calculatedCRCHex}, получено {frameCRCHex}");
             return false;
+        }
+
+        /// <summary>
+        /// Разобрать буфер на несколько Modbus-кадров по CRC и отправить каждый в IOManager.
+        /// Возвращает true, если найден хотя бы один валидный кадр.
+        /// </summary>
+        private bool ExtractAndHandleFrames(byte[] buffer)
+        {
+            bool anyValidFrame = false;
+            int offset = 0;
+
+            // Минимальная длина кадра: адрес + функция + минимум 1 байт данных + CRC(2)
+            const int MinFrameLength = 4;
+
+            while (offset <= buffer.Length - MinFrameLength)
+            {
+                int frameLength = FindNextFrameLengthByCrc(buffer, offset);
+                if (frameLength <= 0)
+                {
+                    // Не нашли валидный кадр с этого байта — двигаемся на байт вперёд
+                    offset++;
+                    continue;
+                }
+
+                // Нашли валидный подкадр
+                var frame = new byte[frameLength];
+                Array.Copy(buffer, offset, frame, 0, frameLength);
+
+                string hexFrame = BitConverter.ToString(frame).Replace("-", " ");
+                LogInformation?.Invoke($"Валидный подкадр: {hexFrame}");
+
+                _ioManager.HandleData(hexFrame);
+
+                anyValidFrame = true;
+                offset += frameLength;
+            }
+
+            if (!anyValidFrame)
+            {
+                string allHex = BitConverter.ToString(buffer).Replace("-", " ");
+                LogWarning?.Invoke($"Не удалось выделить ни одного валидного кадра в буфере: {allHex}");
+            }
+
+            return anyValidFrame;
+        }
+
+        /// <summary>
+        /// Найти длину ближайшего валидного кадра по CRC, начиная с offset.
+        /// Если не найден — вернуть 0.
+        /// </summary>
+        private int FindNextFrameLengthByCrc(byte[] buffer, int offset)
+        {
+            const int MinFrameLength = 4;
+
+            // Начинаем с минимального возможного кадра
+            for (int end = offset + MinFrameLength - 1; end < buffer.Length; end++)
+            {
+                int length = end - offset + 1;
+
+                var candidate = new byte[length];
+                Array.Copy(buffer, offset, candidate, 0, length);
+
+                if (IsValidCrc(candidate))
+                {
+                    return length;
+                }
+            }
+
+            return 0;
         }
 
         private void OnDataReceived(object sender, SerialDataReceivedEventArgs e)

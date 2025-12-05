@@ -90,7 +90,8 @@ namespace FurnaceWPF.Models.Controllers.Zone
             {
                 var currentTemperature = await _temperatureModule.GetTemperatureAsync(
                     _settings.ZonePollingTimeout,
-                    token
+                    token,
+                    channel
                 );
 
                 if (!_callers.ContainsKey(channel))

@@ -1,10 +1,11 @@
-﻿using FurnaceCore.utlis;
+﻿using FurnaceCore.Exceptions;
+using FurnaceCore.utlis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Channels;
 using System.Threading.Tasks;
-using FurnaceCore.Exceptions;
 
 namespace FurnaceCore.Model
 {
@@ -18,7 +19,7 @@ namespace FurnaceCore.Model
             0x03, //0 - адрес модуля
             0x04, //1
             0x00, //2
-            0x07, //3 - номер канала
+            0x01, //3 - номер канала
             0x00, //4
             0x01, //5
         };
@@ -27,7 +28,7 @@ namespace FurnaceCore.Model
         {
         }
 
-        public async Task<Result<double>> GetTemperatureAsync(int timeOut, CancellationToken cancellationToken)
+        public async Task<Result<double>> GetTemperatureAsync(int timeOut, CancellationToken cancellationToken, byte channel)
         {
             if (_completionSource != null)
                 throw new InvalidOperationException("Last request in progress");
@@ -37,7 +38,10 @@ namespace FurnaceCore.Model
 
             try
             {
-                SendGetTemperatureCommand();
+                byte[] command = CopyCommand(_getTemperatureCommand);
+
+                InsertAddressesToCommand(ref command, this._addressByte, channel);
+                SendCommandWithResponse(command);
                 temperature = await _completionSource.Task.WaitAsync(TimeSpan.FromMilliseconds(timeOut), cancellationToken);
             }
             catch (Exception)
@@ -53,6 +57,7 @@ namespace FurnaceCore.Model
 
         public void SendGetTemperatureCommand()
         {
+            
             SendCommandWithResponse(_getTemperatureCommand);
         }
 

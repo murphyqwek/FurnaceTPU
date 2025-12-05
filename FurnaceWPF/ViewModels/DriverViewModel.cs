@@ -19,8 +19,8 @@ namespace FurnaceWPF.ViewModels
     public enum DriverDirectionEnum : int
     {
         Stop = 0,
-        Forward = 1,
-        Backward = -1
+        Forward = -1,
+        Backward = 1
     }
 
     public class DriverViewModel : BaseObservable
