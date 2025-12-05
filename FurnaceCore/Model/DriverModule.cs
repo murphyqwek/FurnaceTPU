@@ -19,6 +19,9 @@ namespace FurnaceCore.Model
         Two = 0x04,
         Three = 0x08,
         Four = 0x10,
+        Five = 0x20,
+        Six = 0x40,
+        Seven = 0x80,
     }
 
     public enum RotationEnum
@@ -192,11 +195,22 @@ namespace FurnaceCore.Model
                 RotationEnum driver0Rotation = GetRotation(rotationData & 0b00000001);
                 RotationEnum driver1Rotation = GetRotation(rotationData & 0b00000010);
                 RotationEnum driver2Rotation = GetRotation(rotationData & 0b00000100);
+                RotationEnum driver3Rotation = GetRotation(rotationData & 0b00001000);
 
+                RotationEnum driver4Rotation = GetRotation(rotationData & 0b00010000);
+                RotationEnum driver5Rotation = GetRotation(rotationData & 0b00100000);
+                RotationEnum driver6Rotation = GetRotation(rotationData & 0b01000000);
+                RotationEnum driver7Rotation = GetRotation(rotationData & 0b10000000);
 
-                rotationDataDict.Add(DriversPortEnum.Two, driver2Rotation);
-                rotationDataDict.Add(DriversPortEnum.One, driver1Rotation);
-                rotationDataDict.Add(DriversPortEnum.Zero, driver0Rotation);
+                rotationDataDict.Add(DriversPortEnum.Zero,  driver0Rotation);
+                rotationDataDict.Add(DriversPortEnum.One,   driver1Rotation);
+                rotationDataDict.Add(DriversPortEnum.Two,   driver2Rotation);
+                rotationDataDict.Add(DriversPortEnum.Three, driver3Rotation);
+                rotationDataDict.Add(DriversPortEnum.Four,  driver4Rotation);
+
+                rotationDataDict.Add(DriversPortEnum.Five,  driver5Rotation);
+                rotationDataDict.Add(DriversPortEnum.Six,   driver6Rotation);
+                rotationDataDict.Add(DriversPortEnum.Seven, driver7Rotation);
 
                 RotationData result = new RotationData(rotationDataDict);
 
