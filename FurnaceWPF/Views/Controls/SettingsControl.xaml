@@ -61,7 +61,7 @@
                 <!-- Температурные зоны -->
                 <Border Background="#F5F5F5" CornerRadius="8" Padding="15" Margin="0,0,0,20">
                     <StackPanel>
-                        <TextBlock Text="Температурные зоны (каналы 0-255)" FontWeight="Bold" FontSize="20" Margin="0,0,0,10"/>
+                        <TextBlock Text="Каналы зон (каналы 0-255)" FontWeight="Bold" FontSize="20" Margin="0,0,0,10"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -112,7 +112,7 @@
                 <!-- Нагреватели и охлаждение -->
                 <Border Background="#FFF3E0" CornerRadius="8" Padding="15" Margin="0,0,0,20">
                     <StackPanel>
-                        <TextBlock Text="Нагреватели и охлаждение (0-255)" FontWeight="Bold" FontSize="20" Margin="0,0,0,10"/>
+                        <TextBlock Text="Каналы нагревателей и холодильника (0-255)" FontWeight="Bold" FontSize="20" Margin="0,0,0,10"/>
                         <UniformGrid Columns="2">
                             <StackPanel Margin="10">
                                 <TextBlock Text="Нагреватель Зоны 1:" FontSize="18"/>
@@ -172,7 +172,7 @@
                 <!-- Драйверы -->
                 <Border Background="#E8F5E9" CornerRadius="8" Padding="15" Margin="0,0,0,20">
                     <StackPanel>
-                        <TextBlock Text="Драйверы и шаговые двигатели" FontWeight="Bold" FontSize="20" Margin="0,0,0,10"/>
+                        <TextBlock Text="Шаговые двигатели" FontWeight="Bold" FontSize="20" Margin="0,0,0,10"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -188,7 +188,7 @@
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Драйвер A (порт):" FontSize="18" Margin="0,0,15,10" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Шаговый двигатель A (порт):" FontSize="18" Margin="0,0,15,10" VerticalAlignment="Center"/>
                             <ComboBox Grid.Row="0" Grid.Column="1" SelectedItem="{Binding CurrentSettings.DriverAPort}" ItemsSource="{StaticResource EnumToItemsSource}" FontSize="16" Margin="0,0,0,10"/>
 
                             <TextBlock Grid.Row="0" Grid.Column="2" Text="Канал A (0-255):" FontSize="18" Margin="30,0,15,10" VerticalAlignment="Center"/>
@@ -202,7 +202,7 @@
                                 </TextBox.Text>
                             </TextBox>
 
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Драйвер B (порт):" FontSize="18" Margin="0,0,15,10" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Шаговый двигатель B (порт):" FontSize="18" Margin="0,0,15,10" VerticalAlignment="Center"/>
                             <ComboBox Grid.Row="1" Grid.Column="1" SelectedItem="{Binding CurrentSettings.DriverBPort}" ItemsSource="{StaticResource EnumToItemsSource}" FontSize="16" Margin="0,0,0,10"/>
 
                             <TextBlock Grid.Row="1" Grid.Column="2" Text="Канал B (0-255):" FontSize="18" Margin="30,0,15,10" VerticalAlignment="Center"/>
@@ -216,7 +216,7 @@
                                 </TextBox.Text>
                             </TextBox>
 
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Драйвер C (порт):" FontSize="18" Margin="0,0,15,10" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Шаговый двигатель C (порт):" FontSize="18" Margin="0,0,15,10" VerticalAlignment="Center"/>
                             <ComboBox Grid.Row="2" Grid.Column="1" SelectedItem="{Binding CurrentSettings.DriverCPort}" ItemsSource="{StaticResource EnumToItemsSource}" FontSize="16" Margin="0,0,0,10"/>
 
                             <TextBlock Grid.Row="2" Grid.Column="2" Text="Канал C (0-255):" FontSize="18" Margin="30,0,15,10" VerticalAlignment="Center"/>
@@ -241,7 +241,7 @@
                                 </TextBox.Text>
                             </TextBox>
 
-                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Интервал ramping (мс >0):" FontSize="18" Margin="0,0,15,10" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Интервал разгона двигателя (мс >0):" FontSize="18" Margin="0,0,15,10" VerticalAlignment="Center"/>
                             <TextBox Grid.Row="3" Grid.Column="1" Style="{StaticResource ValidatingTextBoxStyle}" Margin="0,0,0,10">
                                 <TextBox.Text>
                                     <Binding Path="CurrentSettings.DriverRampingUpdateInterval" UpdateSourceTrigger="LostFocus" ValidatesOnDataErrors="True" TargetNullValue="200">
