@@ -69,7 +69,8 @@ namespace FurnaceWPF.Models.Controllers
 
             if(CurrentFrequency == _targetFrequence)
             {
-                Stop();
+                _logger.LogInformation($"Шаговый двигатель на порту {_driversPort} разогнался до нужной скорости");
+                _rampingTimer?.Change(Timeout.Infinite, Timeout.Infinite);
             }
         }
 
@@ -84,8 +85,8 @@ namespace FurnaceWPF.Models.Controllers
             this._driver.StartDriver(_driversPort);
 
             _logger.LogInformation($"Останавливаем шаговый двигатель на порту {_driversPort}");
-            this._driver.SetDriverFrequency(_channel, CurrentFrequency);
-            this.CurrentFrequency = 0;
+            this.CurrentFrequency = 4;
+            this._driver.SetDriverFrequency(_channel, 4);
             OnPropertyChanged(nameof(CurrentFrequency));
         }
 
