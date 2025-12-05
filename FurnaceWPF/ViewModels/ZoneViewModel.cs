@@ -40,8 +40,11 @@ namespace pechka4._8.ViewModels
 
                 _isPolloingHeater = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(IsInputEnabled));
             }
         }
+
+        public bool IsInputEnabled { get => !IsPollingHeater; }
 
         public bool IsWorking 
         { 

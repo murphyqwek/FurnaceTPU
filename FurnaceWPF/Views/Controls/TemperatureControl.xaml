@@ -86,6 +86,7 @@
                      VerticalAlignment="Center"
                      PreviewTextInput="Input_TextPrewview"
                      AutomationProperties.Name="SetTemperatureInput"
+                     IsEnabled="{Binding IsInputEnabled}"
                      />
 
             <Button Grid.Row="4"
