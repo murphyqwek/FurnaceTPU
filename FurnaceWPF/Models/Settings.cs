@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FurnaceCore.Model;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -11,9 +12,11 @@ namespace FurnaceWPF.Models
     public class Settings : INotifyPropertyChanged
     {
         private bool _isDebug = false;
+
         private byte _zoneOneChannel = 0x00;
         private byte _zoneTwoChannel = 0x01;
         private byte _zoneThreeChannel = 0x02;
+
         private byte _zoneHeaterOneChannel = 0x00;
         private byte _zoneHeaterTwoChannel = 0x01;
         private byte _zoneHeaterThreeChannel = 0x02;
@@ -24,224 +27,216 @@ namespace FurnaceWPF.Models
 
         private byte _driverAddress = 0x01;
         private byte _coolingChannel = 0x03;
-        private bool _isRunning;
+
+        private bool _isRunning = false;
         private bool _isPortOpen = false;
 
+        private ushort _stepSizeDriver = 500;
+        private int _driverRampingUpdateInterval = 200;
+        private int _zonePollingInterval = 1000;
+
+        private double _zonePollingCoeff = 0.8;
+        private int _zoneHeatCheckingInterval = 3300;
+        private double _zoneTreshold = 10.0;
+
+        private int _zonePollingTimeout = 15 * 1000;
+        private int _coolingPollingTimeout = 15 * 1000;
+        private int _coolingPollingTemperatureIntervall = 3300;
+
+        private int _rotationTimeout = 15 * 1000;
+        private int _rotationPollingInterval = 500;
+
+
+        private DriversPortEnum _driverAPort = DriversPortEnum.Zero;
+        private DriversPortEnum _driverBPort = DriversPortEnum.One;
+        private DriversPortEnum _driverCPort = DriversPortEnum.Three;
+
         #region Properties
+
         public bool IsDebug
         {
             get => _isDebug;
-
-            set
-            {
-                if (_isDebug != value)
-                {
-                    _isDebug = value;
-                    OnPropertyChanged();
-                }
-            }
+            set => SetField(ref _isDebug, value);
         }
 
         public byte ZoneOneChannel
         {
             get => _zoneOneChannel;
-            set
-            {
-                if (_zoneOneChannel != value)
-                {
-                    _zoneOneChannel = value;
-                    OnPropertyChanged();
-                }
-            }
+            set => SetField(ref _zoneOneChannel, value);
         }
 
         public byte ZoneTwoChannel
         {
             get => _zoneTwoChannel;
-            set
-            {
-                if (_zoneTwoChannel != value)
-                {
-                    _zoneTwoChannel = value;
-                    OnPropertyChanged();
-                }
-            }
+            set => SetField(ref _zoneTwoChannel, value);
         }
 
         public byte ZoneThreeChannel
         {
             get => _zoneThreeChannel;
-            set
-            {
-                if (_zoneThreeChannel != value)
-                {
-                    _zoneThreeChannel = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public byte DriverAddress
-        {
-            get => _driverAddress;
-            set
-            {
-                if (_driverAddress != value)
-                {
-                    _driverAddress = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public byte DriverAChannel
-        {
-            get => _driverAChannel;
-            set
-            {
-                if (_driverAChannel != value)
-                {
-                    _driverAChannel = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public byte DriverBChannel
-        {
-            get => _driverBChannel;
-            set
-            {
-                if (_driverBChannel != value)
-                {
-                    _driverBChannel = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public byte DriverCChannel
-        {
-            get => _driverCChannel;
-            set
-            {
-                if (_driverCChannel != value)
-                {
-                    _driverCChannel = value;
-                    OnPropertyChanged();
-                }
-            }
+            set => SetField(ref _zoneThreeChannel, value);
         }
 
         public byte ZoneHeaterOneChannel
         {
             get => _zoneHeaterOneChannel;
-            set
-            {
-                if (_zoneHeaterOneChannel != value)
-                {
-                    _zoneHeaterOneChannel = value;
-                    OnPropertyChanged();
-                }
-            }
+            set => SetField(ref _zoneHeaterOneChannel, value);
         }
 
         public byte ZoneHeaterTwoChannel
         {
             get => _zoneHeaterTwoChannel;
-            set
-            {
-                if (_zoneHeaterTwoChannel != value)
-                {
-                    _zoneHeaterTwoChannel = value;
-                    OnPropertyChanged();
-                }
-            }
+            set => SetField(ref _zoneHeaterTwoChannel, value);
         }
 
         public byte ZoneHeaterThreeChannel
         {
             get => _zoneHeaterThreeChannel;
-            set
-            {
-                if (_zoneHeaterThreeChannel != value)
-                {
-                    _zoneHeaterThreeChannel = value;
-                    OnPropertyChanged();
-                }
-            }
+            set => SetField(ref _zoneHeaterThreeChannel, value);
+        }
+
+        public byte DriverAChannel
+        {
+            get => _driverAChannel;
+            set => SetField(ref _driverAChannel, value);
+        }
+
+        public byte DriverBChannel
+        {
+            get => _driverBChannel;
+            set => SetField(ref _driverBChannel, value);
+        }
+
+        public byte DriverCChannel
+        {
+            get => _driverCChannel;
+            set => SetField(ref _driverCChannel, value);
+        }
+
+        public byte DriverAddress
+        {
+            get => _driverAddress;
+            set => SetField(ref _driverAddress, value);
         }
 
         public byte CoolingChannel
         {
             get => _coolingChannel;
-            set
-            {
-                if (_coolingChannel != value)
-                {
-                    _coolingChannel = value;
-                    OnPropertyChanged();
-                }
-            }
+            set => SetField(ref _coolingChannel, value);
         }
 
         public bool IsRunning
         {
             get => _isRunning;
-            set
-            {
-                if (_isRunning != value)
-                {
-                    _isRunning = value;
-                    OnPropertyChanged();
-                }
-            }
+            set => SetField(ref _isRunning, value);
         }
 
-        public ushort StepSizeDriver { get => 500; }
-        public int DriverRampingUpdateInterval { get => 200; } // Интервал указан в мс
-
-        public int ZonePollingInterval { get => 1000; } // Интервал опроса температуры в мс
-
-        public double ZonePollingCoeff { get => 0.8; } //Шим нагревателя
-
-        public int ZoneHeatCheckingInterval { get => 3300; } //Интервал для проверки температуры нагрева
-
-        public double ZoneTreshold { get => 10.0; } //Трешхолд для нагревателя (TargetValue - ZoneTreshold)
-
-        public int ZonePollingTimeout { get => 15 * 1000; } //Таймаут для опроса температуры
-
-        public int CoolingPollingTimeout { get => 15 * 1000; }
-
-        public int CoolingPollingTemperatureIntervall { get => 3300; }
-
-        public int RotationTimeout { get => 15 * 1000; }
-        public int RotationPollingInterval { get => 500; }
-
-        public bool IsPortOpen 
-        { 
-            get => _isPortOpen;
-            set
-            {
-                if (_isPortOpen != value)
-                {
-                    _isPortOpen = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-        #endregion
-
-        public Settings()
+        public bool IsPortOpen
         {
-            this._isRunning = false;
+            get => _isPortOpen;
+            set => SetField(ref _isPortOpen, value);
         }
+
+        public ushort StepSizeDriver
+        {
+            get => _stepSizeDriver;
+            set => SetField(ref _stepSizeDriver, value);
+        }
+
+        public int DriverRampingUpdateInterval
+        {
+            get => _driverRampingUpdateInterval;
+            set => SetField(ref _driverRampingUpdateInterval, value);
+        }
+
+        public int ZonePollingInterval
+        {
+            get => _zonePollingInterval;
+            set => SetField(ref _zonePollingInterval, value);
+        }
+
+        public double ZonePollingCoeff
+        {
+            get => _zonePollingCoeff;
+            set => SetField(ref _zonePollingCoeff, value);
+        }
+
+        public int ZoneHeatCheckingInterval
+        {
+            get => _zoneHeatCheckingInterval;
+            set => SetField(ref _zoneHeatCheckingInterval, value);
+        }
+
+        public double ZoneTreshold
+        {
+            get => _zoneTreshold;
+            set => SetField(ref _zoneTreshold, value);
+        }
+
+        public int ZonePollingTimeout
+        {
+            get => _zonePollingTimeout;
+            set => SetField(ref _zonePollingTimeout, value);
+        }
+
+        public int CoolingPollingTimeout
+        {
+            get => _coolingPollingTimeout;
+            set => SetField(ref _coolingPollingTimeout, value);
+        }
+
+        public int CoolingPollingTemperatureIntervall
+        {
+            get => _coolingPollingTemperatureIntervall;
+            set => SetField(ref _coolingPollingTemperatureIntervall, value);
+        }
+
+        public int RotationTimeout
+        {
+            get => _rotationTimeout;
+            set => SetField(ref _rotationTimeout, value);
+        }
+
+        public int RotationPollingInterval
+        {
+            get => _rotationPollingInterval;
+            set => SetField(ref _rotationPollingInterval, value);
+        }
+
+
+        public DriversPortEnum DriverAPort
+        {
+            get => _driverAPort;
+            set => SetField(ref _driverAPort, value);
+        }
+
+        public DriversPortEnum DriverBPort
+        {
+            get => _driverBPort;
+            set => SetField(ref _driverBPort, value);
+        }
+
+        public DriversPortEnum DriverCPort
+        {
+            get => _driverCPort;
+            set => SetField(ref _driverAPort, value);
+        }
+
+        #endregion
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string name = "")
+        {
+            if (Equals(field, value)) return false;
+            field = value;
+            OnPropertyChanged(name);
+            return true;
         }
     }
 }

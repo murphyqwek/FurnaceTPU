@@ -18,8 +18,8 @@ namespace FurnaceWPF.Models.Controllers
         
         private ushort _targetFrequence;
         private DriverModule _driver;
-        private int _channel;
-        private DriversPortEnum _driversPort;
+        private Func<int> _channel;
+        private Func<DriversPortEnum> _driversPort;
         private Settings _settings;
         private ILogger<DriverContoller> _logger;
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -27,7 +27,7 @@ namespace FurnaceWPF.Models.Controllers
         public ushort CurrentFrequency { get; private set; } = 10_00;
         public bool IsDriverRunning { get; private set; }
 
-        public DriverContoller(DriverModule driver, int channel, DriversPortEnum driversPort, Settings settings, ILogger<DriverContoller> logger)
+        public DriverContoller(DriverModule driver, Func<int> channel, Func<DriversPortEnum> driversPort, Settings settings, ILogger<DriverContoller> logger)
         {
             this._driver = driver;
             this._channel = channel;
@@ -43,7 +43,7 @@ namespace FurnaceWPF.Models.Controllers
 
 
             _logger.LogInformation($"Запускаем шаговый двигатель на порту {_driversPort}");
-            this._driver.StartDriver(_driversPort);
+            this._driver.StartDriver(_driversPort());
             _rampingTimer = new Timer(RampingTick, null, _settings.DriverRampingUpdateInterval, _settings.DriverRampingUpdateInterval);
         }
 
@@ -64,7 +64,7 @@ namespace FurnaceWPF.Models.Controllers
             }
 
 
-            this._driver.SetDriverFrequency(this._channel, CurrentFrequency);
+            this._driver.SetDriverFrequency(this._channel(), CurrentFrequency);
             App.Current.Dispatcher.Invoke(() => { OnPropertyChanged(nameof(CurrentFrequency)); });
 
             if(CurrentFrequency == _targetFrequence)
@@ -82,7 +82,7 @@ namespace FurnaceWPF.Models.Controllers
         public void Start()
         {
             _logger.LogInformation($"Запускаем шаговый двигатель на порту {_driversPort}");
-            this._driver.StartDriver(_driversPort);
+            this._driver.StartDriver(_driversPort());
 
             _logger.LogInformation($"Останавливаем шаговый двигатель на порту {_driversPort}");
             this.CurrentFrequency = 4;
@@ -93,7 +93,7 @@ namespace FurnaceWPF.Models.Controllers
         public void Stop()
         {
             _logger.LogInformation($"Останавливаем шаговый двигатель на порту {_driversPort}");
-            this._driver.StopDriver(this._driversPort);
+            this._driver.StopDriver(this._driversPort());
             IsDriverRunning = false;
             _rampingTimer?.Change(Timeout.Infinite, Timeout.Infinite);
         }
@@ -106,7 +106,8 @@ namespace FurnaceWPF.Models.Controllers
 
         public DriversPortEnum GetDriversPort()
         {
-            return _driversPort;
+            return _driversPort();
         }
+
     }
 }

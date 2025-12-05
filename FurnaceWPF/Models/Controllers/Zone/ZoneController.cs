@@ -22,17 +22,16 @@ namespace FurnaceWPF.Models.Controllers.Zone
     public class ZoneController : BaseObservable, IDisposable
     {
         private Timer _heaterPollingTimer;
-        private bool _heatModuleStatus = false;
         private double _currentTemperature;
         private bool _isHeating;
         private bool _isPollingTemperature;
-        private byte _channel;
+        private bool _heatModuleStatus = false;
+        private Func<byte> _channel;
 
         private HeaterModule _heaterModule;
         private ILogger<ZoneController> _logger;
         private Settings _settings;
         private double _targetTemperature;
-        private byte _heatModuleChannel;
         private CancellationTokenSource _pollingCts;
         private Task _pollingTask;
 
@@ -79,7 +78,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
 
         public event Action<string>? ErrorEvent;
 
-        public ZoneController(byte channel, HeaterModule heaterModule, ILogger<ZoneController> logger, Settings settings, TemperatureController temperatureController) 
+        public ZoneController(Func<byte> channel, HeaterModule heaterModule, ILogger<ZoneController> logger, Settings settings, TemperatureController temperatureController) 
         { 
             this._channel = channel;
             this._heaterModule = heaterModule;
@@ -100,7 +99,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
 
             _logger.LogInformation($"Начат опрос температуры с интервалом {_settings.ZonePollingInterval} мс. Таймаут чтения: {_settings.ZonePollingTimeout} мс.");
 
-            _temperatureController.AddCaller(this._channel, new TemperatureEvent { reciveError = ErrorHandle, reciveTemperatue = TemperatureHande });
+            _temperatureController.AddCaller(this._channel(), new TemperatureEvent { reciveError = ErrorHandle, reciveTemperatue = TemperatureHande });
         }
 
         public void StopPollingTemperature()
@@ -110,9 +109,9 @@ namespace FurnaceWPF.Models.Controllers.Zone
             IsPollingTemperature = false;
             OnPropertyChanged(nameof(IsPollingTemperature));
 
-            _temperatureController.RemoveCaller(_channel);
+            _temperatureController.RemoveCaller(_channel());
 
-            _logger.LogInformation($"Опрос температуры канала {this._channel} преркащён");
+            _logger.LogInformation($"Опрос температуры канала {this._channel()} преркащён");
             IsPollingTemperature = false;
             
         }
@@ -138,7 +137,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
             _pollingTask?.Wait();
 
             _heaterModule.TurnOffHeater();
-            _logger.LogInformation($"Нагрев зоны (канал: {_channel}) остановлен");
+            _logger.LogInformation($"Нагрев зоны (канал: {_channel()}) остановлен");
         }
 
         private async Task PollHeater(CancellationToken token)
@@ -149,14 +148,14 @@ namespace FurnaceWPF.Models.Controllers.Zone
                 {
                     if (!this.IsPollingTemperature)
                     {
-                        _logger.LogInformation($"Опрос температуры канала {this._channel} остановлен, прекращаем нагрев");
+                        _logger.LogInformation($"Опрос температуры канала {this._channel()} остановлен, прекращаем нагрев");
                         Dispatcher.CurrentDispatcher.Invoke(StopPollingHeater);
                         return;
                     }
 
                     if (CurrentTemperature < _targetTemperature + _settings.ZoneTreshold && CurrentTemperature > _targetTemperature - _settings.ZoneTreshold)
                     {
-                        _logger.LogInformation($"Текущая температура зоны (канал: {_channel}) в допустимых пределах заданной");
+                        _logger.LogInformation($"Текущая температура зоны (канал: {_channel()}) в допустимых пределах заданной");
                         _heaterModule.TurnOffHeater();
                         this._heatModuleStatus = false;
                     }
@@ -164,7 +163,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
                     {
                         if (_targetTemperature - _settings.ZoneTreshold >= CurrentTemperature)
                         {
-                            _logger.LogInformation($"Текущая температура зоны (канал: {_channel}) ниже установленной. Идёт нагрев");
+                            _logger.LogInformation($"Текущая температура зоны (канал: {_channel()}) ниже установленной. Идёт нагрев");
                             _heaterModule.TurnOnHeater();
                             await Task.Delay((int)(_settings.ZoneHeatCheckingInterval * _settings.ZonePollingCoeff), token);
                             _heaterModule.TurnOffHeater();
@@ -173,7 +172,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
 
                         if (_targetTemperature + _settings.ZoneTreshold <= CurrentTemperature)
                         {
-                            _logger.LogInformation($"Текущая температура зоны (канал: {_channel}) выше установленной. Идёт охлаждение");
+                            _logger.LogInformation($"Текущая температура зоны (канал: {_channel()}) выше установленной. Идёт охлаждение");
                             _heaterModule.TurnOffHeater();
                             this._heatModuleStatus = false;
                         }
@@ -189,23 +188,11 @@ namespace FurnaceWPF.Models.Controllers.Zone
                 {
                     _logger.LogError(ex.ToString());
                     this._heatModuleStatus = false;
-                    _logger.LogInformation($"Нагрев (канал: {_channel}) остановлен");
+                    _logger.LogInformation($"Нагрев (канал: {_channel()}) остановлен");
                 }
             }
 
             _logger.LogInformation("Алгоритм нагрева остановлен");
-        }
-
-        //private void HeatOrCold()
-        //{
-           
-        //}
-
-        public void SetChannelByte(byte newChannel)
-        {
-            _temperatureController.ChangeChannel(this._channel, newChannel);
-            _logger.LogInformation($"Контроллер зоны поменял канал с {this._channel} на {newChannel}");
-            this._channel = newChannel;
         }
 
         public void Dispose()
@@ -216,7 +203,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
 
         private void TemperatureHande(double temperature)
         {
-            _logger.LogInformation($"Контроллер зоны (канал: {_channel}) получил новые данные по температуре: {temperature}");
+            _logger.LogInformation($"Контроллер зоны (канал: {_channel()}) получил новые данные по температуре: {temperature}");
             this.CurrentTemperature = temperature;
             OnPropertyChanged(nameof(CurrentTemperature));
         }
