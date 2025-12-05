@@ -183,6 +183,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
                 {
                     _logger.LogError(ex.ToString());
                     _logger.LogInformation($"Нагрев (канал: {_channel()}) остановлен");
+                    Dispatcher.CurrentDispatcher.Invoke(StopPollingHeater);
                 }
             }
 

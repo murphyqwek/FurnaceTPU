@@ -18,6 +18,28 @@
                 <SolidColorBrush Color="#e60e23"/>
             </converters:ConfigurableBooleanConverter.FalseValue>
         </converters:ConfigurableBooleanConverter>
+
+        <converters:ConfigurableBooleanConverter x:Key="BackgroundControlButton">
+            <converters:ConfigurableBooleanConverter.TrueValue>
+                <SolidColorBrush Color="#e60e23"/>
+            </converters:ConfigurableBooleanConverter.TrueValue>
+            
+            <converters:ConfigurableBooleanConverter.FalseValue>
+                <SolidColorBrush Color="#21c445"/>
+            </converters:ConfigurableBooleanConverter.FalseValue>
+        </converters:ConfigurableBooleanConverter>
+
+        <converters:ConfigurableBooleanConverter x:Key="ForegroundControlButton">
+            <converters:ConfigurableBooleanConverter.TrueValue>
+                <SolidColorBrush Color="#111212"/>
+            </converters:ConfigurableBooleanConverter.TrueValue>
+
+            <converters:ConfigurableBooleanConverter.FalseValue>
+                <SolidColorBrush Color="#e6e9ed"/>
+            </converters:ConfigurableBooleanConverter.FalseValue>
+        </converters:ConfigurableBooleanConverter>
+
+        <converters:BoolToTextConverter x:Key="ControllTextBoolConverter"/>
     </UserControl.Resources>
     <materialDesign:Card Padding="14">
         <Grid>
@@ -66,9 +88,12 @@
                      AutomationProperties.Name="SetTemperatureInput"
                      />
 
-            <Button Grid.Row="4" Content="Управлять"
+            <Button Grid.Row="4"
                     FontSize="18"
                     Style="{DynamicResource MaterialDesignFilledButton}"
+                    Background="{Binding IsPollingHeater, Converter={StaticResource BackgroundControlButton}}"
+                    Foreground="{Binding IsPollingHeater, Converter={StaticResource ForegroundControlButton}}"
+                    Content="{Binding IsPollingHeater, Converter={StaticResource ControllTextBoolConverter}, ConverterParameter='Остановить;Управлять'}"
                     Width="110" Height="35"
                     HorizontalAlignment="Center"
                     Command="{Binding SetTemperature}"

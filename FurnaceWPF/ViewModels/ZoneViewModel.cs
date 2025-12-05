@@ -24,10 +24,24 @@ namespace pechka4._8.ViewModels
     {
         private double _inputTemperature = 0;
 
+        private bool _isPolloingHeater = false;
+
         private ZoneController _zoneController;
         private Settings _settings;
 
         #region Properties
+        public bool IsPollingHeater
+        {
+            get => _isPolloingHeater;
+
+            set
+            {
+                if(value ==  _isPolloingHeater) return;
+
+                _isPolloingHeater = value;
+                OnPropertyChanged();
+            }
+        }
 
         public bool IsWorking 
         { 
@@ -110,6 +124,11 @@ namespace pechka4._8.ViewModels
                 {
                     OnPropertyChanged(nameof(IsWorking));
                 }
+
+                if(e.PropertyName == nameof(ZoneController.IsHeating))
+                {
+                    IsPollingHeater = _zoneController.IsHeating;
+                }
             };
 
             this._settings.PropertyChanged += (s, e) =>
@@ -148,7 +167,14 @@ namespace pechka4._8.ViewModels
 
         public void SetTemperatureHandler()
         {
-            this._zoneController.StartPollingHeater(InputTemperature);
+            if (!_zoneController.IsHeating)
+            {
+                this._zoneController.StartPollingHeater(InputTemperature);
+            }
+            else
+            {
+                this._zoneController.StopPollingHeater();
+            }
         }
 
         public void Dispose()
