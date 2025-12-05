@@ -219,7 +219,7 @@ namespace FurnaceCore.Model
 
         private RotationEnum GetRotation(int rotationFlag)
         {
-            return rotationFlag == 0 ? RotationEnum.Left : RotationEnum.Right;
+            return rotationFlag == 1 ? RotationEnum.Left : RotationEnum.Right;
         }
     }
 }

@@ -25,7 +25,6 @@ namespace FurnaceWPF.Models.Controllers.Zone
         private double _currentTemperature;
         private bool _isHeating;
         private bool _isPollingTemperature;
-        private bool _heatModuleStatus = false;
         private Func<byte> _channel;
 
         private HeaterModule _heaterModule;
@@ -120,7 +119,6 @@ namespace FurnaceWPF.Models.Controllers.Zone
         {
             this.IsHeating = true;
             _targetTemperature = targetTemperature;
-            this._heatModuleStatus = false;
             _logger.LogInformation($"Начат нагрев с интервалом {_settings.ZoneHeatCheckingInterval} мс до {_targetTemperature}");
             //_heaterModule.TurnOnHeater();
 
@@ -157,7 +155,6 @@ namespace FurnaceWPF.Models.Controllers.Zone
                     {
                         _logger.LogInformation($"Текущая температура зоны (канал: {_channel()}) в допустимых пределах заданной");
                         _heaterModule.TurnOffHeater();
-                        this._heatModuleStatus = false;
                     }
                     else
                     {
@@ -167,14 +164,12 @@ namespace FurnaceWPF.Models.Controllers.Zone
                             _heaterModule.TurnOnHeater();
                             await Task.Delay((int)(_settings.ZoneHeatCheckingInterval * _settings.ZonePollingCoeff), token);
                             _heaterModule.TurnOffHeater();
-                            this._heatModuleStatus = true;
                         }
 
                         if (_targetTemperature + _settings.ZoneTreshold <= CurrentTemperature)
                         {
                             _logger.LogInformation($"Текущая температура зоны (канал: {_channel()}) выше установленной. Идёт охлаждение");
                             _heaterModule.TurnOffHeater();
-                            this._heatModuleStatus = false;
                         }
                     }
 
@@ -187,7 +182,6 @@ namespace FurnaceWPF.Models.Controllers.Zone
                 catch (Exception ex)
                 {
                     _logger.LogError(ex.ToString());
-                    this._heatModuleStatus = false;
                     _logger.LogInformation($"Нагрев (канал: {_channel()}) остановлен");
                 }
             }
