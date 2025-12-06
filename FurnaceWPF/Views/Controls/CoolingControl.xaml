@@ -38,12 +38,12 @@
                     <TextBlock Text="{Binding Name}" FontSize="20" FontWeight="SemiBold" Margin="8,0,0,0"/>
                 </StackPanel>
 
-                <ToggleButton Grid.Column="1" IsChecked="{Binding IsPumpOn, Mode=TwoWay}"
+                <!--<ToggleButton Grid.Column="1" IsChecked="{Binding IsPumpOn, Mode=TwoWay}"
                         Style="{StaticResource MaterialDesignIconButton}"
                         IsEnabled="{Binding IsEnabled}">
-                    <materialDesign:PackIcon Kind="Power" Width="48" Height="48"
+                    <materialDesign:PackIcon Kind="Power" Width="48" Height="48" 
                          Foreground="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}, Converter={StaticResource TurnOnOffButtonStateConverterr}}" Cursor=""/>
-                </ToggleButton>
+                </ToggleButton>-->
             </Grid>
 
             <ProgressBar Grid.Row="1" Value="{Binding CoolantTemperatureDouble, Mode=OneWay}" Maximum="700" Height="10" Margin="0,0,0,6"

@@ -37,7 +37,7 @@ namespace FurnaceTest
                 eventValue = value.Value;
             };
 
-            var task = temperatureModule.GetTemperatureAsync(10_000, CancellationToken.None);
+            var task = temperatureModule.GetTemperatureAsync(10_000, CancellationToken.None, 1);
 
             mockPort.ReceiveData($"01 04 02 {hexData} 00 00");
 

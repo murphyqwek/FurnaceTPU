@@ -62,7 +62,7 @@ namespace FurnaceWPF.Models.Controllers.Cooling
             this._settings = settings;
             this._coolingModule = coolingModule;
             this._channel =  () => _settings.CoolingChannel;
-            this._temperatureController.GlobalErrorEvent += (e) => { StopPollingTemperature(); };
+            //this._temperatureController.GlobalErrorEvent += (e) => { StopPollingTemperature(); };
         }
 
         public void StartPollingTemperature()
@@ -98,7 +98,7 @@ namespace FurnaceWPF.Models.Controllers.Cooling
         public void ErrorHandle(string message)
         {
             _logger.LogError(message);
-            StopPollingTemperature();
+            //StopPollingTemperature();
 
             NoBlockingMessageBox.ShowError(message);
         }
