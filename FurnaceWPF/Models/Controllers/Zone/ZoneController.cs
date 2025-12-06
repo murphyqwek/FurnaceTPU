@@ -205,7 +205,6 @@ namespace FurnaceWPF.Models.Controllers.Zone
 
         private void ErrorHandle(string message)
         {
-            //StopPollingTemperature();
             _logger.LogError(message);
             NoBlockingMessageBox.ShowError(message);
         }

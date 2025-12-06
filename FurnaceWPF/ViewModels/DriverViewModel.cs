@@ -81,6 +81,7 @@ namespace FurnaceWPF.ViewModels
                     _inputSpeed = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(CanConfirmSpeed));
+                    UpdateCanConfirmSpeed();
                 }
             }
         }
@@ -95,6 +96,7 @@ namespace FurnaceWPF.ViewModels
 
                     OnIsWorkingUpdate();
                     OnPropertyChanged(nameof(IsWorking));
+                    UpdateCanConfirmSpeed();
                 }
             }
         }
@@ -111,8 +113,21 @@ namespace FurnaceWPF.ViewModels
         public double AnimationSpeed => Speed > 0 ? Math.Max(0.1, 2.5 - Speed / 40) : 2.5;
         public TimeSpan AnimationDuration => TimeSpan.FromSeconds(AnimationSpeed);
 
-        public bool CanConfirmSpeed =>
-            double.TryParse(InputSpeed, out var val) && val >= 0 && val <= 100 && Math.Abs(val - Speed) > 0.01 && _settings.IsPortOpen && IsWorking;
+        public bool CanConfirmSpeed 
+        { 
+            get
+            {
+                double val;
+                var isParsed = double.TryParse(InputSpeed, out val);
+
+                if (!isParsed)
+                {
+                    return false;
+                }
+
+                return val >= 0 && val <= 100 && Math.Abs(val - Speed) > 0.01 && _settings.IsPortOpen && IsWorking;
+            }
+        }
         #endregion
 
         #region Commands
@@ -132,10 +147,27 @@ namespace FurnaceWPF.ViewModels
                 if(e.PropertyName == nameof(Settings.IsPortOpen))
                 {
                     OnPropertyChanged(nameof(IsEnabled));
+                    OnPropertyChanged(nameof(CanConfirmSpeed));
+                }
+            };
+
+            PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName is nameof(InputSpeed) or
+                                         nameof(Speed) or
+                                         nameof(IsWorking) or
+                                         nameof(IsEnabled))
+                {
+                    (ConfirmSpeedCommand as RelayCommand)?.RaiseCanExecuteChanged();
                 }
             };
 
             rotationController.RotationErrorEvent += (m) => App.Current.Dispatcher.BeginInvoke(() => IsWorking = false);
+        }
+
+        private void UpdateCanConfirmSpeed()
+        {
+            (ConfirmSpeedCommand as RelayCommand)?.RaiseCanExecuteChanged();
         }
 
         private void ConfirmSpeedHandler()
@@ -166,6 +198,7 @@ namespace FurnaceWPF.ViewModels
             if(e.PropertyName == nameof(DriverContoller.CurrentFrequency))
             {
                 OnPropertyChanged(nameof(Speed));
+                OnPropertyChanged(nameof(CanConfirmSpeed));
             }
         }
 
