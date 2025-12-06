@@ -76,24 +76,42 @@ namespace FurnaceWPF.Validators
         }
     }
 
-    public class DoubleRangeValidationRule : ValidationRule
+
+
+public class DoubleRangeValidationRule : ValidationRule
+{
+    public double Min { get; set; }
+    public double Max { get; set; }
+
+    public override ValidationResult Validate(object value, CultureInfo cultureInfo)
     {
-        public double Min { get; set; }
-        public double Max { get; set; }
+        string text = value?.ToString()?.Replace(',', '.').Trim() ?? string.Empty;
 
-        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        // Allow empty (если допустимо; иначе return false)
+        if (string.IsNullOrWhiteSpace(text))
         {
-            string? text = value?.ToString().Trim();
-
-            text = text?.Replace(',', '.');
-
-            if (double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out double val))
-            {
-                if (val >= Min && val <= Max)
-                    return ValidationResult.ValidResult;
-            }
-
-            return new ValidationResult(false, $"Значение должно быть от {Min} до {Max}.");
+            return ValidationResult.ValidResult;  // Или new ValidationResult(false, "Поле не может быть пустым");
         }
+
+        // Allow partial input (trailing ".") без error
+        if (text.EndsWith("."))
+        {
+            return ValidationResult.ValidResult;
+        }
+
+        if (!double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out double val))
+        {
+            return new ValidationResult(false, "Некорректное число");
+        }
+
+        if (val < Min || val > Max)
+        {
+            return new ValidationResult(false, $"Значение должно быть от {Min} до {Max}");
+        }
+
+        return ValidationResult.ValidResult;
     }
 }
+    }
+
+
