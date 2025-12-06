@@ -264,7 +264,7 @@ namespace FurnaceWPF.ViewModels
         public event EventHandler CanExecuteChanged;
         public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 
-        public bool CanExecute(object parameter) => _canExecute == null || _canExecute(parameter);
+        public bool CanExecute(object parameter) => true;
         public void Execute(object parameter) => _execute(parameter);
     }
 }
