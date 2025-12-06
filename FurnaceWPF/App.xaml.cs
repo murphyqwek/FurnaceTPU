@@ -22,6 +22,7 @@ using FurnaceWPF.Models.Controllers.Cooling;
 using FurnaceWPF.Models.Controllers.Zone;
 using FurnaceWPF.Models.Controllers.Driver;
 using FurnaceWPF.Helpers;
+using FurnaceWPF.Models.Controllers.Out;
 
 namespace pechka4._8
 {
@@ -81,6 +82,8 @@ namespace pechka4._8
         {
             services.AddTransient<CoolingConroller>();
 
+            services.AddTransient<OutConroller>();
+
             services.AddSingleton<TemperatureController>();
 
             services.AddSingleton<RotationController>();
@@ -121,6 +124,7 @@ namespace pechka4._8
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsWindowViewModel>();
             services.AddTransient<CoolingSystemViewModel>();
+            services.AddTransient<OutSystemVievModel>();
         }
 
         private void ConfigureFurnaceModules(ServiceCollection services)
@@ -179,6 +183,17 @@ namespace pechka4._8
                 ioManager.RegisterModulePort(coolingModule, port);
 
                 return coolingModule;
+            });
+
+            services.AddSingleton<OutModule>(sp =>
+            {
+                var ioManager = sp.GetRequiredService<IOManager>();
+                var port = sp.GetRequiredService<IPort>();
+                OutModule outModule = new OutModule(0x0, 0x0, ioManager);
+
+                ioManager.RegisterModulePort(outModule, port);
+
+                return outModule;
             });
 
             services.AddSingleton<DriverModule>(sp =>
