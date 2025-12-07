@@ -12,27 +12,20 @@ using System.Threading.Tasks;
 
 namespace FurnaceWPF.Models.Controllers
 {
-    public enum DriverMotionState
-    {
-        Stopped,
-        RampingUp,
-        RampingDown,
-        Running
-    }
-
     public class DriverContoller : INotifyPropertyChanged, IDisposable
     {
         private Timer _rampingTimer;
-        
-        private ushort _targetFrequency;
-        private ushort _requestedTargetFrequency;
+
+        private ushort _targetFrequence;
+        private ushort _savedTarget;
         private DriverModule _driver;
         private Func<int> _channel;
         private Func<DriversPortEnum> _driversPort;
         private Settings _settings;
         private ILogger<DriverContoller> _logger;
-        private DriverMotionState _state = DriverMotionState.Stopped;
         public event PropertyChangedEventHandler? PropertyChanged;
+        private CancellationTokenSource _directionCts;
+
 
         public ushort CurrentFrequency { get; private set; } = 10_000;
         public bool IsDriverRunning { get; private set; }
@@ -48,44 +41,40 @@ namespace FurnaceWPF.Models.Controllers
 
         public void SetNewTarget(ushort newTarget)
         {
-            _logger.LogInformation($"Новая целевая частота: {newTarget}");
+            Stop();
+            this._targetFrequence = newTarget;
 
-            _requestedTargetFrequency = newTarget;
 
-            if (newTarget == 0)
-            {
-                StartRampingDown();
-                return;
-            }
-
-            // если мы стоим или тормозим — просто разгоняемся
-            if (CurrentFrequency == 0)
-            {
-                StartRampingUp(newTarget);
-                return;
-            }
-
-            // если мы уже едем — аккуратно меняем цель
-            _targetFrequency = newTarget;
-            StartRampingTimer();
+            _logger.LogInformation($"Запускаем шаговый двигатель на порту {_driversPort}");
+            this._driver.StartDriver(_driversPort());
+            _rampingTimer = new Timer(RampingTick, null, _settings.DriverRampingUpdateInterval, _settings.DriverRampingUpdateInterval);
         }
+
         private void RampingTick(object? state)
         {
-            int error = _targetFrequency - CurrentFrequency;
-            int step = _settings.StepSizeDriver;
+            int error = _targetFrequence - CurrentFrequency;
 
-            if (Math.Abs(error) <= step)
-                CurrentFrequency = _targetFrequency;
+            var stepSize = _settings.StepSizeDriver;
+
+            if (Math.Abs(error) < stepSize)
+            {
+                CurrentFrequency = _targetFrequence;
+
+            }
             else
-                CurrentFrequency = (ushort)(CurrentFrequency + Math.Sign(error) * step);
+            {
+                CurrentFrequency = (ushort)(error < 0 ? CurrentFrequency - stepSize : CurrentFrequency + stepSize);
+            }
 
-            _driver.SetDriverFrequency(_channel(), CurrentFrequency);
 
-            App.Current.Dispatcher.Invoke(() =>
-                OnPropertyChanged(nameof(CurrentFrequency)));
+            this._driver.SetDriverFrequency(this._channel(), CurrentFrequency);
+            App.Current.Dispatcher.Invoke(() => { OnPropertyChanged(nameof(CurrentFrequency)); });
 
-            if (CurrentFrequency == _targetFrequency)
-                OnRampFinished();
+            if (CurrentFrequency == _targetFrequence)
+            {
+                _logger.LogInformation($"Шаговый двигатель на порту {_driversPort} разогнался до нужной скорости");
+                _rampingTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+            }
         }
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -106,7 +95,6 @@ namespace FurnaceWPF.Models.Controllers
 
         public void Stop()
         {
-            _state = DriverMotionState.Stopped;
             _logger.LogInformation($"Останавливаем шаговый двигатель на порту {_driversPort}");
             this._driver.StopDriver(this._driversPort());
             IsDriverRunning = false;
@@ -124,75 +112,30 @@ namespace FurnaceWPF.Models.Controllers
             return _driversPort();
         }
 
-        public void OnDirectionChanged()
+        public async Task OnDirectionChanged()
         {
-            _logger.LogInformation("Направление изменилось — тормозим");
+            _logger.LogInformation($"Меняем направление шд: {this._channel}");
 
-            if (CurrentFrequency == 0)
+            _directionCts?.Cancel();
+            _directionCts = new CancellationTokenSource();
+            var ct = _directionCts.Token;
+
+            _savedTarget = _targetFrequence;
+
+            // немедленно останавливаем драйвер
+            _driver.StopDriver(_driversPort());
+
+            try
             {
-                if (_requestedTargetFrequency > 0)
-                    StartRampingUp(_requestedTargetFrequency);
-
+                await Task.Delay(500, ct);
+            }
+            catch (TaskCanceledException)
+            {
                 return;
             }
 
-            StartRampingDown();
+            SetNewTarget(_savedTarget);
         }
 
-        private void StartRampingDown()
-        {
-            _state = DriverMotionState.RampingDown;
-            _targetFrequency = 0;
-            StartRampingTimer();
-        }
-
-
-        private void StartRampingUp(ushort target)
-        {
-            _state = DriverMotionState.RampingUp;
-            _targetFrequency = target;
-            StartRampingTimer();
-        }
-
-        private void OnRampFinished()
-        {
-            _rampingTimer?.Change(Timeout.Infinite, Timeout.Infinite);
-
-            if (_state == DriverMotionState.RampingDown)
-            {
-                _state = DriverMotionState.Stopped;
-
-                // направление уже сменилось извне — можно разгоняться
-                if (_requestedTargetFrequency > 0)
-                {
-                    StartRampingUp(_requestedTargetFrequency);
-                }
-                return;
-            }
-
-            if (_state == DriverMotionState.RampingUp)
-            {
-                _state = DriverMotionState.Running;
-            }
-        }
-
-
-        private void StartRampingTimer()
-        {
-            if (_rampingTimer == null)
-            {
-                _rampingTimer = new Timer(
-                    RampingTick,
-                    null,
-                    _settings.DriverRampingUpdateInterval,
-                    _settings.DriverRampingUpdateInterval);
-            }
-            else
-            {
-                _rampingTimer.Change(
-                    _settings.DriverRampingUpdateInterval,
-                    _settings.DriverRampingUpdateInterval);
-            }
-        }
     }
 }
