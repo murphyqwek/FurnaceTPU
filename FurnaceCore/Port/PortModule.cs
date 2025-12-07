@@ -357,9 +357,42 @@ namespace FurnaceCore.Port
         }
         public void ClosePort()
         {
+            LogInformation?.Invoke($"Начало закрытия порта {Name}. Ожидаем завершения очереди...");
+
+            // Ждём, пока очередь не опустеет и не будет активного ожидания ответа
+            while (!_awaitResponseQueue.IsEmpty || _isWaitingForResponse)
+            {
+                // Проверяем, открыт ли порт (на случай, если он уже закрыт извне)
+                if (!_serialPort.IsOpen)
+                {
+                    LogWarning?.Invoke("Порт уже закрыт — прерываем ожидание.");
+                    break;
+                }
+
+                // Вызываем отправку, если нужно (на случай, если процесс застрял)
+                TrySendNextAwaitedCommand();
+
+                // Блокирующая задержка, чтобы не нагружать CPU
+                Thread.Sleep(50); // 50 мс — подберите под вашу скорость
+            }
+
+            // Теперь очередь пуста, и нет ожидания — закрываем порт
             if (_serialPort.IsOpen)
+            {
                 _serialPort.Close();
-            LogInformation?.Invoke($"Порт {Name} закрыт");
+                LogInformation?.Invoke($"Порт {Name} закрыт после обработки очереди.");
+            }
+
+            // Очистка на всякий случай
+            lock (_responseLock)
+            {
+                _awaitResponseQueue.Clear();
+                _currentCommand = null;
+                _currentRetryCount = 0;
+                _isWaitingForResponse = false;
+                _responseTimeoutCts?.Dispose();
+                _responseTimeoutCts = null;
+            }
         }
         public void Dispose()
         {
