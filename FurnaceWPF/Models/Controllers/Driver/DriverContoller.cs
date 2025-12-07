@@ -17,14 +17,12 @@ namespace FurnaceWPF.Models.Controllers
         private Timer _rampingTimer;
 
         private ushort _targetFrequence;
-        private ushort _savedTarget;
         private DriverModule _driver;
         private Func<int> _channel;
         private Func<DriversPortEnum> _driversPort;
         private Settings _settings;
         private ILogger<DriverContoller> _logger;
         public event PropertyChangedEventHandler? PropertyChanged;
-        private CancellationTokenSource _directionCts;
 
 
         public ushort CurrentFrequency { get; private set; } = 10_000;
@@ -110,32 +108,6 @@ namespace FurnaceWPF.Models.Controllers
         public DriversPortEnum GetDriversPort()
         {
             return _driversPort();
-        }
-
-        public async Task OnDirectionChanged()
-        {
-            _logger.LogInformation($"Меняем направление шд: {this._channel}");
-
-            _directionCts?.Cancel();
-            _directionCts = new CancellationTokenSource();
-            var ct = _directionCts.Token;
-
-            _savedTarget = _targetFrequence;
-
-            // немедленно останавливаем драйвер
-            _driver.StopDriver(_driversPort());
-            _rampingTimer?.Change(Timeout.Infinite, Timeout.Infinite);
-
-            try
-            {
-                await Task.Delay(500, ct);
-            }
-            catch (TaskCanceledException)
-            {
-                return;
-            }
-
-            SetNewTarget(_savedTarget);
         }
 
     }
