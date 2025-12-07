@@ -37,6 +37,8 @@ namespace FurnaceWPF.ViewModels
 
         private bool _isWorking;
 
+        private bool _isAnimationReversed;
+
         #region Properties
         public string DriverName => _name;
         public DriverDirectionEnum DirectionEnum
@@ -135,16 +137,18 @@ namespace FurnaceWPF.ViewModels
         #endregion
 
         public event Action? AnimationSettingsChangeed;
-        public DriverViewModel(DriverContoller driverController, string name, Settings settings, RotationController rotationController)
+        public DriverViewModel(DriverContoller driverController, string name, Settings settings, RotationController rotationController, bool isAnimationReversed)
         {
             this._driverController = driverController;
             this._name = name;
             this._settings = settings;
             this._rotationController = rotationController;
+            this._isAnimationReversed = isAnimationReversed;
 
             _driverController.PropertyChanged += DriverController_PropertyChanged;
-            _settings.PropertyChanged += (s, e) => {
-                if(e.PropertyName == nameof(Settings.IsPortOpen))
+            _settings.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(Settings.IsPortOpen))
                 {
                     OnPropertyChanged(nameof(IsEnabled));
                     OnPropertyChanged(nameof(CanConfirmSpeed));
@@ -163,6 +167,7 @@ namespace FurnaceWPF.ViewModels
             };
 
             rotationController.RotationErrorEvent += (m) => App.Current.Dispatcher.BeginInvoke(() => IsWorking = false);
+            _isAnimationReversed = isAnimationReversed;
         }
 
         private void UpdateCanConfirmSpeed()
@@ -183,13 +188,18 @@ namespace FurnaceWPF.ViewModels
             var port = _driverController.GetDriversPort();
             var rotationDirection = rotationData.rotations.GetValueOrDefault(port);
 
-            if(rotationDirection == RotationEnum.Right)
+            App.Current.Dispatcher.Invoke(() => SetDrivetionEnum(rotationDirection));
+        }
+
+        private void SetDrivetionEnum(RotationEnum rotation)
+        {
+            if(rotation == RotationEnum.Right)
             {
-                App.Current.Dispatcher.Invoke(() => DirectionEnum = DriverDirectionEnum.Forward);
+                DirectionEnum = _isAnimationReversed ? DriverDirectionEnum.Backward : DriverDirectionEnum.Forward;
             }
             else
             {
-                App.Current.Dispatcher.Invoke(() => DirectionEnum = DriverDirectionEnum.Backward);
+                DirectionEnum = _isAnimationReversed ? DriverDirectionEnum.Forward : DriverDirectionEnum.Backward;
             }
         }
 

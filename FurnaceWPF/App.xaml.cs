@@ -93,6 +93,7 @@ namespace pechka4._8
         {
             services.AddSingleton<ZoneViewModelFactory>();
             services.AddSingleton<DriverViewModelFactory>();
+            services.AddSingleton<PasswordWindowFactory>();
 
             services.AddSingleton<Func<MockPort>>(sp =>
             {

@@ -183,7 +183,7 @@ namespace FurnaceCore.Model
             {
                 string[] hex = data.Split(' ');
 
-                if (hex.Length < 3)
+                if (hex.Length < 4)
                 {
                     return new Result<RotationData>(null, false, "Неполные данные для шагового двигателя");
                 }
@@ -221,7 +221,7 @@ namespace FurnaceCore.Model
                 return new Result<RotationData>(null, false, ex.Message);
             }
         }
-                
+
         public bool isRotationData(string data)
         {
             string[] hex = data.Split(' ');
@@ -244,8 +244,6 @@ namespace FurnaceCore.Model
                 _completionSource?.SetResult(rotationData);
             }
         }
-
-       
 
         private RotationEnum GetRotation(int rotationFlag)
         {
