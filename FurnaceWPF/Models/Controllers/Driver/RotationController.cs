@@ -97,6 +97,15 @@ namespace FurnaceWPF.Models.Controllers.Driver
                         return;
                     }
 
+                    string resultString = "";
+
+                    foreach(var rotation in result.Value.rotations)
+                    {
+                        resultString += $"{rotation.Key}:{rotation.Value}\n";
+                    }
+
+
+                    _logger.LogInformation("Получил данные по вращению: " + resultString);
                     RotationDataUpdate?.Invoke(result.Value);
 
                     await Task.Delay(_settings.RotationPollingInterval, token);
