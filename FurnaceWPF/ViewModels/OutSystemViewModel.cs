@@ -46,7 +46,7 @@ namespace pechka4._8.ViewModels
             get => _settings.IsPortOpen;
         }
 
-        public string Name { get => "Выход"; }
+        public string Name { get => "Выходящие газы"; }
 
         public Brush CoolantBrush => InterpolateBrush(_controller.CurrentTemperature);
         #endregion

@@ -67,16 +67,18 @@ namespace FurnaceCore.Model
             {
                 var temp = rawTemperatureData.Split(' ');
 
+                string temperatureBytes = temp[3] + temp[4];
+
+                double value = Convert.ToInt16("0x" + temperatureBytes, 16) / 10.0;
+
                 if (Convert.ToInt32(temp[3], 16) == 127 &&
                     Convert.ToInt32(temp[4], 16) == 255)
                 {
-                    return new Result<double>(0, false, "Произошёл обрыв");
+                    value = -1000;
                 }
+
+
                 
-                string temperatureBytes = temp[3] + temp[4];
-
-
-                double value = Convert.ToInt16("0x" + temperatureBytes, 16) / 10.0;
 
                 return new Result<double>(Math.Round(value, 1), true);
             }
