@@ -33,7 +33,7 @@ namespace FurnaceWPF.ViewModels
             _ => "Stop"
         };
 
-        public DriverWithArrowViewModel(PackIconKind forward, PackIconKind backward, PackIconKind stop, DriverContoller driverController, string name, Settings settings, RotationController rotationController) : base(driverController, name, settings, rotationController)
+        public DriverWithArrowViewModel(PackIconKind forward, PackIconKind backward, PackIconKind stop, DriverContoller driverController, string name, Settings settings, RotationController rotationController, bool isAnimatedReversed) : base(driverController, name, settings, rotationController, isAnimatedReversed)
         {
             this._forwardArrowKind = forward;
             this._backwardArrowKind = backward;
