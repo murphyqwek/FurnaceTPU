@@ -188,6 +188,8 @@ namespace FurnaceWPF.ViewModels
             var port = _driverController.GetDriversPort();
             var rotationDirection = rotationData.rotations.GetValueOrDefault(port);
 
+            _driverController.OnDirectionChanged();
+
             App.Current.Dispatcher.Invoke(() => SetDrivetionEnum(rotationDirection));
         }
 
