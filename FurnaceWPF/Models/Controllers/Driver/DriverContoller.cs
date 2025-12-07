@@ -123,7 +123,7 @@ namespace FurnaceWPF.Models.Controllers
             _savedTarget = _targetFrequence;
 
             // немедленно останавливаем драйвер
-            _driver.StopDriver(_driversPort());
+            Stop();
 
             try
             {
