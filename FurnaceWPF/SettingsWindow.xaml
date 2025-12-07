@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FurnaceWPF.Views"
         xmlns:controls="clr-namespace:FurnaceWPF.Views.Controls"
         mc:Ignorable="d"
-        Title="SettingsWindow" MinHeight="450" MinWidth="870" 
+        Title="Настройки" MinHeight="450" MinWidth="870" 
                                Height="450" Width="870">
     <ScrollViewer VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Disabled"
