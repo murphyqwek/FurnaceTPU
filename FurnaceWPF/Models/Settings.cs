@@ -52,6 +52,8 @@ namespace FurnaceWPF.Models
         private DriversPortEnum _driverBPort = DriversPortEnum.One;
         private DriversPortEnum _driverCPort = DriversPortEnum.Three;
 
+        public const string SETTINGS_WINDOW_PASSOWRD = "Bestpirolisis";
+
         #region Properties
 
         public bool IsDebug

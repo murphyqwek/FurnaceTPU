@@ -43,12 +43,12 @@ namespace FurnaceWPF.ViewModels
 
         private readonly Settings _settings;
         private readonly IServiceProvider _service;
-
+        private readonly PasswordWindowFactory _passwordWindowFactory;
         private Func<SettingsWindow> _getSettingsWindow;
 
         public RemoteCommand SettingsCommand { get; }
 
-        public FurnaceWindowViewModel(DriverViewModelFactory driverFactory, ZoneViewModelFactory zoneFactory, Settings settings, IServiceProvider service, Func<SettingsWindow> settingsWindow, CoolingSystemViewModel coolingSystem, OutSystemVievModel outSystem, PortViewModel portViewModel)
+        public FurnaceWindowViewModel(DriverViewModelFactory driverFactory, ZoneViewModelFactory zoneFactory, Settings settings, IServiceProvider service, Func<SettingsWindow> settingsWindow, CoolingSystemViewModel coolingSystem, OutSystemVievModel outSystem, PortViewModel portViewModel, PasswordWindowFactory passwordWindowFactory)
         {
             DriveA = driverFactory.GetDriverA();
             DriveB = driverFactory.GetDriverB();
@@ -62,6 +62,8 @@ namespace FurnaceWPF.ViewModels
 
             CoolingSystem = coolingSystem;
             OutSystem = outSystem;
+
+            _passwordWindowFactory = passwordWindowFactory;
 
             this._settings = settings;
             this._service = service;
@@ -140,7 +142,13 @@ namespace FurnaceWPF.ViewModels
 
         private void OnSettingsButtonClicked()
         {
-            _getSettingsWindow().ShowDialog();
+            var passwordWindow = _passwordWindowFactory.GetPasswordWindow(Settings.SETTINGS_WINDOW_PASSOWRD);
+            passwordWindow.ShowDialog();
+
+            if (passwordWindow._passwordViewModel.IsCorrect)
+            {
+                _getSettingsWindow().ShowDialog();
+            }
         }
     }
 }
