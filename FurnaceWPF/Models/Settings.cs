@@ -26,7 +26,8 @@ namespace FurnaceWPF.Models
         private byte _driverCChannel = 0x04;
 
         private byte _driverAddress = 0x01;
-        private byte _coolingChannel = 0x03;
+        private byte _coolingChannel = 0x04;
+        private byte _outChannel = 0x03;
 
         private bool _isRunning = false;
         private bool _isPortOpen = false;
@@ -123,6 +124,12 @@ namespace FurnaceWPF.Models
         {
             get => _coolingChannel;
             set => SetField(ref _coolingChannel, value);
+        }
+
+        public byte OutChannel
+        {
+            get => _outChannel;
+            set => SetField(ref _outChannel, value);
         }
 
         public bool IsRunning

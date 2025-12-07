@@ -165,7 +165,7 @@ Kind="{Binding DriveB.ArrowKind}" Width="16" Height="26" Canvas.Left="486" Canva
 
                 <!--#region cooling area-->
                 <controls:CoolingControl DataContext="{Binding CoolingSystem}" Canvas.Left="2026" Canvas.Top="324" HorizontalAlignment="Left" VerticalAlignment="Center" Width="289"/>
-                <Image Height="284" Canvas.Left="2032" Source="/Resourses/Images/Tube_V.PNG" Stretch="Fill" Canvas.Top="594" Width="278" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Image Height="284" Canvas.Left="2117" Source="/Resourses/Images/Tube_V.PNG" Stretch="Fill" Canvas.Top="594" Width="109" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 <Image Height="424" Canvas.Left="1916" Source="/Resourses/Images/Tube_V.PNG" Stretch="Fill" Canvas.Top="335" Width="52" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" VerticalAlignment="Center">
                     <Image.RenderTransform>
                         <TransformGroup>
@@ -176,11 +176,12 @@ Kind="{Binding DriveB.ArrowKind}" Width="16" Height="26" Canvas.Left="486" Canva
                         </TransformGroup>
                     </Image.RenderTransform>
                 </Image>
-                <Image Height="95" Canvas.Left="2140" Source="/Resourses/Images/Tube_V.PNG" Stretch="Fill" Canvas.Top="500" Width="61" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <Image Height="95" Canvas.Left="2140" Source="/Resourses/Images/Tube_V.PNG" Stretch="Fill" Canvas.Top="878" Width="61" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Image Height="74" Canvas.Left="2154" Source="/Resourses/Images/Tube_V.PNG" Stretch="Fill" Canvas.Top="521" Width="36" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <controls:CoolingControl DataContext="{Binding OutSystem}" Canvas.Left="1712" Canvas.Top="324" Width="289" HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
                 <!--#endregion-->
             </Canvas>
         </Viewbox>
+        <Image Source="/Resourses/Images/Tube_V.PNG" Stretch="Fill" Margin="1063,425,219,25"/>
     </Grid>
 </Window>

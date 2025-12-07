@@ -33,6 +33,7 @@ namespace FurnaceWPF.ViewModels
         public PortViewModel PortControlViewMovel { get; }
 
         public CoolingSystemViewModel CoolingSystem { get; }
+        public OutSystemVievModel OutSystem { get; }
 
         public bool IsSettingsAvalable
         {
@@ -47,7 +48,7 @@ namespace FurnaceWPF.ViewModels
 
         public RemoteCommand SettingsCommand { get; }
 
-        public FurnaceWindowViewModel(DriverViewModelFactory driverFactory, ZoneViewModelFactory zoneFactory, Settings settings, IServiceProvider service, Func<SettingsWindow> settingsWindow, CoolingSystemViewModel coolingSystem, PortViewModel portViewModel)
+        public FurnaceWindowViewModel(DriverViewModelFactory driverFactory, ZoneViewModelFactory zoneFactory, Settings settings, IServiceProvider service, Func<SettingsWindow> settingsWindow, CoolingSystemViewModel coolingSystem, OutSystemVievModel outSystem, PortViewModel portViewModel)
         {
             DriveA = driverFactory.GetDriverA();
             DriveB = driverFactory.GetDriverB();
@@ -60,6 +61,7 @@ namespace FurnaceWPF.ViewModels
             PortControlViewMovel = portViewModel;
 
             CoolingSystem = coolingSystem;
+            OutSystem = outSystem;
 
             this._settings = settings;
             this._service = service;
@@ -98,7 +100,8 @@ namespace FurnaceWPF.ViewModels
             Zone1.IsWorking = isWorking;
             Zone2.IsWorking = isWorking;
             Zone3.IsWorking = isWorking;
-            //CoolingSystem.IsPumpOn = isWorking;
+            CoolingSystem.IsPumpOn = isWorking;
+            OutSystem.IsPumpOn = isWorking;
         }
 
         private void OnIsDebugChanged()

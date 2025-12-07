@@ -13,17 +13,17 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace FurnaceWPF.Models.Controllers.Cooling
+namespace FurnaceWPF.Models.Controllers.Out
 {
-    public class CoolingConroller : BaseObservable
+    public class OutConroller : BaseObservable
     {
         private double _currentTemperature;
         private bool _isWorking;
         private Func<byte> _channel;
 
         private TemperatureController _temperatureController;
-        private CoolingModule _coolingModule;
-        private ILogger<CoolingConroller> _logger;
+        private OutModule _OutModule;
+        private ILogger<OutConroller> _logger;
         private Settings _settings;
 
         #region Properties
@@ -55,13 +55,13 @@ namespace FurnaceWPF.Models.Controllers.Cooling
 
         public event Action<string>? ErrorEvent;
 
-        public CoolingConroller(TemperatureController temperatureController, CoolingModule coolingModule, ILogger<CoolingConroller> logger, Settings settings)
+        public OutConroller(TemperatureController temperatureController, OutModule OutModule, ILogger<OutConroller> logger, Settings settings)
         {
             this._temperatureController = temperatureController;
             this._logger = logger;
             this._settings = settings;
-            this._coolingModule = coolingModule;
-            this._channel =  () => _settings.CoolingChannel;
+            this._OutModule = OutModule;
+            this._channel =  () => _settings.OutChannel;
             //this._temperatureController.GlobalErrorEvent += (e) => { StopPollingTemperature(); };
         }
 

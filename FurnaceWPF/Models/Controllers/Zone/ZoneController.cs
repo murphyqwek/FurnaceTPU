@@ -211,7 +211,7 @@ namespace FurnaceWPF.Models.Controllers.Zone
 
         private void GlobalErrorHandle(string message)
         {
-            StopPollingTemperature();
+            //StopPollingTemperature();
         }
     }
 
