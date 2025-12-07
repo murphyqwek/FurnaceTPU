@@ -254,9 +254,7 @@ namespace FurnaceCore.Port
             {
                 return true;
             }
-            string calculatedCRCHex = BitConverter.ToString(calculatedCrc).Replace("-", " ");
-            string frameCRCHex = BitConverter.ToString(frameCrc).Replace("-", " ");
-            LogWarning?.Invoke($"Неверный CRC. Ожидалось {calculatedCRCHex}, получено {frameCRCHex}");
+
             return false;
         }
         /// <summary>
@@ -328,8 +326,7 @@ namespace FurnaceCore.Port
                     _receiveQueue.Enqueue((byte)b);
                     frame.Add((byte)b);
                 }
-                string hex = BitConverter.ToString(frame.ToArray()).Replace("-", " ");
-                LogInformation?.Invoke("Получил байты: " + hex);
+
                 RestartFrameTimer();
             }
             catch (Exception ex)
