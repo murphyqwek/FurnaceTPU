@@ -221,27 +221,31 @@ namespace FurnaceCore.Model
                 return new Result<RotationData>(null, false, ex.Message);
             }
         }
-
-        public bool isEchoData(string data)
+                
+        public bool isRotationData(string data)
         {
             string[] hex = data.Split(' ');
 
-            return !(hex[0] == "01");
+
+            if(hex.Length != 6)
+            {
+                return false;
+            }
+
+            return (hex[0] == "01" && hex[1] == "01" && hex[2] == "01");
         }
 
         public void HandleData(string data)
         {
-            if (isEchoData(data))
+            if (isRotationData(data))
             {
-                return;
+                var rotationData = ParseRotationData(data);
+
+                _completionSource?.SetResult(rotationData);
             }
-
-            var rotationData = ParseRotationData(data);
-
-            _completionSource?.SetResult(rotationData);
-
-            RotationUpdate?.Invoke(rotationData);
         }
+
+       
 
         private RotationEnum GetRotation(int rotationFlag)
         {

@@ -199,6 +199,7 @@ namespace FurnaceWPF.ViewModels
             {
                 OnPropertyChanged(nameof(Speed));
                 OnPropertyChanged(nameof(CanConfirmSpeed));
+                AnimationSettingsChangeed?.Invoke();
             }
         }
 

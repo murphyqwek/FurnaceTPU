@@ -39,7 +39,7 @@ namespace FurnaceWPF.Factories
         {
             var driverController = GetDriverController(() => _settings.DriverBChannel, () => _settings.DriverBPort);
 
-            return new DriverWithArrowViewModel(PackIconKind.ArrowRightBold, PackIconKind.ArrowLeftBold, PackIconKind.ArrowRightBold, driverController, "B", _settings, _rotationController);
+            return new DriverWithArrowViewModel(PackIconKind.ArrowLeftBold, PackIconKind.ArrowRightBold, PackIconKind.ArrowLeftBold, driverController, "B", _settings, _rotationController);
         }
 
         public DriverWithArrowViewModel GetDriverC()

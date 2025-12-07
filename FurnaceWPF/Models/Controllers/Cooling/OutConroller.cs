@@ -100,7 +100,7 @@ namespace FurnaceWPF.Models.Controllers.Out
             _logger.LogError(message);
             //StopPollingTemperature();
 
-            NoBlockingMessageBox.ShowError(message);
+            //NoBlockingMessageBox.ShowError(message);
         }
     }
 }

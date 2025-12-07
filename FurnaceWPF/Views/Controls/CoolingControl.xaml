@@ -46,7 +46,7 @@
                 </ToggleButton>-->
             </Grid>
 
-            <ProgressBar Grid.Row="1" Value="{Binding CoolantTemperatureDouble, Mode=OneWay}" Maximum="500" Height="10" Margin="0,0,0,6"
+            <ProgressBar Grid.Row="1" Value="{Binding CoolantTemperatureDouble, Mode=OneWay}" Maximum="100" Height="10" Margin="0,0,0,6"
              Foreground="{Binding CoolantBrush}" />
 
             <TextBlock Grid.Row="2" Text="{Binding CoolantTemperature, Mode=OneWay}" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
